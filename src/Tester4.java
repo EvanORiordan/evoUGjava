@@ -1,8 +1,8 @@
 import java.util.Random;
 
 /*
-Tester of two players who play a number of rounds, where one round is two instances of the UG where both players
-got to play as both roles, and whose strategies are random each round.
+Tester of two players who playUG a number of rounds, where one round is two instances of the UG where both players
+got to playUG as both roles, and whose strategies are random each round.
  */
 public class Tester4 {
     public static void main(String[] args){
@@ -17,8 +17,8 @@ public class Tester4 {
             player2.setP(random.nextDouble());
             player2.setQ(random.nextDouble());
             System.out.println("\n=========== Round "+(i+1)+" ===========");
-            player1.play(player2, prize);
-            player2.play(player1, prize);
+            player1.playUG(player2, prize);
+            player2.playUG(player1, prize);
         }
         displayTotals(player1, player2);
     }

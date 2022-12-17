@@ -1,93 +1,61 @@
-import java.util.ArrayList;
 
+/**
+ * <p>Player class for instantiating player objects for different variants of the UG.</p>
+ */
 public class Player {
+    private static int count = 0; // class-wide attribute that helps assign player ID
+    private int id; // each player has a unique ID
+    private double score = 0; // amount of reward player has received from playing; i.e. this player's fitness
+    private double p = 0.0; // proposal value; real num within [0,1]
+    private double q = 0.0; // acceptance threshold value; real num within [0,1]
+    private int games_played = 0; // keep track of the number of games this player has played
+    private double EAP;  // EAP; used by [rand2013evolution]
 
-    //private static int count = 1;
-    private static int count = 0;
-    private int id;                     // each Player has a unique id
+    public Player(){}  // empty constructor
 
-    private double score = 0;           // amount of reward player has received from playing
-    private double effective_average_payoff;
-
-    // p and q are real numbers that lie within the range [0, 1]
-    private double p = 0.0;             // fraction of prize that player will offer to give to responder as proposer
-    private double q = 0.0;             // minimum fraction of the prize that player will accept as responder
-
-    private int how_many_players_ive_played_against = 1; // including This player himself
-    private ArrayList<Integer> players_ive_played_against = new ArrayList<>(); // including This player himself
-
-    public Player(){}
+    // constructor for instantiating a UG player
     public Player(double p, double q){
-        id=count++;
+        id=count++; // assign this player's ID
+        // assign this player's strategy
         this.p=p;
         this.q=q;
-        players_ive_played_against.add(id);
     }
 
+    // constructor for instantiating a DG player
+    public Player(double p){
+        id=count++; // assign this player's ID
+        this.p=p; // assign this player's strategy
+    }
 
-    // NOTE: method overloading for the play() method
-    public void play(Player responder, double prize) {
+    // method for playing the UG
+    public void playUG(Player responder, double prize) {
         if(p >= responder.q){
-            System.out.println(p+" >= "+ responder.q+" Responder accepts offer." +
-                    "\n\tProposer earns "+(prize*(1-p))+"\tResponder earns "+(prize*p));
-
-            increaseScore(prize*(1-p));
-            responder.increaseScore(prize*p);
+            score += (prize*(1-p));
+            responder.score += (prize*p);
         }
-        if(p < responder.q){
-            System.out.println(p+" <  "+ responder.q+" Responder declines offer.");
-        }
-//        adjustPlayerLists(responder);
-    }
-    public void play(Player responder, double prize, boolean displayMessages){
-        if(displayMessages){
-            play(responder, prize);
-        } else{
-            if(p >= responder.q) {
-                increaseScore(prize * (1 - p));
-                responder.increaseScore(prize * p);
-            }
-        }
-//        adjustPlayerLists(responder);
-    }
-    public void play(Player responder, double prize, boolean displayMessages, double w){
-        if(displayMessages){
-            play(responder, prize);
-        } else{
-//            if(p >= responder.q) {
-//                increaseScore(prize * (1 - p));
-//                responder.increaseScore(prize * p);
-//            }
-            play(responder, prize, false);
-        }
-        calculateEffectiveAveragePayoff(w);
-        adjustPlayerLists(responder);
-        responder.calculateEffectiveAveragePayoff(w);
-        responder.adjustPlayerLists(this);
+        games_played++;
+        responder.games_played++;
     }
 
-    public void adjustPlayerLists(Player other_player){
-        players_ive_played_against.add(other_player.id);
-        how_many_players_ive_played_against++;
-//        responder.players_ive_played_against.add(id);
-//        responder.how_many_players_ive_played_against++;
-    }
-    public void calculateEffectiveAveragePayoff(double w){
-        effective_average_payoff = Math.exp(w*score);
+    // method for playing the DG
+    public void playDG(Player recipient, double prize){
+        score += (prize*(1-p));
+        recipient.score += (prize*p);
     }
 
     public double getScore(){
         return score;
     }
+
     public void setScore(double score){
         this.score=score;
     }
-    public void increaseScore(double amount){
-        score+=amount;
-    }
+
     public double getP(){
         return p;
     }
+
+    // recall that p must lie within the range [0,1]
     public void setP(double p){
         this.p=p;
         if(this.p>1){
@@ -96,9 +64,12 @@ public class Player {
             this.p=0;
         }
     }
+
     public double getQ(){
         return q;
     }
+
+    // recall that q must lie within the range [0,1]
     public void setQ(double q){
         this.q=q;
         if(this.q>1){
@@ -107,28 +78,59 @@ public class Player {
             this.q=0;
         }
     }
+
     public void setStrategy(double p, double q){
-        setP(p);
-        setQ(q);
+        this.p=p;
+        this.q=q;
     }
+
     public int getId(){
         return id;
     }
-    public ArrayList<Integer> getPlayers_ive_played_against(){
-        return players_ive_played_against;
+
+    public double getEAP_rand2013evolution(){
+        return EAP;
     }
-    public double getEffective_average_payoff(){
-        return effective_average_payoff;
+
+    // Method for calculating a player's effective average payoff, according to [rand2013evolution].
+    public void setEAP_rand2013evolution(double w){
+        double average_payoff = score / games_played; // i.e. pi_i
+        EAP = Math.exp(w * average_payoff);
     }
 
     @Override
     public String toString(){
-//        return "Player ID: "+id+"\tScore: "+score+"\tp: "+p+"\tq: "+q;
+        // Uncomment the player describing method you want to have display.
+
+//        return toStringUG();
+        return toStringRand2013();
+//        return toStringDG();
+    }
+
+    // method for returning the description of a standard UG player
+    public String toStringUG(){
         return "ID="+id+
                 " p="+p+
                 " q="+q+
-                " PPA: "+how_many_players_ive_played_against+
                 " Score="+score+
-                " EAP="+effective_average_payoff;
+                " Games played="+games_played;
+    }
+
+    // method for returning the description of a [rand2013evolution] UG player
+    public String toStringRand2013(){
+        return "ID="+id+
+                " p="+p+
+                " q="+q+
+                " Score="+score+
+                " Games played="+games_played+
+                " EAP="+ EAP;
+    }
+
+    // method for returning the description of a DG player
+    public String toStringDG(){
+        return "ID="+id+
+                "\tp="+p+
+                "\tScore="+score+
+                "\tGames played="+games_played;
     }
 }

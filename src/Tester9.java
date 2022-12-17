@@ -2,7 +2,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /*
 One-shot UG.
@@ -23,7 +22,6 @@ public class Tester9 {
     static int max_num_rounds = 10000;  // specifies the number of rounds the game will be played for
     static int pop_size = 100;  // even integer specifies how many players are in the population; also denoted by N
     static boolean reset1 = true; // indicates whether player scores are reset at a certain point of the program
-    static boolean displayRoundMessages = false; // indicates whether some messages are printed each round
 
     public static void main(String[] args) throws IOException {
         for(int i=0; i<pop_size; i++){  // add players with random strategies to pop
@@ -34,9 +32,6 @@ public class Tester9 {
         writeToCSV(starting_players, population);
         int round = 0;
         while(round != max_num_rounds){
-            if(displayRoundMessages){
-                System.out.println("\n=========== Round "+(round+1)+" ===========");
-            }
             resetScores(population, reset1);
             ArrayList<Player> players_this_round = (ArrayList) population.clone();  // temp copy of pop
             while(players_this_round.size() != 0){  // while there are players left unassigned
@@ -47,7 +42,7 @@ public class Tester9 {
                 }
                 Player proposer = players_this_round.get(rand_int);
                 Player responder = players_this_round.get(rand_int2);
-                proposer.play(responder, prize, displayRoundMessages);  // play UG
+                proposer.playUG(responder, prize);  // play the UG
 
                 // start evolution
                 if(proposer.getScore()>responder.getScore()){
@@ -86,7 +81,7 @@ public class Tester9 {
     }
     public static void writeToCSV(String filename, ArrayList<Player> player_list) throws IOException {
         FileWriter fw = new FileWriter(filename, false);
-        fw.append("Player ID"+COMMA_DELIMITER
+        fw.append("DG.Player ID"+COMMA_DELIMITER
                 + "p"+COMMA_DELIMITER
                 + "q"+COMMA_DELIMITER
                 + "Tester: "+tester+COMMA_DELIMITER

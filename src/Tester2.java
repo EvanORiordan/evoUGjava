@@ -22,7 +22,7 @@ public class Tester2 {
             ArrayList responders = (ArrayList) players.clone();
             responders.remove(proposer);
             for(Object responder: responders){
-                proposer.play((Player) responder, prize);
+                proposer.playUG((Player) responder, prize);
             }
             round++;
         }

@@ -9,8 +9,8 @@ public class Tester6 {
         int numRounds = 5;
         for(int i=0;i<numRounds;i++){
             System.out.println("\n=========== Round "+(i+1)+" ===========");
-            player1.play(player2, prize);
-            player2.play(player1, prize);
+            player1.playUG(player2, prize);
+            player2.playUG(player1, prize);
 
             // APPLY EVOLUTIONARY PRESSURE
             if(player1.getScore()>player2.getScore()){

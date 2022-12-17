@@ -46,7 +46,7 @@ public class Tester5 {
                 }
                 Player proposer = players_this_round.get(rand_int);
                 Player responder = players_this_round.get(rand_int2);
-                proposer.play(responder, prize, displayRoundMessages);  // play UG
+                proposer.playUG(responder, prize);
 
                 // start evolution
                 if(proposer.getScore()>responder.getScore()){
@@ -85,7 +85,7 @@ public class Tester5 {
     }
     public static void writeToCSV(String filename, ArrayList<Player> player_list) throws IOException {
         FileWriter fw = new FileWriter(filename, false);
-        fw.append("Player ID"+COMMA_DELIMITER
+        fw.append("DG.Player ID"+COMMA_DELIMITER
                 + "p"+COMMA_DELIMITER
                 + "q"+COMMA_DELIMITER
                 //+ "Prize: "+prize+COMMA_DELIMITER

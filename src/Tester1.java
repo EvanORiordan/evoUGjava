@@ -1,8 +1,7 @@
-import java.util.List;
 import java.util.ArrayList;
 
 /*
-Basic java UG program of 2 hard-coded players with pre-determined strategies who play each other as both roles and
+Basic java UG program of 2 hard-coded players with pre-determined strategies who playUG each other as both roles and
 accumulate payoff.
  */
 public class Tester1 {
@@ -13,11 +12,11 @@ public class Tester1 {
         Player player2 = new Player(0.1, 0.25);
         players.add(player1);
         players.add(player2);
-//        for(Player player: players){
+//        for(DG.Player player: players){
 //            System.out.println("p = "+player.getp()+"\tq = "+player.getq());
 //        }
-        players.get(0).play(players.get(1), prize);
-        players.get(1).play(players.get(0), prize);
+        players.get(0).playUG(players.get(1), prize);
+        players.get(1).playUG(players.get(0), prize);
 //        System.out.println(players.get(0).getScore());
 //        System.out.println(players.get(1).getScore());
 
