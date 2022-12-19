@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -16,8 +18,11 @@ public class Tester16 {
     static String tester = "16";
     static int max_gens = 10000;
     static String neighbourhood = "vonNeumann4";
+    static String results_csv="results.csv";
+    static String COMMA_DELIMITER = ",";
+    static String NEW_LINE_SEPARATOR = "\n";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("Executing Tester"+tester+"."+Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
 
         // construct grid of players
@@ -54,6 +59,7 @@ public class Tester16 {
         }
 
         displayStats(grid);
+        writeToCSV(results_csv, grid);
     }
 
     public static void reset(ArrayList<ArrayList<Player>> grid){
@@ -101,5 +107,25 @@ public class Tester16 {
         System.out.println("Lowest value of p: "+lowest_p);
         System.out.println("Highest value of q: "+highest_q);
         System.out.println("Lowest value of q: "+lowest_q);
+    }
+
+    public static void writeToCSV(String filename, ArrayList<ArrayList<Player>> grid) throws IOException {
+        FileWriter fw = new FileWriter(filename, false);
+        fw.append("Player ID"+COMMA_DELIMITER
+                + "p"+COMMA_DELIMITER
+                + "q"+COMMA_DELIMITER
+                + "Tester: "+tester+COMMA_DELIMITER
+                + "gens: "+max_gens+COMMA_DELIMITER
+                + "N: "+N+COMMA_DELIMITER
+                + NEW_LINE_SEPARATOR);
+        for(ArrayList<Player> row: grid){
+            for(Player player: row){
+                fw.append(player.getId()+COMMA_DELIMITER
+                        + player.getP()+COMMA_DELIMITER
+                        + player.getQ()+NEW_LINE_SEPARATOR);
+            }
+        }
+        fw.close();
+        System.out.println("Completed writing to "+filename);
     }
 }
