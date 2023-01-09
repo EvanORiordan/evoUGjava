@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * UG on a 2D grid. For each gen, a player plays with their von Neumann neighbourhood. Scores and
- * number of games played in a gen is reset after each gen. NEXT TIME: debug to see if the players
- * are playing their neighbourhood properly, in particular the assignPosition2D() and
- * findNeighbours2D() methods.
+ * Non-evo UG on a 2D grid. During each gen, a player plays with their von Neumann neighbourhood.
  */
 
 public class Tester16 {
@@ -15,7 +12,6 @@ public class Tester16 {
     static int rows = 10;
     static int columns = 10;
     static int N = rows * columns;
-    static String tester = "16";
     static int max_gens = 10000;
     static String neighbourhood = "vonNeumann4";
     static String results_csv="results.csv";
@@ -23,7 +19,8 @@ public class Tester16 {
     static String NEW_LINE_SEPARATOR = "\n";
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Executing Tester"+tester+"."+Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
+        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
+                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
 
         // construct grid of players
         ArrayList<ArrayList<Player>> grid = new ArrayList<>();
@@ -114,8 +111,8 @@ public class Tester16 {
         fw.append("Player ID"+COMMA_DELIMITER
                 + "p"+COMMA_DELIMITER
                 + "q"+COMMA_DELIMITER
-                + "Tester: "+tester+COMMA_DELIMITER
-                + "gens: "+max_gens+COMMA_DELIMITER
+                + "Program: "+Thread.currentThread().getStackTrace()[1].getClassName()+COMMA_DELIMITER
+                + "Gens: "+max_gens+COMMA_DELIMITER
                 + "N: "+N+COMMA_DELIMITER
                 + NEW_LINE_SEPARATOR);
         for(ArrayList<Player> row: grid){

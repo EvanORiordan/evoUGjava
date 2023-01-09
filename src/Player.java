@@ -10,13 +10,12 @@ public class Player {
     private double score = 0; // amount of reward player has received from playing; i.e. this player's fitness
     private double p = 0.0; // proposal value; real num within [0,1]
     private double q = 0.0; // acceptance threshold value; real num within [0,1]
-    private int games_played = 0; // keep track of the number of games this player has played
+    private int games_played_in_total = 0; // keep track of the total number of games this player has played
     private double EAP;  // EAP; used by [rand2013evolution]
     private String neighbourhood_type; // neighbourhood type of this player
     private ArrayList<Player> neighbourhood; // contains the players in this player's neighbourhood
     private int max_games_per_gen;
     private int games_played_this_gen = 0;
-
     // allows for the dynamic assignment of position values regardless of the number of dimensions
     private int[] position;
 
@@ -47,7 +46,14 @@ public class Player {
         this.q=q;
         this.neighbourhood_type=neighbourhood_type;
         neighbourhood = new ArrayList<>();
+    }
 
+    // constructor for instantiating a spatial DG player
+    public Player(double p, String neighbourhood_type){
+        ID=count++; // assign this player's ID
+        this.p=p; // assign this player's strategy
+        this.neighbourhood_type=neighbourhood_type;
+        neighbourhood = new ArrayList<>();
     }
 
     // method for playing the UG
@@ -56,16 +62,16 @@ public class Player {
             score += (prize*(1-p));
             responder.score += (prize*p);
         }
-        games_played++;
-        responder.games_played++;
+        games_played_in_total++;
+        responder.games_played_in_total++;
     }
 
     // method for playing the DG
     public void playDG(Player recipient, double prize){
         score += (prize*(1-p));
         recipient.score += (prize*p);
-        games_played++;
-        recipient.games_played++;
+        games_played_in_total++;
+        recipient.games_played_in_total++;
     }
 
     // method for playing the spatial UG
@@ -137,7 +143,7 @@ public class Player {
 
     // Method for calculating a player's effective average payoff, according to [rand2013evolution].
     public void setEAP_rand2013evolution(double w){
-        double average_payoff = score / games_played; // i.e. pi_i
+        double average_payoff = score / games_played_in_total; // i.e. pi_i
         EAP = Math.exp(w * average_payoff);
     }
 
@@ -197,7 +203,8 @@ public class Player {
 //        return toStringUG();
 //        return toStringRand2013();
 //        return toStringDG();
-        return toStringSpatialUG();
+//        return toStringSpatialUG();
+        return toStringSpatialDG();
     }
 
     // method for returning the description of a standard UG player
@@ -206,7 +213,7 @@ public class Player {
                 " p="+p+
                 " q="+q+
                 " Score="+score+
-                " Games played="+games_played;
+                " GPIT="+games_played_in_total;
     }
 
     // method for returning the description of a [rand2013evolution] UG player
@@ -215,7 +222,7 @@ public class Player {
                 " p="+p+
                 " q="+q+
                 " Score="+score+
-                " Games played="+games_played+
+                " GPIT="+games_played_in_total+
                 " EAP="+ EAP;
     }
 
@@ -224,16 +231,68 @@ public class Player {
         return "ID="+ID+
                 " p="+p+
                 " Score="+score+
-                " Games played="+games_played;
+                " GPIT="+games_played_in_total;
     }
 
     // method for returning the description of a spatial UG player
     public String toStringSpatialUG(){
+        String neighbours = "[";
+        int j=0;
+        for(int i=0;i<neighbourhood.size();i++){
+            neighbours+=neighbourhood.get(i).getId();
+            j++;
+            if(j < neighbourhood.size()){
+                neighbours+=", ";
+            }
+        }
+        neighbours+="]";
         return "ID="+ID+
                 " p="+p+
                 " q="+q+
                 " Score="+score+
+                " Neighbourhood="+neighbours+
                 " GPTG="+ games_played_this_gen +
-                " GP="+games_played;
+                " GPIT="+games_played_in_total;
+    }
+
+    public String toStringSpatialDG(){
+        String neighbours = "[";
+        int j=0;
+        for(int i=0;i<neighbourhood.size();i++){
+            neighbours+=neighbourhood.get(i).getId();
+            j++;
+            if(j < neighbourhood.size()){
+                neighbours+=", ";
+            }
+        }
+        neighbours+="]";
+        return "ID="+ID+
+                " p="+p+
+                " Score="+score+
+                " Neighbourhood="+neighbours+
+                " GPTG="+ games_played_this_gen +
+                " GPIT="+games_played_in_total;
+    }
+
+
+
+    // place BPs to debug and test Player method functionality
+    public static void main(String[] args) {
+        test1();
+//        test2();
+    }
+    public static void test1(){
+        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
+                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
+        Player player1 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
+        Player player2 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
+        player1.playUG(player2, 1.0);
+    }
+    public static void test2(){
+        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
+                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
+        Player player1 = new Player(ThreadLocalRandom.current().nextDouble());
+        Player player2 = new Player(ThreadLocalRandom.current().nextDouble());
+        player1.playDG(player2, 1.0);
     }
 }

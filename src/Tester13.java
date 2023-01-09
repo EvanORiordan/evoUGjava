@@ -1,7 +1,7 @@
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Non-evolutionary Dictator Game (DG) program.
+ * Non-evolutionary Dictator Game (DG) program with two players.
  */
 public class Tester13 {
     public static void main(String[] args) {

@@ -1,10 +1,9 @@
 import java.util.ArrayList;
 
 /**
- * <p>Idea from the TO DO list: Fair mutants invade greedy population.</p>
- *
+ * Idea from the to do list: Fair mutants invade greedy population.
+ * NOT COMPLETED.
  */
-
 public class Tester12 {
     static final double prize = 10.0;
     static final int N = 100;
@@ -43,7 +42,7 @@ public class Tester12 {
         int generation = 0;
         while(generation!=max_gens){
 
-            //playUG UG...
+            //play UG...
 
             generation++;
         }

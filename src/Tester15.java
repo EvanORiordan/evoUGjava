@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * UG on a 1D line. For each gen, a player plays with their neighbourhood which consists of the player
+ * Non-evo UG on a 1D line. For each gen, a player plays with their neighbourhood which consists of the player
  * before and after them in the line (think of the line as a circle). Scores and number of games played
  * each round of each player is reset to zero after each gen.
  */
@@ -12,17 +12,22 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Tester15 {
     static double prize = 10.0;
     static int N = 100;
-    static String tester = "15";
+//    static String tester = "15";
     static int max_gens = 10000;
-    static String neighbourhood = "line2";
+    static String neighbourhood = "line2"; // type of neighbourhood and number of neighbours
     static String results_csv="results.csv";
     static String COMMA_DELIMITER = ",";
     static String NEW_LINE_SEPARATOR = "\n";
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Executing Tester"+tester+"."+Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
+//        System.out.println("Executing Tester"+tester+"."+Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
+        System.out.println("Executing "
+                +Thread.currentThread().getStackTrace()[1].getClassName()
+                +"."
+                +Thread.currentThread().getStackTrace()[1].getMethodName()
+                +"()...\n");
 
-        // construct line of players
+        // construct a population in the form of a line of players
         ArrayList<Player> line = new ArrayList<>();
         for(int i=0;i<N;i++){
             line.add(new Player(
@@ -58,6 +63,8 @@ public class Tester15 {
         }
     }
 
+    // note that since this is a non-evo program, displaying stats is not very relevant due to the fact that
+    // these players are not adjusting, i.e., evolving, their behaviour over time.
     public static void displayStats(ArrayList<Player> player_list){
         int p_geq_q_tally=0;
         double avg_p=0;
@@ -99,8 +106,8 @@ public class Tester15 {
         fw.append("Player ID"+COMMA_DELIMITER
                 + "p"+COMMA_DELIMITER
                 + "q"+COMMA_DELIMITER
-                + "Tester: "+tester+COMMA_DELIMITER
-                + "gens: "+max_gens+COMMA_DELIMITER
+                + "Program: "+Thread.currentThread().getStackTrace()[1].getClassName()+COMMA_DELIMITER
+                + "Gens: "+max_gens+COMMA_DELIMITER
                 + "N: "+N+COMMA_DELIMITER
                 + NEW_LINE_SEPARATOR);
         for(Player player: player_list){
