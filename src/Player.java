@@ -13,7 +13,7 @@ public class Player {
     private int games_played = 0; // keep track of the number of games this player has played
     private double EAP;  // EAP; used by [rand2013evolution]
     private String neighbourhood_type; // neighbourhood type of this player
-    private ArrayList<Player> neighbourhood;
+    private ArrayList<Player> neighbourhood; // contains the players in this player's neighbourhood
     private int max_games_per_gen;
     private int games_played_this_gen = 0;
 
