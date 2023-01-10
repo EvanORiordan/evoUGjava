@@ -18,6 +18,7 @@ public class Player {
     private int games_played_this_gen = 0;
     // allows for the dynamic assignment of position values regardless of the number of dimensions
     private int[] position;
+    private static double prize; // the prize amount being split in an interaction
 
 //    private int row_position;
 //    private int column_position;
@@ -57,7 +58,7 @@ public class Player {
     }
 
     // method for playing the UG
-    public void playUG(Player responder, double prize) {
+    public void playUG(Player responder) {
         if(p >= responder.q){
             score += (prize*(1-p));
             responder.score += (prize*p);
@@ -67,24 +68,41 @@ public class Player {
     }
 
     // method for playing the DG
-    public void playDG(Player recipient, double prize){
+    public void playDG(Player recipient){
         score += (prize*(1-p));
         recipient.score += (prize*p);
         games_played_in_total++;
         recipient.games_played_in_total++;
     }
 
-    // method for playing the spatial UG
-    public void playSpatialUG(double prize){
+    // method for playing the spatial UG. dictator role is randomly assigned
+    public void playSpatialUG(){
         for(Player neighbour: neighbourhood){ // play spatial UG with each neighbour
             // do not play if you have reached your limit for this gen
             if(games_played_this_gen != max_games_per_gen
                     && neighbour.games_played_this_gen != max_games_per_gen){
                 boolean rand_bool = ThreadLocalRandom.current().nextBoolean(); // assign roles
                 if(rand_bool){
-                    playUG(neighbour, prize);
+                    playUG(neighbour);
                 } else {
-                    neighbour.playUG(this, prize);
+                    neighbour.playUG(this);
+                }
+                games_played_this_gen++;
+                neighbour.games_played_this_gen++;
+            }
+        }
+    }
+
+    // method for playing the spatial DG. dictator role is randomly assigned
+    public void playSpatialDG(){
+        for(Player neighbour: neighbourhood){
+            if(games_played_this_gen != max_games_per_gen
+                    && neighbour.games_played_this_gen != max_games_per_gen){
+                boolean rand_bool = ThreadLocalRandom.current().nextBoolean();
+                if(rand_bool){
+                    playDG(neighbour);
+                } else {
+                    neighbour.playDG(this);
                 }
                 games_played_this_gen++;
                 neighbour.games_played_this_gen++;
@@ -195,6 +213,14 @@ public class Player {
         position = new int[] {row_position, column_position};
     }
 
+    public static void setPrize(double d){
+        prize=d;
+    }
+
+    public ArrayList<Player> getNeighbourhood() {
+        return neighbourhood;
+    }
+
 
 
     @Override
@@ -284,15 +310,17 @@ public class Player {
     public static void test1(){
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
+        Player.setPrize(1.0);
         Player player1 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
         Player player2 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
-        player1.playUG(player2, 1.0);
+        player1.playUG(player2);
     }
     public static void test2(){
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
+        Player.setPrize(1.0);
         Player player1 = new Player(ThreadLocalRandom.current().nextDouble());
         Player player2 = new Player(ThreadLocalRandom.current().nextDouble());
-        player1.playDG(player2, 1.0);
+        player1.playDG(player2);
     }
 }

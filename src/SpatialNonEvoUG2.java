@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Non-evo DG on a 2D grid with von Neumann neighbourhood.
+ * Non-evo UG on a 2D grid. During each gen, a player plays with their von Neumann neighbourhood.
  */
-public class SpatialNonEvoDG1 {
+public class SpatialNonEvoUG2 {
     static double prize = 10.0;
     static int rows = 10;
     static int columns = 10;
@@ -27,7 +27,10 @@ public class SpatialNonEvoDG1 {
         for(int i = 0; i < rows; i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j = 0; j < columns; j++){
-                row.add(new Player(ThreadLocalRandom.current().nextDouble(), neighbourhood));
+                row.add(new Player(
+                        ThreadLocalRandom.current().nextDouble(),
+                        ThreadLocalRandom.current().nextDouble(),
+                        neighbourhood));
             }
             grid.add(row);
         }
@@ -40,18 +43,19 @@ public class SpatialNonEvoDG1 {
             }
         }
 
-        // play DG
+        // play UG
         int gen = 0;
         while(gen != max_gens){
             for(int i = 0; i < rows; i++){
                 for(int j = 0; j < columns; j++){
-                    grid.get(i).get(j).playSpatialDG();
+                    grid.get(i).get(j).playSpatialUG();
                 }
             }
             gen++;
             reset(grid);
         }
 
+        displayStats(grid);
         writeToCSV(results_csv, grid);
     }
 
@@ -64,10 +68,49 @@ public class SpatialNonEvoDG1 {
         }
     }
 
+    public static void displayStats(ArrayList<ArrayList<Player>> grid){
+        int p_geq_q_tally=0;
+        double avg_p=0;
+        double avg_q=0;
+        double highest_p = 0.0;
+        double lowest_p = 1.0;
+        double highest_q = 0.0;
+        double lowest_q = 1.0;
+        for(ArrayList<Player> row: grid){
+            for(Player player: row){
+                if(player.getP() > player.getQ()){
+                    p_geq_q_tally++;
+                }
+                if(player.getP() > highest_p){
+                    highest_p = player.getP();
+                } else if(player.getP() < lowest_p){
+                    lowest_p = player.getP();
+                }
+                if(player.getQ() > highest_q){
+                    highest_q = player.getQ();
+                } else if(player.getQ() < lowest_q){
+                    lowest_q = player.getQ();
+                }
+                avg_p+=player.getP();
+                avg_q+=player.getQ();
+            }
+        }
+        avg_p /= N;
+        avg_q /= N;
+        System.out.println("Number of players out of "+N+" that have p>q: "+p_geq_q_tally);
+        System.out.println("Average value of p: "+avg_p);
+        System.out.println("Average value of q: "+avg_q);
+        System.out.println("Highest value of p: "+highest_p);
+        System.out.println("Lowest value of p: "+lowest_p);
+        System.out.println("Highest value of q: "+highest_q);
+        System.out.println("Lowest value of q: "+lowest_q);
+    }
+
     public static void writeToCSV(String filename, ArrayList<ArrayList<Player>> grid) throws IOException {
         FileWriter fw = new FileWriter(filename, false);
         fw.append("Player ID"+COMMA_DELIMITER
                 + "p"+COMMA_DELIMITER
+                + "q"+COMMA_DELIMITER
                 + "Program: "+Thread.currentThread().getStackTrace()[1].getClassName()+COMMA_DELIMITER
                 + "Gens: "+max_gens+COMMA_DELIMITER
                 + "N: "+N+COMMA_DELIMITER
@@ -75,7 +118,8 @@ public class SpatialNonEvoDG1 {
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 fw.append(player.getId()+COMMA_DELIMITER
-                        + player.getP()+NEW_LINE_SEPARATOR);
+                        + player.getP()+COMMA_DELIMITER
+                        + player.getQ()+NEW_LINE_SEPARATOR);
             }
         }
         fw.close();
