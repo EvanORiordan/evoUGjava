@@ -348,11 +348,12 @@ public class Player {
 
 
 
-    // place BPs to debug and test Player method functionality
+    // place BPs to debug and test Player method functionality using the simple test methods below.
     public static void main(String[] args) {
 //        test1();
 //        test2();
-        abstainUGTest1();
+//        abstainUGTest1();
+        abstainUGTest2();
     }
     public static void test1(){
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
@@ -377,6 +378,16 @@ public class Player {
         Player.setPrize(prize);
         Player.setBaseAbstainProb(50.0);
         Player.setAbstainThreshold(25.0);
+        Player.setLoners_payoff(local_prize * 0.1);
+        Player player1 = new Player(0.3, 0.01);
+        Player player2 = new Player(0.3, 0.40);
+        player1.playAbstinenceUG(player2);
+    }
+    public static void abstainUGTest2(){
+        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
+                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
+        double local_prize = 1.0;
+        Player.setPrize(prize);
         Player.setLoners_payoff(local_prize * 0.1);
         Player player1 = new Player(0.3, 0.01);
         Player player2 = new Player(0.3, 0.40);
