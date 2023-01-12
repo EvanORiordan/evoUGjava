@@ -16,12 +16,14 @@ public class Player {
     private ArrayList<Player> neighbourhood; // contains the players in this player's neighbourhood
     private int max_games_per_gen;
     private int games_played_this_gen = 0;
-    // allows for the dynamic assignment of position values regardless of the number of dimensions
-    private int[] position;
+    private int[] position; // allows for dynamic assignment of position values regardless of number of dimensions
     private static double prize; // the prize amount being split in an interaction
 
-//    private int row_position;
-//    private int column_position;
+    // variables pertaining to abstinence
+    // should these be randomly generated between [0,1]?
+    private static double baseAbstainProb; // base probability that a player abstains
+    private static double abstainThreshold; // the benchmark required to reach to abstain
+    private static double loners_payoff; // payoff received for being part of an interaction where a party abstained
 
 
     public Player(){}  // empty constructor
@@ -108,6 +110,25 @@ public class Player {
                 neighbour.games_played_this_gen++;
             }
         }
+    }
+
+    // method for playing the UG with an abstinence option
+    // firstly check if proposal is acceptable
+    // else if the offer was not satisfactory, there is a chance to abstain where the players receive a loner's payoff
+    // else the responder rejects the offer and neither party receive a payoff
+    public void playAbstinenceUG(Player responder){
+        double a = baseAbstainProb * p;
+        double b = abstainThreshold * responder.q;
+        if(p >= responder.q) {
+            score += (prize * (1 - p));
+            responder.score += (prize * p);
+            //} else if((baseAbstainProb * p) > (abstainThreshold * responder.q)){
+        } else if (a > b){
+            score += loners_payoff;
+            responder.score += loners_payoff;
+        }
+        games_played_in_total++;
+        responder.games_played_in_total++;
     }
 
     public double getScore(){
@@ -221,16 +242,28 @@ public class Player {
         return neighbourhood;
     }
 
+    public static void setBaseAbstainProb(double d){
+        baseAbstainProb=d;
+    }
+
+    public static void setAbstainThreshold(double d){
+        abstainThreshold=d;
+    }
+
+    public static void setLoners_payoff(double d){
+        loners_payoff=d;
+    }
+
 
 
     @Override
     public String toString(){
         // Uncomment the player-describing method you want to have display.
-//        return toStringUG();
+        return toStringUG();
 //        return toStringRand2013();
 //        return toStringDG();
 //        return toStringSpatialUG();
-        return toStringSpatialDG();
+//        return toStringSpatialDG();
     }
 
     // method for returning the description of a standard UG player
@@ -304,8 +337,9 @@ public class Player {
 
     // place BPs to debug and test Player method functionality
     public static void main(String[] args) {
-        test1();
+//        test1();
 //        test2();
+        abstainUGTest1();
     }
     public static void test1(){
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
@@ -322,5 +356,17 @@ public class Player {
         Player player1 = new Player(ThreadLocalRandom.current().nextDouble());
         Player player2 = new Player(ThreadLocalRandom.current().nextDouble());
         player1.playDG(player2);
+    }
+    public static void abstainUGTest1(){
+        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
+                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
+        double local_prize = 1.0;
+        Player.setPrize(prize);
+        Player.setBaseAbstainProb(50.0);
+        Player.setAbstainThreshold(25.0);
+        Player.setLoners_payoff(local_prize * 0.1);
+        Player player1 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
+        Player player2 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
+        player1.playAbstinenceUG(player2);
     }
 }
