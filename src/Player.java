@@ -116,14 +116,27 @@ public class Player {
     // firstly check if proposal is acceptable
     // else if the offer was not satisfactory, there is a chance to abstain where the players receive a loner's payoff
     // else the responder rejects the offer and neither party receive a payoff
-    public void playAbstinenceUG(Player responder){
+    public void playAbstinenceUG(Player responder) {
         double a = baseAbstainProb * p;
         double b = abstainThreshold * responder.q;
-        if(p >= responder.q) {
+        if (p >= responder.q) {
             score += (prize * (1 - p));
             responder.score += (prize * p);
-            //} else if((baseAbstainProb * p) > (abstainThreshold * responder.q)){
-        } else if (a > b){
+        } else if (a > b) {
+            score += loners_payoff;
+            responder.score += loners_payoff;
+        }
+        games_played_in_total++;
+        responder.games_played_in_total++;
+    }
+
+    public void playAbstinenceUG2(Player responder) {
+        double rand_double = ThreadLocalRandom.current().nextDouble();
+        double difference = responder.q - p; // the greater the difference, the greater the chance to abstain
+        if (p >= responder.q) {
+            score += (prize * (1 - p));
+            responder.score += (prize * p);
+        } else if (rand_double < difference) {
             score += loners_payoff;
             responder.score += loners_payoff;
         }
@@ -365,8 +378,8 @@ public class Player {
         Player.setBaseAbstainProb(50.0);
         Player.setAbstainThreshold(25.0);
         Player.setLoners_payoff(local_prize * 0.1);
-        Player player1 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
-        Player player2 = new Player(ThreadLocalRandom.current().nextDouble(),ThreadLocalRandom.current().nextDouble());
-        player1.playAbstinenceUG(player2);
+        Player player1 = new Player(0.3, 0.01);
+        Player player2 = new Player(0.3, 0.40);
+        player1.playAbstinenceUG2(player2);
     }
 }
