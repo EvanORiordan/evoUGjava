@@ -8,6 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * consider abstaining. The greater the difference between the offer and the responder's acceptance threshold,
  * the more likely the responder is to abstain. At the end of a generation, the lowest scoring individual in
  * the population copies the strategy of the highest scoring individual subject to noise (epsilon).
+ *
+ * Initial conclusions: pop is not particularly fair or rational
  */
 public class AbstainEvoUG2 {
     static double prize = 1.0;
