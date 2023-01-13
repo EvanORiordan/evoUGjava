@@ -288,8 +288,19 @@ public class Player {
             neighbourhood.add(grid.get((a%c+c)%c).get(((b-1)%d+d)%d));
             neighbourhood.add(grid.get((a%c+c)%c).get(((b+1)%d+d)%d));
         } else if(neighbourhood_type.equals("moore8")){
-//            max_games_per_gen = 8;
-            // play spatial UG with respect to the moore neighbourhood...
+            max_games_per_gen = 8;
+
+            // NEXT TIME: resume here!
+
+//            neighbourhood.add(grid.get(  ).get(  ));
+//            neighbourhood.add(grid.get(  ).get(  ));
+//            neighbourhood.add(grid.get(  ).get(  ));
+//            neighbourhood.add(grid.get(  ).get(  ));
+//            neighbourhood.add(grid.get(  ).get(  ));
+//            neighbourhood.add(grid.get(  ).get(  ));
+//            neighbourhood.add(grid.get(  ).get(  ));
+//            neighbourhood.add(grid.get(  ).get(  ));
+
         }
     }
 
