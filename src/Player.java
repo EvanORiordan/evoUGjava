@@ -130,6 +130,9 @@ public class Player {
         responder.games_played_in_total++;
     }
 
+    // different mechanism for determining probability to abstain than that of playAbstinenceUG().
+    // if offer is unsatisfactory, responder may abstain.
+    // the worse the offer was, the more likely they abstain.
     public void playAbstinenceUG2(Player responder) {
         double rand_double = ThreadLocalRandom.current().nextDouble();
         double difference = responder.q - p; // the greater the difference, the greater the chance to abstain
@@ -142,6 +145,57 @@ public class Player {
         }
         games_played_in_total++;
         responder.games_played_in_total++;
+    }
+
+    // another difference abstain mechanism.
+    // if the amount offered to the responder is worse than the loner's payoff, the responder abstains.
+    // this does mean that if a responder has a lower acceptance threshold than the loner's payoff,
+    // they will never abstain.
+    public void playAbstinenceUG3(Player responder) {
+        double amount_offered_to_responder = p * prize;
+        if (p >= responder.q) {
+            score += (prize * (1 - p));
+            responder.score += (prize * p);
+        } else if (amount_offered_to_responder < loners_payoff) {
+            score += loners_payoff;
+            responder.score += loners_payoff;
+        }
+        games_played_in_total++;
+        responder.games_played_in_total++;
+    }
+
+    // method for playing the spatial UG with the option of abstinence. uses playAbstinenceUG2()
+    public void playAbstinenceSpatialUG(){
+        for(Player neighbour: neighbourhood){
+            if(games_played_this_gen != max_games_per_gen
+                    && neighbour.games_played_this_gen != max_games_per_gen){
+                boolean rand_bool = ThreadLocalRandom.current().nextBoolean();
+                if(rand_bool){
+                    playAbstinenceUG2(neighbour);
+                } else {
+                    neighbour.playAbstinenceUG2(this);
+                }
+                games_played_this_gen++;
+                neighbour.games_played_this_gen++;
+            }
+        }
+    }
+
+    // abstinence spatial UG method that uses playAbstinenceUG3().
+    public void playAbstinenceSpatialUG2(){
+        for(Player neighbour: neighbourhood){
+            if(games_played_this_gen != max_games_per_gen
+                    && neighbour.games_played_this_gen != max_games_per_gen){
+                boolean rand_bool = ThreadLocalRandom.current().nextBoolean();
+                if(rand_bool){
+                    playAbstinenceUG3(neighbour);
+                } else {
+                    neighbour.playAbstinenceUG3(this);
+                }
+                games_played_this_gen++;
+                neighbour.games_played_this_gen++;
+            }
+        }
     }
 
     public double getScore(){
@@ -181,8 +235,10 @@ public class Player {
     }
 
     public void setStrategy(double p, double q){
-        this.p=p;
-        this.q=q;
+//        this.p=p;
+//        this.q=q;
+        setP(p);
+        setQ(q);
     }
 
     public int getId(){
@@ -272,10 +328,10 @@ public class Player {
     @Override
     public String toString(){
         // Uncomment the player-describing method you want to have display.
-        return toStringUG();
+//        return toStringUG();
 //        return toStringRand2013();
 //        return toStringDG();
-//        return toStringSpatialUG();
+        return toStringSpatialUG();
 //        return toStringSpatialDG();
     }
 
