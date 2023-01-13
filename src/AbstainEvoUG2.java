@@ -7,15 +7,16 @@ import java.util.concurrent.ThreadLocalRandom;
  * Evo UG with a random chance to abstain. After a responder determines that an offer is unsatisfactory, they
  * consider abstaining. The greater the difference between the offer and the responder's acceptance threshold,
  * the more likely the responder is to abstain. At the end of a generation, the lowest scoring individual in
- * the population copies the strategy of the highest scoring individual.
+ * the population copies the strategy of the highest scoring individual subject to noise (epsilon).
  */
-public class AbstainEvoUG1 {
+public class AbstainEvoUG2 {
     static double prize = 1.0;
     static int N = 100;
     static int max_gens = 100000;
     static String results_csv="results.csv";
     static String COMMA_DELIMITER = ",";
     static String NEW_LINE_SEPARATOR = "\n";
+    static double epsilon = 0.1;
 
     public static void main(String[] args) throws IOException {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
@@ -70,7 +71,9 @@ public class AbstainEvoUG1 {
                     lowest_score = offspring.getScore();
                 }
             }
-            offspring.setStrategy(parent.getP(), parent.getQ());
+            offspring.setStrategy(
+                    ThreadLocalRandom.current().nextDouble(parent.getP()-epsilon, parent.getP()+epsilon),
+                    ThreadLocalRandom.current().nextDouble(parent.getQ()-epsilon, parent.getQ()+epsilon));
 
             gen++;
         }
