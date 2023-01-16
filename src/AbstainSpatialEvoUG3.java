@@ -2,18 +2,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+import java.text.DecimalFormat;
 
 /**
- * Evo UG played on a square grid with the action of abstinence available. Players obey the von Neumann neighbourhood.
+ * Evo UG played on a square grid with the action of abstinence available. Players obey the Moore neighbourhood.
  * After determining that an offer is does not rise above their acceptance threshold, a responder will abstain if
- * the loner's payoff is a better deal than the proposed offer.
+ * the loner's payoff is a better deal than the proposed offer. This program comes with an additional method that
+ * visualises the square grid in a separate .csv file.
  *
  * Initial conclusions:
  * Average p is low, average q is even lower.
  * The majority of players have p > q. This does mean that players are offering more than expecting, even if the
  * amounts offered and expected are low.
  */
-public class AbstainSpatialEvoUG2 {
+public class AbstainSpatialEvoUG3 {
     static double prize = 10.0;
     static int rows = 10;
     static int columns = 10;
@@ -23,7 +25,8 @@ public class AbstainSpatialEvoUG2 {
     static String COMMA_DELIMITER = ",";
     static String NEW_LINE_SEPARATOR = "\n";
     static double epsilon = 0.1;
-    static String neighbourhood = "vonNeumann4";
+    static String neighbourhood = "moore8";
+    static String grid_diagram_csv = "grid_diagram.csv";
 
     public static void main(String[] args) throws IOException {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
@@ -90,6 +93,7 @@ public class AbstainSpatialEvoUG2 {
         }
         displayStats(grid);
         writeToCSV(results_csv, grid);
+        writeGridDiagram(grid_diagram_csv, grid);
     }
 
     public static void reset(ArrayList<ArrayList<Player>> grid){
@@ -157,5 +161,18 @@ public class AbstainSpatialEvoUG2 {
         System.out.println("Lowest value of p: "+lowest_p);
         System.out.println("Highest value of q: "+highest_q);
         System.out.println("Lowest value of q: "+lowest_q);
+    }
+
+    public static void writeGridDiagram(String filename, ArrayList<ArrayList<Player>> grid) throws IOException {
+        FileWriter fw = new FileWriter(filename, false);
+        DecimalFormat df = new DecimalFormat("0.00");
+        for(ArrayList<Player> row: grid){
+            for(Player player: row){
+                fw.append("("+df.format(player.getP())+" | "+df.format(player.getQ())+")"+COMMA_DELIMITER);
+            }
+            fw.append(NEW_LINE_SEPARATOR);
+        }
+        fw.close();
+        System.out.println("Completed writing to "+filename);
     }
 }

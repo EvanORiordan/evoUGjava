@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Evo UG played on a square grid with the action of abstinence available. A responder may abstain if an
- * offer is unsatisfactory. The poorer the offer, the greater the likelihood of abstaining.
+ * Evo UG played on a square grid with the action of abstinence available. Players obey the von Neumann neighbourhood.
+ * A responder may abstain if an offer is unsatisfactory. The poorer the offer, the greater the likelihood of
+ * abstaining.
  *
  * Initial conclusions:
  * Average p is low, average q is even lower.

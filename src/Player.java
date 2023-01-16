@@ -275,32 +275,29 @@ public class Player {
         }
     }
 
-    // method for finding the neighbours when a player resides on a 2D space
+    // method for finding the neighbours when a player resides on a 2D space.
+    // currently, this method handles programs using the von Neumann and the Moore neighbourhood types.
     public void findNeighbours2D(ArrayList<ArrayList<Player>> grid){
+        int a=position[0];
+        int b=position[1];
+        int c=grid.size();
+        int d=grid.get(0).size();
+        int up=((a-1)%c+c)%c; // go up one node (on the square grid)
+        int down=((a+1)%c+c)%c; // down
+        int left=((b-1)%d+d)%d; // left
+        int right=((b+1)%d+d)%d; // right
+        neighbourhood.add(grid.get(up).get((b%d+d)%d));
+        neighbourhood.add(grid.get(down).get((b%d+d)%d));
+        neighbourhood.add(grid.get((a%c+c)%c).get(left));
+        neighbourhood.add(grid.get((a%c+c)%c).get(right));
         if(neighbourhood_type.equals("vonNeumann4")){
             max_games_per_gen = 4;
-            int a=position[0];
-            int b=position[1];
-            int c=grid.size();
-            int d=grid.get(0).size();
-            neighbourhood.add(grid.get(((a-1)%c+c)%c).get((b%d+d)%d));
-            neighbourhood.add(grid.get(((a+1)%c+c)%c).get((b%d+d)%d));
-            neighbourhood.add(grid.get((a%c+c)%c).get(((b-1)%d+d)%d));
-            neighbourhood.add(grid.get((a%c+c)%c).get(((b+1)%d+d)%d));
         } else if(neighbourhood_type.equals("moore8")){
             max_games_per_gen = 8;
-
-            // NEXT TIME: resume here!
-
-//            neighbourhood.add(grid.get(  ).get(  ));
-//            neighbourhood.add(grid.get(  ).get(  ));
-//            neighbourhood.add(grid.get(  ).get(  ));
-//            neighbourhood.add(grid.get(  ).get(  ));
-//            neighbourhood.add(grid.get(  ).get(  ));
-//            neighbourhood.add(grid.get(  ).get(  ));
-//            neighbourhood.add(grid.get(  ).get(  ));
-//            neighbourhood.add(grid.get(  ).get(  ));
-
+            neighbourhood.add(grid.get(up).get(left)); // up-left
+            neighbourhood.add(grid.get(up).get(right)); // up-right
+            neighbourhood.add(grid.get(down).get(left)); // down-left
+            neighbourhood.add(grid.get(down).get(right)); // down-right
         }
     }
 
