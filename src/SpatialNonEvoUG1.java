@@ -28,12 +28,12 @@ public class SpatialNonEvoUG1 {
 
         // construct a population in the form of a line of players
         Player.setPrize(prize);
+        Player.setNeighbourhoodType(neighbourhood);
         ArrayList<Player> line = new ArrayList<>();
         for(int i=0;i<N;i++){
             line.add(new Player(
                     ThreadLocalRandom.current().nextDouble(),
-                    ThreadLocalRandom.current().nextDouble(),
-                    neighbourhood));
+                    ThreadLocalRandom.current().nextDouble()));
         }
 
         // assign neighbours

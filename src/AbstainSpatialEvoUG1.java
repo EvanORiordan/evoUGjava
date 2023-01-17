@@ -38,8 +38,7 @@ public class AbstainSpatialEvoUG1 {
             for(int j = 0; j < columns; j++){
                 row.add(new Player(
                         ThreadLocalRandom.current().nextDouble(),
-                        ThreadLocalRandom.current().nextDouble(),
-                        neighbourhood));
+                        ThreadLocalRandom.current().nextDouble()));
             }
             grid.add(row);
         }

@@ -1,3 +1,4 @@
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -12,18 +13,21 @@ public class Player {
     private double q = 0.0; // acceptance threshold value; real num within [0,1]
     private int games_played_in_total = 0; // keep track of the total number of games this player has played
     private double EAP;  // EAP; used by [rand2013evolution]
-    private String neighbourhood_type; // neighbourhood type of this player
-    private ArrayList<Player> neighbourhood; // contains the players in this player's neighbourhood
+    private static String neighbourhood_type; // neighbourhood type of this player
+    private ArrayList<Player> neighbourhood = new ArrayList<>(); // this player's neighbourhood
     private int max_games_per_gen;
     private int games_played_this_gen = 0;
     private int[] position; // allows for dynamic assignment of position values regardless of number of dimensions
     private static double prize; // the prize amount being split in an interaction
 
     // variables pertaining to abstinence
-    // should these be randomly generated between [0,1]?
     private static double baseAbstainProb; // base probability that a player abstains
     private static double abstainThreshold; // the benchmark required to reach to abstain
     private static double loners_payoff; // payoff received for being part of an interaction where a party abstained
+
+    // players that this player abstains from playing with
+    private ArrayList<Player> abstainList = new ArrayList<>();
+
 
 
     public Player(){}  // empty constructor
@@ -31,32 +35,14 @@ public class Player {
     // constructor for instantiating a UG player
     public Player(double p, double q){
         ID=count++; // assign this player's ID
-        // assign this player's strategy
-        this.p=p;
-        this.q=q;
+        this.p=p; // assign p value
+        this.q=q; // assign q value
     }
 
     // constructor for instantiating a DG player
     public Player(double p){
-        ID=count++; // assign this player's ID
-        this.p=p; // assign this player's strategy
-    }
-
-    //constructor for instantiating a spatial UG player
-    public Player(double p, double q, String neighbourhood_type){
         ID=count++;
         this.p=p;
-        this.q=q;
-        this.neighbourhood_type=neighbourhood_type;
-        neighbourhood = new ArrayList<>();
-    }
-
-    // constructor for instantiating a spatial DG player
-    public Player(double p, String neighbourhood_type){
-        ID=count++; // assign this player's ID
-        this.p=p; // assign this player's strategy
-        this.neighbourhood_type=neighbourhood_type;
-        neighbourhood = new ArrayList<>();
     }
 
     // method for playing the UG
@@ -198,6 +184,48 @@ public class Player {
         }
     }
 
+    // method for playing the abstinence spatial DG
+    public void playAbstinenceSpatialDG(){
+        for(Player neighbour: neighbourhood){
+            if(games_played_this_gen != max_games_per_gen
+                    && neighbour.games_played_this_gen != max_games_per_gen){
+                boolean rand_bool = ThreadLocalRandom.current().nextBoolean();
+                if(rand_bool){
+                    playAbstinenceDG(neighbour);
+                } else {
+                    neighbour.playAbstinenceDG(this);
+                }
+                games_played_this_gen++;
+                neighbour.games_played_this_gen++;
+            }
+        }
+    }
+
+    // method for playing the DG with abstinence.
+    // if a dictator offers a recipient an offer that is less than the loner's payoff,
+    // that dictator is placed on that recipient's abstain list.
+    // from then on, if that recipient player is receiving from that dictator player,
+    // the recipient abstains.
+    // should abstaining mean that you refuse to play with a player entirely, or just that you
+    // don't want to play if you are the recipient?
+    // currently, it implies the latter.
+    public void playAbstinenceDG(Player recipient){
+        for(Player player: recipient.abstainList){
+            if(ID == player.ID){
+                score += loners_payoff;
+                recipient.score += loners_payoff;
+                return;
+            }
+        }
+        playDG(recipient);
+        if(loners_payoff > (prize * this.p)){
+            if(recipient.abstainList == null){
+                recipient.abstainList = new ArrayList<>();
+            }
+            recipient.abstainList.add(this);
+        }
+    }
+
     public double getScore(){
         return score;
     }
@@ -235,8 +263,6 @@ public class Player {
     }
 
     public void setStrategy(double p, double q){
-//        this.p=p;
-//        this.q=q;
         setP(p);
         setQ(q);
     }
@@ -255,8 +281,8 @@ public class Player {
         EAP = Math.exp(w * average_payoff);
     }
 
-    public String getNeighbourhoodType(){
-        return neighbourhood_type;
+    public static void setNeighbourhoodType(String s){
+        neighbourhood_type=s;
     }
 
     public void setGamesPlayedThisGen(int games_played_this_gen){

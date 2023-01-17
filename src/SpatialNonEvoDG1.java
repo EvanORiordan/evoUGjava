@@ -23,11 +23,12 @@ public class SpatialNonEvoDG1 {
 
         // construct grid of players
         Player.setPrize(prize);
+        Player.setNeighbourhoodType(neighbourhood);
         ArrayList<ArrayList<Player>> grid = new ArrayList<>();
         for(int i = 0; i < rows; i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j = 0; j < columns; j++){
-                row.add(new Player(ThreadLocalRandom.current().nextDouble(), neighbourhood));
+                row.add(new Player(ThreadLocalRandom.current().nextDouble()));
             }
             grid.add(row);
         }

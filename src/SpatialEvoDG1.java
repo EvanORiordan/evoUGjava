@@ -29,10 +29,11 @@ public class SpatialEvoDG1 {
         // construct grid of players
         ArrayList<ArrayList<Player>> grid = new ArrayList<>();
         Player.setPrize(prize);
+        Player.setNeighbourhoodType(neighbourhood);
         for(int i = 0; i < rows; i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j = 0; j < columns; j++){
-                row.add(new Player(ThreadLocalRandom.current().nextDouble(), neighbourhood));
+                row.add(new Player(ThreadLocalRandom.current().nextDouble()));
             }
             grid.add(row);
         }
