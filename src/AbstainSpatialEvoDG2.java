@@ -6,14 +6,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Abstinence spatial evo DG program. Once recipient x realises that dictator y offered them an offer
- * poorer than the loner's payoff, x abstains from playing y as dictator ever again. Each gen, the
+ * poorer than the loner's payoff, x abstains from playing y ever again. Each gen, the
  * weakest player copies the strongest player.
  *
  * Initial conclusions:
- * Average value of p is very low, alongside the highest and lowest values of p.
  * Players are rational.
  */
-public class AbstainSpatialEvoDG1 {
+public class AbstainSpatialEvoDG2 {
     static double prize = 10.0;
     static int rows = 10;
     static int columns = 10;
@@ -56,7 +55,7 @@ public class AbstainSpatialEvoDG1 {
         while(gen != max_gens) {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
-                    grid.get(i).get(j).playAbstinenceSpatialDG();
+                    grid.get(i).get(j).playAbstinenceSpatialDG2();
                 }
             }
 

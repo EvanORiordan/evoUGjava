@@ -226,6 +226,50 @@ public class Player {
         }
     }
 
+    // second method for playing the abstinence spatial DG.
+    // uses playAbstinenceDG2()
+    public void playAbstinenceSpatialDG2(){
+        for(Player neighbour: neighbourhood){
+            if(games_played_this_gen != max_games_per_gen
+                    && neighbour.games_played_this_gen != max_games_per_gen){
+                boolean rand_bool = ThreadLocalRandom.current().nextBoolean();
+                if(rand_bool){
+                    playAbstinenceDG2(neighbour);
+                } else {
+                    neighbour.playAbstinenceDG2(this);
+                }
+                games_played_this_gen++;
+                neighbour.games_played_this_gen++;
+            }
+        }
+    }
+
+    // here, abstaining from playing someone means never playing with them, whether
+    // you are the dictator or the recipient.
+    public void playAbstinenceDG2(Player recipient){
+        for(Player player: recipient.abstainList){
+            if(ID == player.ID){
+                score += loners_payoff;
+                recipient.score += loners_payoff;
+                return;
+            }
+        }
+        for(Player player: abstainList){
+            if(recipient.ID == player.ID){
+                score += loners_payoff;
+                recipient.score += loners_payoff;
+                return;
+            }
+        }
+        playDG(recipient);
+        if(loners_payoff > (prize * this.p)){
+            if(recipient.abstainList == null){
+                recipient.abstainList = new ArrayList<>();
+            }
+            recipient.abstainList.add(this);
+        }
+    }
+
     public double getScore(){
         return score;
     }
