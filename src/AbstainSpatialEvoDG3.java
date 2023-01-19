@@ -7,17 +7,17 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Abstinence spatial evo DG program. Once recipient x realises that dictator y offered them an offer
  * poorer than the loner's payoff, x abstains from playing y ever again. Each gen, the
- * weakest player copies the strongest player subject to noise.
+ * lowest scoring player copies the highest scoring player subject to noise.
  *
  * Initial conclusions:
- * Players are rational.
+ * Players are rational. Abstinence is not inducing very fair splits...
  */
 public class AbstainSpatialEvoDG3 {
     static double prize = 10.0;
     static int rows = 10;
     static int columns = 10;
     static int N = rows * columns;
-    static int max_gens = 10000;
+    static int max_gens = 100000;
     static String results_csv="results.csv";
     static String COMMA_DELIMITER = ",";
     static String NEW_LINE_SEPARATOR = "\n";

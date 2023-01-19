@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Abstinence spatial evo DG program. Once recipient x realises that dictator y offered them an offer
  * poorer than the loner's payoff, x abstains from playing y as dictator ever again. Each gen, the
- * weakest player copies the strongest player.
+ * lowest scoring player copies the highest scoring player.
  *
  * Initial conclusions:
  * Average value of p is very low, alongside the highest and lowest values of p.
