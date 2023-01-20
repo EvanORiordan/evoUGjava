@@ -42,8 +42,7 @@ public class SpatialEvoDG2 {
         // assign neighbours
         for(int i=0;i<rows;i++){
             for(int j=0;j<columns;j++){
-                grid.get(i).get(j).assignPosition2D(i,j);
-                grid.get(i).get(j).findNeighbours2D(grid);
+                grid.get(i).get(j).findNeighbours2D(grid, i, j);
             }
         }
 
