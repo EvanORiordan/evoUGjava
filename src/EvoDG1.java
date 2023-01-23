@@ -24,7 +24,7 @@ public class EvoDG1 {
         ArrayList<Player> pop = new ArrayList<>();
         ArrayList<Integer> player_id_list = new ArrayList<>();
         for(int i=0;i<N;i++){
-            pop.add(new Player(ThreadLocalRandom.current().nextDouble()));
+            pop.add(new Player(ThreadLocalRandom.current().nextDouble(),0.0,false));
             player_id_list.add(pop.get(i).getId());
         }
         int generation = 0;

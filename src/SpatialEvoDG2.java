@@ -34,7 +34,7 @@ public class SpatialEvoDG2 {
         for(int i = 0; i < rows; i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j = 0; j < columns; j++){
-                row.add(new Player(ThreadLocalRandom.current().nextDouble()));
+                row.add(new Player(ThreadLocalRandom.current().nextDouble(),0.0,false));
             }
             grid.add(row);
         }

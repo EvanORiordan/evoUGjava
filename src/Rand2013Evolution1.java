@@ -36,7 +36,10 @@ public class Rand2013Evolution1 {
         Player.setPrize(prize);
         ArrayList<Player> pop = new ArrayList<>();
         for(int i=0;i<N;i++){
-            pop.add(new Player(ThreadLocalRandom.current().nextDouble(), ThreadLocalRandom.current().nextDouble()));
+            pop.add(new Player(
+                    ThreadLocalRandom.current().nextDouble(),
+                    ThreadLocalRandom.current().nextDouble(),
+                    false));
         }
         int gen = 0;
         while(gen != max_num_gens){
