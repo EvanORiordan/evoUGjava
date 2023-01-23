@@ -20,12 +20,13 @@ public class Player {
     private static double prize; // the prize amount being split in an interaction
     private static double loners_payoff; // payoff received for being part of an interaction where a party abstained
     private double old_p; // the p value held at the beginning of the gen; will be copied by imitators
-    private boolean abstainer = false; // indicates whether this player is an abstainer; an abstainer always abstains
-    // from playing the game, hence both parties receive the loner's payoff; default value: false
-    private int role1_games_this_gen; // how many games this player has played so far this gen as role1
-    private int role2_games_this_gen; // how many games this player has played so far this gen as role2
+    private double old_q; // the q value held at the beginning of the gen; will be copied by imitators
+    private boolean abstainer; // indicates whether this player is an abstainer; an abstainer always abstains
+    // from playing the game, hence both interacting parties receive the loner's payoff.
+    private int role1_games; // how many games this player has played as role1
+    private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
-    private final DecimalFormat df = new DecimalFormat("0.000000");
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
 
     public Player(){}  // empty constructor
@@ -38,24 +39,26 @@ public class Player {
         this.p=p; // assign p value
         this.q=q; // assign q value
         this.abstainer=abstainer; // indicate whether this player initialises as an abstainer
+        old_p=p;
     }
 
-    // method for playing the UG
+    // method for playing the UG.
+    // if DG player, the offer is always accepted since the responder/recipient/role2 player has q=0.0.
     public void playUG(Player responder) {
-        if(p >= responder.q){ // if offer is satisfactory
+        if(p >= responder.q){ // accept offer
             updateStats(prize*(1-p), true);
             responder.updateStats(prize*p, false);
-        } else { // if offer is not satisfactory
+        } else { // reject offer
             updateStats(0, true);
             responder.updateStats(0, false);
         }
     }
 
     // method for playing the DG
-    public void playDG(Player recipient){
-        updateStats(prize*(1-p), true);
-        recipient.updateStats(prize*p, false);
-    }
+//    public void playDG(Player recipient){
+//        updateStats(prize*(1-p), true);
+//        recipient.updateStats(prize*p, false);
+//    }
 
     // method for playing the UG with an abstinence option.
     // if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
@@ -74,16 +77,16 @@ public class Player {
     // method for playing the DG with an abstinence option.
     // if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
     // otherwise, play the regular DG.
-    public void playAbstinenceDG(Player recipient){
-        if(abstainer || recipient.abstainer){
-//            score += loners_payoff;
-//            recipient.score += loners_payoff;
-            updateStats(loners_payoff, true);
-            recipient.updateStats(loners_payoff, false);
-        } else {
-            playDG(recipient);
-        }
-    }
+//    public void playAbstinenceDG(Player recipient){
+//        if(abstainer || recipient.abstainer){
+////            score += loners_payoff;
+////            recipient.score += loners_payoff;
+//            updateStats(loners_payoff, true);
+//            recipient.updateStats(loners_payoff, false);
+//        } else {
+//            playDG(recipient);
+//        }
+//    }
 
     // method for playing the UG, as the proposer, with each neighbour
     public void playSpatialUG(){
@@ -93,11 +96,11 @@ public class Player {
     }
 
     // method for playing the UG, as the dictator, with each neighbour
-    public void playSpatialDG(){
-        for(Player neighbour: neighbourhood){
-            playDG(neighbour);
-        }
-    }
+//    public void playSpatialDG(){
+//        for(Player neighbour: neighbourhood){
+//            playDG(neighbour);
+//        }
+//    }
 
     // method for playing the UG with an abstinence option, as the proposer, with each neighbour
     public void playSpatialAbstinenceUG(){
@@ -107,11 +110,11 @@ public class Player {
     }
 
     // method for playing the DG with an abstinence option, as the dictator, with each neighbour
-    public void playSpatialAbstinenceDG(){
-        for(Player neighbour: neighbourhood){
-            playAbstinenceDG(neighbour);
-        }
-    }
+//    public void playSpatialAbstinenceDG(){
+//        for(Player neighbour: neighbourhood){
+//            playAbstinenceDG(neighbour);
+//        }
+//    }
 
     public double getScore(){
         return score;
@@ -155,16 +158,18 @@ public class Player {
         games_played_in_total++;
         games_played_this_gen++;
         if(role1){
-            role1_games_this_gen++;
+            role1_games++;
         } else{
-            role2_games_this_gen++;
+            role2_games++;
         }
         average_score = score / games_played_in_total;
     }
 
-    public void setStrategy(double p, double q){
-        setP(p);
-        setQ(q);
+    // copy another player's strategy.
+    public void copyStrategy(Player model){
+        setP(model.old_p);
+        setQ(model.q);
+        this.abstainer=model.abstainer;
     }
 
     public int getId(){
@@ -220,8 +225,9 @@ public class Player {
         neighbourhood.add(grid.get(down).get((b%d+d)%d));
         neighbourhood.add(grid.get((a%c+c)%c).get(left));
         neighbourhood.add(grid.get((a%c+c)%c).get(right));
-        if(neighbourhood_type.equals("vonNeumann4")){
-        } else if(neighbourhood_type.equals("moore8")){
+//        if(neighbourhood_type.equals("vonNeumann4")){
+//        } else if(neighbourhood_type.equals("moore8")){
+        if(neighbourhood_type.equals("moore8")){
             neighbourhood.add(grid.get(up).get(left)); // up-left
             neighbourhood.add(grid.get(up).get(right)); // up-right
             neighbourhood.add(grid.get(down).get(left)); // down-left
@@ -257,6 +263,18 @@ public class Player {
         this.old_p=old_p;
     }
 
+    public double getOld_q(){
+        return old_q;
+    }
+
+    public void setOld_q(double old_q){
+        this.old_q=old_q;
+    }
+
+    public static DecimalFormat getDf(){
+        return df;
+    }
+
 
 
 
@@ -283,8 +301,8 @@ public class Player {
         }
         description += " GPTG="+ games_played_this_gen;
         description += " GPIT="+games_played_in_total;
-        description += " R1GTG="+role1_games_this_gen;
-        description += " R2GTG="+role2_games_this_gen;
+        description += " R1G="+role1_games;
+        description += " R2G="+role2_games;
         return description;
     }
 
@@ -293,6 +311,8 @@ public class Player {
 
     // place BPs to debug and test Player method functionality using the simple test methods below.
     public static void main(String[] args) {
+        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
+                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
 //        UGTest1();
 //        UGTest2();
 //        DGTest1();
@@ -341,7 +361,8 @@ public class Player {
         Player.setPrize(1.0);
         Player player1 = new Player(ThreadLocalRandom.current().nextDouble(), 0.0, false);
         Player player2 = new Player(ThreadLocalRandom.current().nextDouble(), 0.0, false);
-        player1.playDG(player2);
+//        player1.playDG(player2);
+        player1.playUG(player2);
     }
 
     // DG test to see if the player stats are updated correctly
@@ -351,7 +372,8 @@ public class Player {
         Player.setPrize(1.0);
         Player player1 = new Player(0.3, 0.0, false);
         Player player2 = new Player(0.2, 0.0, false);
-        player1.playDG(player2);
+//        player1.playDG(player2);
+        player1.playUG(player2);
         System.out.println(player1.score == 0.7);
         System.out.println(player2.score == 0.3);
     }
@@ -373,11 +395,9 @@ public class Player {
         for(int i=0;i<N;i++){
             line.get(i).findNeighbours1D(line, i);
         }
-        System.out.println("place a BP at this line of code!");
         for(Player player: line){
             player.playSpatialUG();
         }
-        System.out.println("place a BP at this line of code!");
     }
 
     // 2D grid von Neumann neighbourhood UG test
@@ -404,13 +424,11 @@ public class Player {
                 grid.get(i).get(j).findNeighbours2D(grid, i, j);
             }
         }
-        System.out.println("place a BP at this line of code!");
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 player.playSpatialUG();
             }
         }
-        System.out.println("place a BP at this line of code!");
     }
 
     // 2D grid Moore neighbourhood UG test
@@ -437,13 +455,11 @@ public class Player {
                 grid.get(i).get(j).findNeighbours2D(grid, i, j);
             }
         }
-        System.out.println("place a BP at this line of code!");
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 player.playSpatialUG();
             }
         }
-        System.out.println("place a BP at this line of code!");
     }
 
     // 2D grid von Neumann neighbourhood DG test
@@ -467,13 +483,12 @@ public class Player {
                 grid.get(i).get(j).findNeighbours2D(grid, i, j);
             }
         }
-        System.out.println("place a BP at this line of code!");
         for(ArrayList<Player> row: grid){
             for(Player player: row){
+//                player.playSpatialDG();
                 player.playSpatialUG();
             }
         }
-        System.out.println("place a BP at this line of code!");
     }
 
     // abstinence UG test
@@ -561,10 +576,10 @@ public class Player {
         }
         for(ArrayList<Player> row: grid){
             for(Player player: row){
-                player.playSpatialAbstinenceDG();
+//                player.playSpatialAbstinenceDG();
+                player.playSpatialAbstinenceUG();
             }
         }
-        System.out.println("hello");
     }
 
 }

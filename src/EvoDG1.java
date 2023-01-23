@@ -42,9 +42,9 @@ public class EvoDG1 {
                 Player player2 = pop.get(player_id_list_copy.get(random_int2));
                 boolean random_bool = ThreadLocalRandom.current().nextBoolean(); // role assignment
                 if(random_bool){
-                    player1.playDG(player2); // if true, player1 is dictator
+                    player1.playUG(player2); // if true, player1 is dictator
                 } else{
-                    player2.playDG(player1); // if false, player2 is dictator
+                    player2.playUG(player1); // if false, player2 is dictator
                 }
                 player_id_list_copy.remove(Integer.valueOf(player1.getId())); // player1 won't play again this gen
                 player_id_list_copy.remove(Integer.valueOf(player2.getId())); // player2 won't play again this gen

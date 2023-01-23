@@ -50,7 +50,7 @@ public class SpatialEvoDG1 {
         while(gen != max_gens){
             for(int i = 0; i < rows; i++){
                 for(int j = 0; j < columns; j++){
-                    grid.get(i).get(j).playSpatialDG();
+                    grid.get(i).get(j).playSpatialUG();
                 }
             }
 
