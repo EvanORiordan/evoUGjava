@@ -26,7 +26,7 @@ public class Player {
     private int role1_games; // how many games this player has played as role1
     private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
-    private static final DecimalFormat df = new DecimalFormat("0.00");
+    private static DecimalFormat df = new DecimalFormat("0.00"); // format for printing doubles
 
 
     public Player(){}  // empty constructor

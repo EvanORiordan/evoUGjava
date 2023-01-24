@@ -11,24 +11,27 @@ import java.util.concurrent.ThreadLocalRandom;
  *  measures their score against their neighbours. Each player copies the strategy that their highest
  *  scoring neighbour had at the beginning of the generation (i.e., the update rule is synchronous). A
  *  player's strategy is both their p value and their abstainer status.
+ *
+ *  I have changed this class into a thread and the main method into start().
  */
-public class SpatialAbstinenceDG4 {
-    static double abstainer_prob = 0.98; // the probability that a player initialises as an abstainer
-    static double prize = 1.0;
-    static int rows = 50;
-    static int columns = 50;
-    static int N = rows * columns;
-    static int max_gens = 100000;
-    static String neighbourhood = "moore8";
-    static String results_csv="results.csv";
-    static String grid_diagram_csv = "grid_diagram.csv";
-    static String COMMA_DELIMITER = ",";
-    static String NEW_LINE_SEPARATOR = "\n";
+public class SpatialAbstinenceDG4 extends Thread{
+    double abstainer_prob = 0.1; // the probability that a player initialises as an abstainer
+    double prize = 1.0;
+    int rows = 10;
+    int columns = 10;
+    int N = rows * columns;
+    int max_gens = 3;
+    String neighbourhood = "moore8";
+    String results_csv="results.csv";
+    String grid_diagram_csv = "grid_diagram.csv";
+    String COMMA_DELIMITER = ",";
+    String NEW_LINE_SEPARATOR = "\n";
+    ArrayList<ArrayList<Player>> grid = new ArrayList<>();
 
-    public static void main(String[] args) throws IOException {
+
+    public void start() {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
-        ArrayList<ArrayList<Player>> grid = new ArrayList<>();
         Player.setPrize(prize);
         Player.setLoners_payoff(prize * 0.1);
         Player.setNeighbourhoodType(neighbourhood);
@@ -74,14 +77,19 @@ public class SpatialAbstinenceDG4 {
                 }
             }
             gen++;
-            reset(grid);
+            reset();
         }
-        displayStats(grid);
-        writeResults(results_csv, grid);
-        writeGridDiagram(grid_diagram_csv, grid);
+
+//        displayStats(grid);
+//        try {
+//            writeResults(results_csv, grid);
+//            writeGridDiagram(grid_diagram_csv, grid);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
-    public static void reset(ArrayList<ArrayList<Player>> grid){
+    public void reset(){
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 player.setScore(0);
@@ -91,24 +99,7 @@ public class SpatialAbstinenceDG4 {
         }
     }
 
-    public static void writeResults(String filename, ArrayList<ArrayList<Player>> grid) throws IOException {
-        FileWriter fw = new FileWriter(filename, false);
-        fw.append("Player ID"+COMMA_DELIMITER
-                + "p"+COMMA_DELIMITER
-                + "Program: "+Thread.currentThread().getStackTrace()[1].getClassName()+COMMA_DELIMITER
-                + "Gens: "+max_gens+COMMA_DELIMITER
-                + "N: "+N
-                + NEW_LINE_SEPARATOR);
-        for(ArrayList<Player> row: grid){
-            for(Player player: row){
-                fw.append(player.getId()+COMMA_DELIMITER+player.getP()+NEW_LINE_SEPARATOR);
-            }
-        }
-        fw.close();
-        System.out.println("Completed writing to "+filename);
-    }
-
-    public static void displayStats(ArrayList<ArrayList<Player>> grid){
+    public StorageObject1 gatherStats(){
         double avg_p=0;
         double highest_p = 0.0;
         double lowest_p = 1.0;
@@ -127,14 +118,28 @@ public class SpatialAbstinenceDG4 {
             }
         }
         avg_p /= N;
-        System.out.println("Average value of p:\t"+avg_p);
-        System.out.println("Highest value of p:\t"+highest_p);
-        System.out.println("Lowest value of p:\t"+lowest_p);
-        System.out.println("Number of abstainers: "+abstainers);
+        return new StorageObject1(avg_p,highest_p,lowest_p,abstainers);
     }
 
-    public static void writeGridDiagram(String filename, ArrayList<ArrayList<Player>> grid) throws IOException {
-        FileWriter fw = new FileWriter(filename, false);
+    public void writeResults() throws IOException {
+        FileWriter fw = new FileWriter(results_csv, false);
+        fw.append("Player ID"+COMMA_DELIMITER
+                + "p"+COMMA_DELIMITER
+                + "Program: "+Thread.currentThread().getStackTrace()[1].getClassName()+COMMA_DELIMITER
+                + "Gens: "+max_gens+COMMA_DELIMITER
+                + "N: "+N
+                + NEW_LINE_SEPARATOR);
+        for(ArrayList<Player> row: grid){
+            for(Player player: row){
+                fw.append(player.getId()+COMMA_DELIMITER+player.getP()+NEW_LINE_SEPARATOR);
+            }
+        }
+        fw.close();
+        System.out.println("Completed writing to "+results_csv);
+    }
+
+    public void writeGridDiagram() throws IOException {
+        FileWriter fw = new FileWriter(grid_diagram_csv, false);
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 if(player.getAbstainer()){
@@ -147,6 +152,6 @@ public class SpatialAbstinenceDG4 {
             fw.append(NEW_LINE_SEPARATOR);
         }
         fw.close();
-        System.out.println("Completed writing to "+filename);
+        System.out.println("Completed writing to "+grid_diagram_csv);
     }
 }
