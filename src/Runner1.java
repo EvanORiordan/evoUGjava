@@ -7,7 +7,7 @@ public class Runner1 {
         double avg_highest_p = 0.0;
         double avg_lowest_p = 0.0;
         int avg_abstainers = 0;
-        int runs=10;
+        int runs=1;
         for(int i=0;i<runs;i++){
             System.out.println("Run "+i);
             SpatialAbstinenceDG4 run = new SpatialAbstinenceDG4();

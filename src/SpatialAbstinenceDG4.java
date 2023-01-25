@@ -12,7 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
  *  scoring neighbour had at the beginning of the generation (i.e., the update rule is synchronous). A
  *  player's strategy is both their p value and their abstainer status.
  *
- *  I have changed this class into a thread and the main method into start().
+ *  I have changed this class into a thread and the main method into start(). To run this program, use
+ *  Runner1.main().
  */
 public class SpatialAbstinenceDG4 extends Thread{
     double abstainer_prob = 0.1; // the probability that a player initialises as an abstainer
@@ -20,7 +21,7 @@ public class SpatialAbstinenceDG4 extends Thread{
     int rows = 10;
     int columns = 10;
     int N = rows * columns;
-    int max_gens = 3;
+    int max_gens = 100000;
     String neighbourhood = "moore8";
     String results_csv="results.csv";
     String grid_diagram_csv = "grid_diagram.csv";

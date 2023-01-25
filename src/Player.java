@@ -251,6 +251,10 @@ public class Player {
         return abstainer;
     }
 
+    public void setAbstainer(boolean abstainer){
+        this.abstainer=abstainer;
+    }
+
     public double getAverage_score(){
         return average_score;
     }
@@ -274,6 +278,7 @@ public class Player {
     public static DecimalFormat getDf(){
         return df;
     }
+
 
 
 
