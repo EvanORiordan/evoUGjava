@@ -3,14 +3,14 @@ public class Runner1 {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
 
-        double avg_avg_p = 0.0;
+        double avg_avg_p = 0.0; // change to mean avg p
         double avg_highest_p = 0.0;
         double avg_lowest_p = 0.0;
         int avg_abstainers = 0;
-        int runs=1;
+        int runs=5;
         for(int i=0;i<runs;i++){
             System.out.println("Run "+i);
-            SpatialAbstinenceDG4 run = new SpatialAbstinenceDG4();
+            SpatialAbstinenceDG5 run = new SpatialAbstinenceDG5();
             run.start();
             StorageObject1 so = run.gatherStats();
             avg_avg_p+=so.getAvg_p();
@@ -22,9 +22,9 @@ public class Runner1 {
         avg_highest_p /= runs;
         avg_lowest_p /= runs;
         avg_abstainers /= runs;
-        System.out.println("Average value of p:\t\t\t"+avg_avg_p+
-                        "\nAverage highest value of p:\t"+avg_highest_p+
-                        "\nAverage lowest value of p:\t"+avg_lowest_p+
-                        "\nAverage number of abstainers: "+avg_abstainers);
+        System.out.println("Average value of p:\t\t\t"+Player.getDf().format(avg_avg_p)+
+                        "\nAverage highest value of p:\t"+Player.getDf().format(avg_highest_p)+
+                        "\nAverage lowest value of p:\t"+Player.getDf().format(avg_lowest_p)+
+                        "\nAverage number of abstainers: "+Player.getDf().format(avg_abstainers));
     }
 }

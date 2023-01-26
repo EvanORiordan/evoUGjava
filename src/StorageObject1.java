@@ -1,3 +1,6 @@
+/**
+ * Acts as a box with which multiple values can be stored and returned.
+ */
 public class StorageObject1 {
     private double avg_p;
     private double highest_p;

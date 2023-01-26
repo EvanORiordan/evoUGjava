@@ -1,6 +1,10 @@
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
+/**
+ * Hard-coded pop initially consists of 98 abstainers and 2 non-abstainers. Evolution results in the complete
+ * imitation of the neighbour that scored the highest amount over oneself.
+ */
 public class SpatialAbstinenceDG5 extends Thread{
     double prize = 1.0;
     int rows = 10;
@@ -20,12 +24,12 @@ public class SpatialAbstinenceDG5 extends Thread{
         for(int i = 0; i < rows; i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j=0;j<columns;j++){
-                row.add(new Player(0.5,0.5,true));
+                row.add(new Player(0.95,0.0,true));
             }
             grid.add(row);
         }
-        grid.get(4).get(4).setAbstainer(false);
-        grid.get(4).get(5).setAbstainer(false);
+        grid.get(0).get(0).setAbstainer(false);
+        grid.get(0).get(1).setAbstainer(false);
         for(int i=0;i<rows;i++){
             for(int j=0;j<columns;j++){
                 grid.get(i).get(j).findNeighbours2D(grid, i, j);
@@ -42,11 +46,11 @@ public class SpatialAbstinenceDG5 extends Thread{
                 for(int j=0;j<columns;j++){
                     Player player = grid.get(i).get(j);
                     Player parent = null;
-                    double highest_score_in_neighbourhood = player.getScore();
+                    double highest_avg_score_in_neighbourhood = player.getAverage_score();
                     for(Player neighbour: player.getNeighbourhood()){
-                        if(neighbour.getScore() > highest_score_in_neighbourhood){
+                        if(neighbour.getAverage_score() > highest_avg_score_in_neighbourhood){
                             parent = neighbour;
-                            highest_score_in_neighbourhood = parent.getScore();
+                            highest_avg_score_in_neighbourhood = parent.getAverage_score();
                         }
                     }
                     if(parent != null){
@@ -67,5 +71,27 @@ public class SpatialAbstinenceDG5 extends Thread{
                 player.setOld_p(player.getP());
             }
         }
+    }
+
+    public StorageObject1 gatherStats(){
+        double avg_p=0;
+        double highest_p = 0.0;
+        double lowest_p = 1.0;
+        int abstainers = 0;
+        for(ArrayList<Player> row: grid){
+            for(Player player: row){
+                if(player.getP() > highest_p){
+                    highest_p = player.getP();
+                } else if(player.getP() < lowest_p){
+                    lowest_p = player.getP();
+                }
+                avg_p+=player.getP();
+                if(player.getAbstainer()){
+                    abstainers++;
+                }
+            }
+        }
+        avg_p /= N;
+        return new StorageObject1(avg_p,highest_p,lowest_p,abstainers);
     }
 }
