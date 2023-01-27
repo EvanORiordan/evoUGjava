@@ -100,7 +100,7 @@ public class SpatialAbstinenceDG4 extends Thread{
         }
     }
 
-    public StorageObject1 gatherStats(){
+    public StorageObject1 giveStats(){
         double avg_p=0;
         double highest_p = 0.0;
         double lowest_p = 1.0;

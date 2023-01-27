@@ -1,18 +1,21 @@
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Hard-coded pop initially consists of 98 abstainers and 2 non-abstainers. Evolution results in the complete
- * imitation of the neighbour that scored the highest amount over oneself.
+ * Spatial abstinence evo DG program that is capable of assigning a fixed number of initial abstainers.
  */
-public class SpatialAbstinenceDG5 extends Thread{
-    double prize = 1.0;
-    int rows = 10;
-    int columns = 10;
-    int N = rows * columns;
-    String neighbourhood = "vonNeumann4";
-    int max_gens = 100000;
+public class SpatialAbstinenceDG6 extends Thread{
+    double prize=1.0;
+    int rows=10;
+    int columns=10;
+    int N=rows*columns;
+    int max_gens=100000;
+    String neighbourhood="moore4";
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
+    int initial_num_abstainers = 10;
 
     public void start(){
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
@@ -21,27 +24,49 @@ public class SpatialAbstinenceDG5 extends Thread{
         Player.setLoners_payoff(prize * 0.1);
         Player.setNeighbourhoodType(neighbourhood);
         Player.getDf().setRoundingMode(RoundingMode.UP);
+
+        // generate unique random abstainer positions
+        Set<Integer> abstainer_positions = new HashSet<>(); // each int represents an abstainer position
+        while(abstainer_positions.size() != initial_num_abstainers){
+            abstainer_positions.add(ThreadLocalRandom.current().nextInt(0, N));
+        }
+
+        // place players into the grid
+        int pop_position=0;
         for(int i = 0; i < rows; i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j=0;j<columns;j++){
-                row.add(new Player(0.95,0.0,true));
+                boolean abstainer = false; // by default, a player is a non-abstainer
+                for(Integer abstainer_position: abstainer_positions){
+                    if(pop_position == abstainer_position){
+                        abstainer=true;
+                        break;
+                    }
+                }
+                row.add(new Player(ThreadLocalRandom.current().nextDouble(), 0.0, abstainer));
+                pop_position++;
             }
             grid.add(row);
         }
-        grid.get(0).get(0).setAbstainer(false);
-        grid.get(0).get(1).setAbstainer(false);
+
+        // find neighbours
         for(int i=0;i<rows;i++){
             for(int j=0;j<columns;j++){
                 grid.get(i).get(j).findNeighbours2D(grid, i, j);
             }
         }
+
+        // play spatial DG with abstinence
         int gen = 0;
         while(gen != max_gens) {
+            giveStats();
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < columns; j++) {
                     grid.get(i).get(j).playSpatialAbstinenceUG();
                 }
             }
+
+            // evolution
             for(int i=0;i<rows;i++){
                 for(int j=0;j<columns;j++){
                     Player player = grid.get(i).get(j);
@@ -69,10 +94,14 @@ public class SpatialAbstinenceDG5 extends Thread{
                 player.setScore(0);
                 player.setGamesPlayedThisGen(0);
                 player.setOld_p(player.getP());
+                player.setOldAbstainer(player.getAbstainer());
             }
         }
     }
 
+    // to see the stats while the thread is executing, call this method and place a BP in here. when
+    // calling a method that returns something, you do not need to receive it.
+    // this is useful for seeing how many abstainers are in the pop.
     public StorageObject1 giveStats(){
         double avg_p=0;
         double highest_p = 0.0;

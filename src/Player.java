@@ -1,3 +1,4 @@
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -21,6 +22,7 @@ public class Player {
     private static double loners_payoff; // payoff received for being part of an interaction where a party abstained
     private double old_p; // the p value held at the beginning of the gen; will be copied by imitators
     private double old_q; // the q value held at the beginning of the gen; will be copied by imitators
+    private boolean old_abstainer; // the abstainer value held at start of gen; to be copied by imitators
     private boolean abstainer; // indicates whether this player is an abstainer; an abstainer always abstains
     // from playing the game, hence both interacting parties receive the loner's payoff.
     private int role1_games; // how many games this player has played as role1
@@ -54,39 +56,17 @@ public class Player {
         }
     }
 
-    // method for playing the DG
-//    public void playDG(Player recipient){
-//        updateStats(prize*(1-p), true);
-//        recipient.updateStats(prize*p, false);
-//    }
-
     // method for playing the UG with an abstinence option.
     // if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
     // otherwise, play the regular UG.
     public void playAbstinenceUG(Player responder){
         if(abstainer || responder.abstainer){
-//            score += loners_payoff;
-//            responder.score += loners_payoff;
             updateStats(loners_payoff, true);
             responder.updateStats(loners_payoff, false);
         } else {
             playUG(responder);
         }
     }
-
-    // method for playing the DG with an abstinence option.
-    // if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
-    // otherwise, play the regular DG.
-//    public void playAbstinenceDG(Player recipient){
-//        if(abstainer || recipient.abstainer){
-////            score += loners_payoff;
-////            recipient.score += loners_payoff;
-//            updateStats(loners_payoff, true);
-//            recipient.updateStats(loners_payoff, false);
-//        } else {
-//            playDG(recipient);
-//        }
-//    }
 
     // method for playing the UG, as the proposer, with each neighbour
     public void playSpatialUG(){
@@ -95,26 +75,12 @@ public class Player {
         }
     }
 
-    // method for playing the UG, as the dictator, with each neighbour
-//    public void playSpatialDG(){
-//        for(Player neighbour: neighbourhood){
-//            playDG(neighbour);
-//        }
-//    }
-
     // method for playing the UG with an abstinence option, as the proposer, with each neighbour
     public void playSpatialAbstinenceUG(){
         for(Player neighbour: neighbourhood){
             playAbstinenceUG(neighbour);
         }
     }
-
-    // method for playing the DG with an abstinence option, as the dictator, with each neighbour
-//    public void playSpatialAbstinenceDG(){
-//        for(Player neighbour: neighbourhood){
-//            playAbstinenceDG(neighbour);
-//        }
-//    }
 
     public double getScore(){
         return score;
@@ -168,8 +134,8 @@ public class Player {
     // copy another player's strategy.
     public void copyStrategy(Player model){
         setP(model.old_p);
-        setQ(model.q);
-        this.abstainer=model.abstainer;
+        setQ(model.old_q);
+        abstainer=model.old_abstainer;
     }
 
     public int getId(){
@@ -225,8 +191,6 @@ public class Player {
         neighbourhood.add(grid.get(down).get((b%d+d)%d));
         neighbourhood.add(grid.get((a%c+c)%c).get(left));
         neighbourhood.add(grid.get((a%c+c)%c).get(right));
-//        if(neighbourhood_type.equals("vonNeumann4")){
-//        } else if(neighbourhood_type.equals("moore8")){
         if(neighbourhood_type.equals("moore8")){
             neighbourhood.add(grid.get(up).get(left)); // up-left
             neighbourhood.add(grid.get(up).get(right)); // up-right
@@ -273,6 +237,14 @@ public class Player {
 
     public void setOld_q(double old_q){
         this.old_q=old_q;
+    }
+
+    public boolean getOldAbstainer(){
+        return old_abstainer;
+    }
+
+    public void setOldAbstainer(boolean old_abstainer){
+        this.old_abstainer=old_abstainer;
     }
 
     public static DecimalFormat getDf(){
@@ -329,6 +301,7 @@ public class Player {
 //        AbstinenceUGTest1();
 //        SpatialAbstinenceUGTest1();
         SpatialAbstinenceDGTest1();
+//        SpatialAbstinenceDGTest2();
     }
 
     // basic UG test
@@ -366,7 +339,6 @@ public class Player {
         Player.setPrize(1.0);
         Player player1 = new Player(ThreadLocalRandom.current().nextDouble(), 0.0, false);
         Player player2 = new Player(ThreadLocalRandom.current().nextDouble(), 0.0, false);
-//        player1.playDG(player2);
         player1.playUG(player2);
     }
 
@@ -490,7 +462,6 @@ public class Player {
         }
         for(ArrayList<Player> row: grid){
             for(Player player: row){
-//                player.playSpatialDG();
                 player.playSpatialUG();
             }
         }
@@ -581,10 +552,37 @@ public class Player {
         }
         for(ArrayList<Player> row: grid){
             for(Player player: row){
-//                player.playSpatialAbstinenceDG();
                 player.playSpatialAbstinenceUG();
             }
         }
     }
-
+//
+//    public static void SpatialAbstinenceDGTest2(){
+//        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
+//                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
+//        Player.setPrize(1.0);
+//        Player.setLoners_payoff(prize * 0.1);
+//        Player.setNeighbourhoodType("vonNeumann4");
+//        Player.getDf().setRoundingMode(RoundingMode.UP);
+//        ArrayList<ArrayList<Player>> grid = new ArrayList<>();
+//        int rows=10;
+//        int columns=10;
+//        for(int i=0;i<rows;i++){
+//            ArrayList<Player> row = new ArrayList<>();
+//            for(int j=0;j<columns;j++){
+//                row.add(new Player(0.95,0.0,true));
+//            }
+//            grid.add(row);
+//        }
+//        for(int i=0;i<rows;i++){
+//            for(int j=0;j<columns;j++){
+//                grid.get(i).get(j).findNeighbours2D(grid, i, j);
+//            }
+//        }
+//        for(ArrayList<Player> row: grid){
+//            for(Player player: row){
+//                player.playSpatialAbstinenceUG();
+//            }
+//        }
+//    }
 }
