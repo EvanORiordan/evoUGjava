@@ -1,4 +1,3 @@
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -6,34 +5,34 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Spatial abstinence evo DG program that is capable of assigning a fixed number of initial abstainers.
+ * Some variables of this program are now static and are assigned values at runtime by Runner2.
  */
-public class SpatialAbstinenceDG6 extends Thread{
-    double prize=1.0;
-    int rows=10;
-    int columns=10;
-    int N=rows*columns;
-    int max_gens=100000;
-    String neighbourhood="vonNeumann4";
-    int initial_num_abstainers = 80;
+public class SpatialAbstinenceDG7 extends Thread{
+    static int rows;
+    static int columns;
+    int N;
+    static int max_gens;
+    static int initial_num_abstainers;
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
+    double avg_p=0;
+    double highest_p = 0.0;
+    double lowest_p = 1.0;
+    int abstainers = 0;
 
     public void start(){
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
-        Player.setPrize(prize);
-        Player.setLoners_payoff(prize * 0.1);
-        Player.setNeighbourhoodType(neighbourhood);
-        Player.getDf().setRoundingMode(RoundingMode.UP);
 
         // generate unique random abstainer positions
-        Set<Integer> abstainer_positions = new HashSet<>(); // each int represents an abstainer position
+        N=rows*columns;
+        Set<Integer> abstainer_positions = new HashSet<>();
         while(abstainer_positions.size() != initial_num_abstainers){
             abstainer_positions.add(ThreadLocalRandom.current().nextInt(0, N));
         }
 
         // place players into the grid
         int pop_position=0;
-        for(int i = 0; i < rows; i++){
+        for(int i=0;i<rows;i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j=0;j<columns;j++){
                 boolean abstainer = false; // by default, a player is a non-abstainer
@@ -59,17 +58,15 @@ public class SpatialAbstinenceDG6 extends Thread{
         // play spatial DG with abstinence
         int gen = 0;
         while(gen != max_gens) {
-            giveStats();
-            for (int i = 0; i < rows; i++) {
-                for (int j = 0; j < columns; j++) {
-                    grid.get(i).get(j).playSpatialAbstinenceUG();
+            for(ArrayList<Player> row: grid){
+                for(Player player: row){
+                    player.playSpatialAbstinenceUG();
                 }
             }
 
             // evolution
-            for(int i=0;i<rows;i++){
-                for(int j=0;j<columns;j++){
-                    Player player = grid.get(i).get(j);
+            for(ArrayList<Player> row: grid){
+                for(Player player: row){
                     Player parent = null;
                     double highest_avg_score_in_neighbourhood = player.getAverage_score();
                     for(Player neighbour: player.getNeighbourhood()){
@@ -86,6 +83,7 @@ public class SpatialAbstinenceDG6 extends Thread{
             gen++;
             reset();
         }
+        getStats();
     }
 
     public void reset(){
@@ -99,14 +97,7 @@ public class SpatialAbstinenceDG6 extends Thread{
         }
     }
 
-    // to see the stats while the thread is executing, call this method and place a BP in here. when
-    // calling a method that returns something, you do not need to receive it.
-    // this is useful for seeing how many abstainers are in the pop.
-    public StorageObject1 giveStats(){
-        double avg_p=0;
-        double highest_p = 0.0;
-        double lowest_p = 1.0;
-        int abstainers = 0;
+    public void getStats(){
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 if(player.getP() > highest_p){
@@ -121,6 +112,5 @@ public class SpatialAbstinenceDG6 extends Thread{
             }
         }
         avg_p /= N;
-        return new StorageObject1(avg_p,highest_p,lowest_p,abstainers);
     }
 }
