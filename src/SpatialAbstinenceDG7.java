@@ -20,9 +20,6 @@ public class SpatialAbstinenceDG7 extends Thread{
     int abstainers = 0;
 
     public void start(){
-        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
-                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
-
         // generate unique random abstainer positions
         N=rows*columns;
         Set<Integer> abstainer_positions = new HashSet<>();

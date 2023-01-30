@@ -1,4 +1,3 @@
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -306,7 +305,6 @@ public class Player {
 //        AbstinenceUGTest1();
 //        SpatialAbstinenceUGTest1();
         SpatialAbstinenceDGTest1();
-//        SpatialAbstinenceDGTest2();
     }
 
     // basic UG test
@@ -561,33 +559,4 @@ public class Player {
             }
         }
     }
-//
-//    public static void SpatialAbstinenceDGTest2(){
-//        System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
-//                +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...\n");
-//        Player.setPrize(1.0);
-//        Player.setLoners_payoff(prize * 0.1);
-//        Player.setNeighbourhoodType("vonNeumann4");
-//        Player.getDf().setRoundingMode(RoundingMode.UP);
-//        ArrayList<ArrayList<Player>> grid = new ArrayList<>();
-//        int rows=10;
-//        int columns=10;
-//        for(int i=0;i<rows;i++){
-//            ArrayList<Player> row = new ArrayList<>();
-//            for(int j=0;j<columns;j++){
-//                row.add(new Player(0.95,0.0,true));
-//            }
-//            grid.add(row);
-//        }
-//        for(int i=0;i<rows;i++){
-//            for(int j=0;j<columns;j++){
-//                grid.get(i).get(j).findNeighbours2D(grid, i, j);
-//            }
-//        }
-//        for(ArrayList<Player> row: grid){
-//            for(Player player: row){
-//                player.playSpatialAbstinenceUG();
-//            }
-//        }
-//    }
 }
