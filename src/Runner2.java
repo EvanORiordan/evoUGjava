@@ -13,7 +13,7 @@ public class Runner2 {
         // initialise variables in preparation for experimentation
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.5);
+        Player.setLoners_payoff(Player.getPrize() * 0.54);
         Player.setNeighbourhoodType("vonNeumann4");
         Player.getDf().setRoundingMode(RoundingMode.UP);
         SpatialAbstinenceDG7.rows=20;
