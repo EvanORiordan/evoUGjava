@@ -1,5 +1,6 @@
 /**
- * Acts as a box with which multiple values can be stored and returned.
+ * Acts as a box within which statistics can be stored and returned.
+ * Used in runner classes.
  */
 public class StorageObject1 {
     private double avg_p;
