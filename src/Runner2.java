@@ -13,13 +13,13 @@ public class Runner2 {
         // initialise variables in preparation for experimentation
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.54);
+        Player.setLoners_payoff(Player.getPrize() * 0.51);
         Player.setNeighbourhoodType("vonNeumann4");
         Player.getDf().setRoundingMode(RoundingMode.UP);
-        SpatialAbstinenceDG7.rows=20;
-        SpatialAbstinenceDG7.columns=20;
-        SpatialAbstinenceDG7.max_gens=10000;
-        SpatialAbstinenceDG7.initial_num_abstainers=5;
+        SpatialAbstinenceDG7.rows=30;
+        SpatialAbstinenceDG7.columns=30;
+        SpatialAbstinenceDG7.max_gens=1000;
+        SpatialAbstinenceDG7.initial_num_abstainers=550;
         double mean_avg_p = 0.0;
         double mean_highest_p = 0.0;
         double mean_lowest_p = 0.0;
