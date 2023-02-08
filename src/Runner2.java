@@ -12,14 +12,14 @@ public class Runner2 {
 
         // initialise variables in preparation for experimentation
         int runs=5000;
-        Player.setPrize(1.0);
+        Player.setPrize(100.0);
         Player.setLoners_payoff(Player.getPrize() * 0.2);
-        Player.setNeighbourhoodType("vonNeumann4");
+        Player.setNeighbourhoodType("M");
         Player.getDf().setRoundingMode(RoundingMode.UP);
-        SpatialAbstinenceDG7.rows=80;
-        SpatialAbstinenceDG7.columns=80;
+        SpatialAbstinenceDG7.rows=10;
+        SpatialAbstinenceDG7.columns=10;
         SpatialAbstinenceDG7.max_gens=1000;
-        SpatialAbstinenceDG7.initial_num_abstainers=3200;
+        SpatialAbstinenceDG7.initial_num_abstainers=10;
 
         // stats representing experiment results
         double mean_avg_p = 0.0;

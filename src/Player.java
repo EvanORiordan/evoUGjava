@@ -175,7 +175,7 @@ public class Player {
     // method for assigning the position of a player on a 2D space and
     // finding the neighbours when a player resides on a 2D space.
     // currently, this method handles programs using the von Neumann and the Moore neighbourhood types.
-    // possible neighbourhood_type values: vonNeumann4; moore8
+    // possible neighbourhood_type values: VN; M
     public void findNeighbours2D(ArrayList<ArrayList<Player>> grid, int row_position, int column_position){
         position = new int[] {row_position, column_position};
         neighbourhood = new ArrayList<>();
@@ -191,7 +191,7 @@ public class Player {
         neighbourhood.add(grid.get(down).get((b%d+d)%d));
         neighbourhood.add(grid.get((a%c+c)%c).get(left));
         neighbourhood.add(grid.get((a%c+c)%c).get(right));
-        if(neighbourhood_type.equals("moore8")){
+        if(neighbourhood_type.equals("M")){
             neighbourhood.add(grid.get(up).get(left)); // up-left
             neighbourhood.add(grid.get(up).get(right)); // up-right
             neighbourhood.add(grid.get(down).get(left)); // down-left
