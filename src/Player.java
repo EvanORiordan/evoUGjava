@@ -150,6 +150,10 @@ public class Player {
         EAP = Math.exp(w * average_score);
     }
 
+    public static String getNeighbourhoodType(){
+        return neighbourhood_type;
+    }
+
     public static void setNeighbourhoodType(String s){
         neighbourhood_type=s;
     }
@@ -209,6 +213,10 @@ public class Player {
 
     public ArrayList<Player> getNeighbourhood() {
         return neighbourhood;
+    }
+
+    public static double getLoners_payoff(){
+        return loners_payoff;
     }
 
     public static void setLoners_payoff(double d){
