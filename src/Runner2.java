@@ -13,13 +13,24 @@ public class Runner2 {
         // initialise variables in preparation for experimentation
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.2);
+        Player.setLoners_payoff(Player.getPrize() * 0.6);
         Player.setNeighbourhoodType("VN");
         Player.getDf().setRoundingMode(RoundingMode.UP);
-        SpatialAbstinenceDG7.rows=10;
-        SpatialAbstinenceDG7.columns=10;
-        SpatialAbstinenceDG7.max_gens=1000;
-        SpatialAbstinenceDG7.initial_num_abstainers=70;
+        SpatialAbstinenceDG7.rows=20;
+        SpatialAbstinenceDG7.columns=20;
+        SpatialAbstinenceDG7.N = SpatialAbstinenceDG7.rows * SpatialAbstinenceDG7.columns;
+        SpatialAbstinenceDG7.max_gens=10000;
+        SpatialAbstinenceDG7.initial_num_abstainers = SpatialAbstinenceDG7.N / 10;
+
+        System.out.println("Runs="+runs+
+                ", prize="+Player.getPrize()+
+                ", l="+Player.getLoners_payoff()+
+                ", neighbourhood="+Player.getNeighbourhoodType()+
+                ", rows="+SpatialAbstinenceDG7.rows+
+                ", columns="+SpatialAbstinenceDG7.columns+
+                ", gens="+SpatialAbstinenceDG7.max_gens+
+                ", initial abstainers="+SpatialAbstinenceDG7.initial_num_abstainers+
+                ", initial p=random: ");
 
         // stats representing experiment results
         double mean_avg_p = 0.0;
@@ -46,16 +57,6 @@ public class Runner2 {
         mean_highest_p /= runs;
         mean_lowest_p /= runs;
         mean_abstainers /= runs;
-
-        System.out.println("Runs="+runs+
-                ", prize="+Player.getPrize()+
-                ", l="+Player.getLoners_payoff()+
-                ", neighbourhood="+Player.getNeighbourhoodType()+
-                ", rows="+SpatialAbstinenceDG7.rows+
-                ", columns="+SpatialAbstinenceDG7.columns+
-                ", gens="+SpatialAbstinenceDG7.max_gens+
-                ", initial abstainers="+SpatialAbstinenceDG7.initial_num_abstainers+
-                ", initial p=random: ");
 
         System.out.println("Approx run time="+minutesElapsed+" minutes" +
                 ", mean avg p="+Player.getDf().format(mean_avg_p)+

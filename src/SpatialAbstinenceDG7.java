@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SpatialAbstinenceDG7 extends Thread{
     static int rows;
     static int columns;
-    int N;
+    static int N;
     static int max_gens;
     static int initial_num_abstainers;
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
@@ -21,7 +21,6 @@ public class SpatialAbstinenceDG7 extends Thread{
 
     public void start(){
         // generate unique random abstainer positions
-        N=rows*columns;
         Set<Integer> abstainer_positions = new HashSet<>();
         while(abstainer_positions.size() != initial_num_abstainers){
             abstainer_positions.add(ThreadLocalRandom.current().nextInt(0, N));
