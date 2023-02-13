@@ -16,21 +16,19 @@ public class Runner2 {
         Player.setLoners_payoff(Player.getPrize() * 0.6);
         Player.setNeighbourhoodType("VN");
         Player.getDf().setRoundingMode(RoundingMode.UP);
-        SpatialAbstinenceDG7.rows=20;
-        SpatialAbstinenceDG7.columns=20;
+        SpatialAbstinenceDG7.rows=50;
+        SpatialAbstinenceDG7.columns=50;
         SpatialAbstinenceDG7.N = SpatialAbstinenceDG7.rows * SpatialAbstinenceDG7.columns;
         SpatialAbstinenceDG7.max_gens=10000;
         SpatialAbstinenceDG7.initial_num_abstainers = SpatialAbstinenceDG7.N / 10;
 
         System.out.println("Runs="+runs+
-                ", prize="+Player.getPrize()+
+                ", gens="+SpatialAbstinenceDG7.max_gens+
                 ", l="+Player.getLoners_payoff()+
                 ", neighbourhood="+Player.getNeighbourhoodType()+
-                ", rows="+SpatialAbstinenceDG7.rows+
-                ", columns="+SpatialAbstinenceDG7.columns+
-                ", gens="+SpatialAbstinenceDG7.max_gens+
-                ", initial abstainers="+SpatialAbstinenceDG7.initial_num_abstainers+
-                ", initial p=random: ");
+                ", pop size="+SpatialAbstinenceDG7.N+
+                ", init abstainers="+SpatialAbstinenceDG7.initial_num_abstainers
+        );
 
         // stats representing experiment results
         double mean_avg_p = 0.0;

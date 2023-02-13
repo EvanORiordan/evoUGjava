@@ -3,20 +3,23 @@
 //import java.util.ArrayList;
 //import java.util.concurrent.ThreadLocalRandom;
 //
-///**
-// * My first attempt at reproducing the algorithm based on details read from paper
-// * by Rand et al., 2013 [rand2013evolution].
-// * <p>Pop size is denoted by {@code N}.</p>
-// * <p>Each player {@code i} plays the UG once with each of the N-1 other players each generation.</p>
-// * <p>Player i's average payoff after a given generation is denoted by pi_i.</p>
-// * <p>To determine which player to select as parent,
-// * each player has an effective average payoff defined as exp(w*pi_i).</p>
-// * <p>The intensity of selection is denoted by {@code w}. As w -> infinity, only highest payoff players are imitated.
-// * As w -> 0, all strategies can be selected to be imitated.</p>
-// * <p>Select one player each generation with respect to w. Then, one other random player from the population must
-// * either imitate the selected player or mutate their strategy to random values in the range [0,1]. Mutation rate
-// * {@code u} determines how often the latter occurs.</p>
-// */
+/**
+ * My first attempt at reproducing the algorithm based on details read from paper
+ * by Rand et al., 2013 [rand2013evolution].
+ * <p>Pop size is denoted by {@code N}.</p>
+ * <p>Each player {@code i} plays the UG once with each of the N-1 other players each generation.</p>
+ * <p>Player i's average payoff after a given generation is denoted by pi_i.</p>
+ * <p>To determine which player to select as parent,
+ * each player has an effective average payoff defined as exp(w*pi_i).</p>
+ * <p>The intensity of selection is denoted by {@code w}. As w -> infinity, only highest payoff players are imitated.
+ * As w -> 0, all strategies can be selected to be imitated.</p>
+ * <p>Select one player each generation with respect to w. Then, one other random player from the population must
+ * either imitate the selected player or mutate their strategy to random values in the range [0,1]. Mutation rate
+ * {@code u} determines how often the latter occurs.</p>
+ *
+ * NOTE: Do not delete this file, especially because it contains a mechanism for selecting a player
+ * out of a group of players based on avg scores (see the selection segment of this program).
+ */
 //
 //public class Rand2013Evolution1 {
 //    static final double prize = 1.0;
