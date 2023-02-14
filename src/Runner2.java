@@ -13,14 +13,16 @@ public class Runner2 {
         // initialise variables in preparation for experimentation
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.6);
+        Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
         Player.getDf().setRoundingMode(RoundingMode.UP);
-        SpatialAbstinenceDG7.rows=50;
-        SpatialAbstinenceDG7.columns=50;
+        SpatialAbstinenceDG7.rows=10;
+        SpatialAbstinenceDG7.columns=10;
         SpatialAbstinenceDG7.N = SpatialAbstinenceDG7.rows * SpatialAbstinenceDG7.columns;
-        SpatialAbstinenceDG7.max_gens=10000;
-        SpatialAbstinenceDG7.initial_num_abstainers = SpatialAbstinenceDG7.N / 10;
+        SpatialAbstinenceDG7.max_gens=1000;
+//        SpatialAbstinenceDG7.initial_num_abstainers = SpatialAbstinenceDG7.N / 10;
+        SpatialAbstinenceDG7.initial_num_abstainers = 95;
+
 
         System.out.println("Runs="+runs+
                 ", gens="+SpatialAbstinenceDG7.max_gens+
