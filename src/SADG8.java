@@ -21,11 +21,13 @@ public class SADG8 extends Thread{
     int abstainers = 0;
 
     public void start(){
-        // generate unique random abstainer positions
+        // generate fixed number of unique random abstainer positions; the Set collection ensures that ints are unique
         Set<Integer> abstainer_positions = new HashSet<>();
         while(abstainer_positions.size() != initial_num_abstainers){
             abstainer_positions.add(ThreadLocalRandom.current().nextInt(0, N));
         }
+
+        System.out.println(abstainer_positions);
 
         // place players into the grid
         int pop_position=0;
