@@ -4,9 +4,13 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Spatial abstinence evo DG program that is capable of assigning a fixed number of initial abstainers.
- * Some variables of this program are now static and are assigned values at runtime by Runner2.
- * The evolution process here takes inspiration from the selection mechanism from Rand2013Evolution1.java.
+ * Spatial abstinence evo DG program. Update rule runs a probability check to see if a player will evolve.
+ * If the check is passed, the rule specifies that the greater a neighbour's average score is in comparison
+ * to the evolving player, the greater the likelihood of the player imitating that neighbour. The converse
+ * is true for neighbour's with lesser average scores than the player.
+ *
+ * When making a new program based on this one in the future, feel free to clean up the code to
+ * reduce the number of lines of code.
  */
 public class SADG8 extends Thread{
     static int rows;
@@ -21,13 +25,12 @@ public class SADG8 extends Thread{
     int abstainers = 0;
 
     public void start(){
-        // generate fixed number of unique random abstainer positions; the Set collection ensures that ints are unique
+        // generate fixed number of unique random abstainer positions;
+        // the Set collection used here helps ensure that the generated ints are unique.
         Set<Integer> abstainer_positions = new HashSet<>();
         while(abstainer_positions.size() != initial_num_abstainers){
             abstainer_positions.add(ThreadLocalRandom.current().nextInt(0, N));
         }
-
-        System.out.println(abstainer_positions);
 
         // place players into the grid
         int pop_position=0;
@@ -66,13 +69,13 @@ public class SADG8 extends Thread{
             // evolution
             for(ArrayList<Player> row: grid){
                 for(Player player: row){ // the "player" denoted here is the current player under inspection
-                    Player parent = null;
 
                     // to introduce more stochasticity, there is a 50% chance that a player chooses
                     // not to copy anyone. if an additional mechanism such as this was not present,
                     // each player in the pop would always copy a neighbour each generation!
                     double chance_to_not_imitate = ThreadLocalRandom.current().nextDouble();
                     if(chance_to_not_imitate < 0.5){
+                        Player parent = null;
 
                         // each neighbour calculates their "imitation score".
                         // the imitation scores are pitted against each other to determine the parent.
@@ -102,11 +105,9 @@ public class SADG8 extends Thread{
                             double chance = imitation_score_tally / total_imitation_score;
                             if(random_double_to_beat < chance) {
                                 parent = player.getNeighbourhood().get(i);
+                                player.copyStrategy(parent);
                                 break;
                             }
-                        }
-                        if(parent != null){
-                            player.copyStrategy(parent);
                         }
                     }
                 }

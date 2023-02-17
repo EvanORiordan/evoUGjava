@@ -13,14 +13,14 @@ public class Runner3 {
         // initialise variables in preparation for experimentation
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.6);
-        Player.setNeighbourhoodType("VN");
+        Player.setLoners_payoff(Player.getPrize() * 0.1);
+        Player.setNeighbourhoodType("M");
         Player.getDf().setRoundingMode(RoundingMode.UP);
         SADG8.rows=30;
         SADG8.columns=30;
         SADG8.N = SADG8.rows * SADG8.columns;
         SADG8.max_gens=10000;
-        SADG8.initial_num_abstainers = SADG8.N / 5;
+        SADG8.initial_num_abstainers = SADG8.N / 2;
 
         System.out.println("Runs="+runs
                 + ", gens="+SADG8.max_gens
