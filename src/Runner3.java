@@ -10,6 +10,8 @@ public class Runner3 {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
 
+        System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
+
         // initialise variables in preparation for experimentation
         int runs=5000;
         Player.setPrize(1.0);
@@ -20,7 +22,7 @@ public class Runner3 {
         SADG8.columns=30;
         SADG8.N = SADG8.rows * SADG8.columns;
         SADG8.max_gens=10000;
-        SADG8.initial_num_abstainers = SADG8.N / 5;
+        SADG8.initial_num_abstainers = SADG8.N / 2;
 
         System.out.println("Runs="+runs
                 + ", gens="+SADG8.max_gens
@@ -63,5 +65,8 @@ public class Runner3 {
         );
 
         System.out.print("Time elapsed: "+minutesElapsed+" minutes, "+secondsElapsed%60+" seconds");
+
+        System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
+
     }
 }

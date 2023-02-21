@@ -16,7 +16,6 @@ public class Player {
     private static String neighbourhood_type; // neighbourhood type of this player
     private ArrayList<Player> neighbourhood; // this player's neighbourhood
     private int games_played_this_gen;
-    private int[] position; // allows for dynamic assignment of position values regardless of number of dimensions
     private static double prize; // the prize amount being split in an interaction
     private static double loners_payoff; // payoff received for being part of an interaction where a party abstained
     private double old_p; // the p value held at the beginning of the gen; will be copied by imitators
@@ -165,11 +164,10 @@ public class Player {
 
     // method for assigning the position of a player on a 1D space and
     // finding the neighbours when a player resides on a 1D line space.
-    public void findNeighbours1D(ArrayList<Player> line, int position_value1){
-        position = new int[] {position_value1};
+    public void findNeighbours1D(ArrayList<Player> line, int position){
         neighbourhood = new ArrayList<>();
         if(neighbourhood_type.equals("line2")){
-            int a=position[0];
+            int a=position;
             int b=line.size();
             neighbourhood.add(line.get(((a-1)%b+b)%b)); // (a%b+b)%b lets edge players reach other edge players
             neighbourhood.add(line.get(((a+1)%b+b)%b));
@@ -181,10 +179,9 @@ public class Player {
     // currently, this method handles programs using the von Neumann and the Moore neighbourhood types.
     // possible neighbourhood_type values: VN; M
     public void findNeighbours2D(ArrayList<ArrayList<Player>> grid, int row_position, int column_position){
-        position = new int[] {row_position, column_position};
         neighbourhood = new ArrayList<>();
-        int a=position[0];
-        int b=position[1];
+        int a=row_position;
+        int b=column_position;
         int c=grid.size();
         int d=grid.get(0).size();
         int up=((a-1)%c+c)%c; // go up one node (on the square grid)

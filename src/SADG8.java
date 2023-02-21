@@ -9,8 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * to the evolving player, the greater the likelihood of the player imitating that neighbour. The converse
  * is true for neighbour's with lesser average scores than the player.
  *
- * When making a new program based on this one in the future, feel free to clean up the code to
- * reduce the number of lines of code.
+ * I have moved the code from the old static methods SADG8.reset() and SADG8.getStats() into main().
  */
 public class SADG8 extends Thread{
     static int rows;
@@ -75,7 +74,7 @@ public class SADG8 extends Thread{
                     // each player in the pop would always copy a neighbour each generation!
                     double chance_to_not_imitate = ThreadLocalRandom.current().nextDouble();
                     if(chance_to_not_imitate < 0.5){
-                        Player parent = null;
+                        Player parent;
 
                         // each neighbour calculates their "imitation score".
                         // the imitation scores are pitted against each other to determine the parent.
@@ -84,9 +83,9 @@ public class SADG8 extends Thread{
                         // that neighbour is exponentially more likely to be selected as the parent.
                         double[] imitation_scores = new double[player.getNeighbourhood().size()];
                         double total_imitation_score = 0;
+                        double player_avg_score = player.getAverage_score();
                         for(int i=0;i<player.getNeighbourhood().size();i++){
                             Player neighbour = player.getNeighbourhood().get(i);
-                            double player_avg_score = player.getAverage_score();
                             double neighbours_avg_score = neighbour.getAverage_score();
                             double difference = neighbours_avg_score - player_avg_score;
                             double imitation_score = Math.exp(difference);
@@ -113,23 +112,19 @@ public class SADG8 extends Thread{
                 }
             }
             gen++;
-            reset();
-        }
-        getStats();
-    }
 
-    public void reset(){
-        for(ArrayList<Player> row: grid){
-            for(Player player: row){
-                player.setScore(0);
-                player.setGamesPlayedThisGen(0);
-                player.setOld_p(player.getP());
-                player.setOldAbstainer(player.getAbstainer());
+            // reset the players' scores, GPTG, old p value and old abstainer values.
+            for(ArrayList<Player> row: grid){
+                for(Player player: row){
+                    player.setScore(0);
+                    player.setGamesPlayedThisGen(0);
+                    player.setOld_p(player.getP());
+                    player.setOldAbstainer(player.getAbstainer());
+                }
             }
         }
-    }
 
-    public void getStats(){
+        // gets stats
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 if(player.getP() > highest_p){
