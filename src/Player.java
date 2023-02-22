@@ -270,7 +270,8 @@ public class Player {
         String description = "";
         description += "ID="+ID;
         description += " p="+df.format(p);
-        description += " q="+df.format(q);
+        description += " old p="+df.format(old_p);
+//        description += " q="+df.format(q);
         description += " Abstainer="+abstainer;
         description += " Score="+df.format(score);
         description += " AS="+df.format(average_score);
@@ -285,10 +286,10 @@ public class Player {
             }
             description +="]";
         }
-        description += " GPTG="+ games_played_this_gen;
-        description += " GPIT="+games_played_in_total;
-        description += " R1G="+role1_games;
-        description += " R2G="+role2_games;
+//        description += " GPTG="+ games_played_this_gen;
+//        description += " GPIT="+games_played_in_total;
+//        description += " R1G="+role1_games;
+//        description += " R2G="+role2_games;
         return description;
     }
 
