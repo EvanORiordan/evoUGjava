@@ -111,7 +111,6 @@ public class SADG8 extends Thread{
                     }
                 }
             }
-            gen++;
 
             // reset the players' scores, GPTG, old p value and old abstainer values.
             for(ArrayList<Player> row: grid){
@@ -122,6 +121,18 @@ public class SADG8 extends Thread{
                     player.setOldAbstainer(player.getAbstainer());
                 }
             }
+
+            double current_abstainers = 0;
+            for(ArrayList<Player> row: grid){
+                for(Player player: row){
+                    if(player.getAbstainer()){
+                        current_abstainers++;
+                    }
+                }
+            }
+            System.out.println(current_abstainers);
+
+            gen++;
         }
 
         // gets stats
