@@ -71,7 +71,7 @@ public class SADG9 extends Thread{
                 }
             }
 
-            displayScreenshotOfPop();
+//            displayScreenshotOfPop();
 
             // evolution
             for(ArrayList<Player> row: grid){
@@ -119,15 +119,15 @@ public class SADG9 extends Thread{
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
 
         // variables that define the characteristics/settings of the experiment
-        int runs=1;
+        int runs=5000;
         Player.setPrize(1.0);
         Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
-        SADG9.rows = 10;
-        SADG9.columns = 10;
+        SADG9.rows = 30;
+        SADG9.columns = 30;
         SADG9.N = SADG9.rows * SADG9.columns;
-        SADG9.max_gens = 100;
+        SADG9.max_gens = 10000;
         SADG9.initial_num_abstainers = SADG9.N / 2;
 
         // display settings
