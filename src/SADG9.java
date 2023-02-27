@@ -139,8 +139,12 @@ public class SADG9 extends Thread{
                 + ", init abstainers="+SADG9.initial_num_abstainers
                 +": ");
 
+
         // variables for storing experiment results
-        double avg_p = 0; // technically, this is the mean average value of p across the experiment's runs
+
+        // technically, this is the mean average value of p across the experiment's runs.
+        // i.e. this variable is storing the mean of the average p values.
+        double avg_p = 0;
         double[] avg_p_values = new double[runs]; // average p values obtained from the runs
         double sd_avg_p = 0; // the standard deviation of the group of avg p values
         int avg_abstainers = 0;
@@ -171,9 +175,9 @@ public class SADG9 extends Thread{
 
         // display experiment results
         System.out.println("avg p="+df.format(avg_p)
-                + ", standard deviation of avg p="+df.format(sd_avg_p)
+                + ", avg p SD="+df.format(sd_avg_p)
                 + ", avg abstainers="+avg_abstainers
-                + ", standard deviation of avg abstainers="+df.format(sd_avg_abstainers)
+                + ", avg abstainers SD="+df.format(sd_avg_abstainers)
         );
 
         // display the time taken by the experiment
