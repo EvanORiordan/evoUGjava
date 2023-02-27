@@ -8,15 +8,9 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Spatial abstinence evo DG program. Update rule specifies that the greater a neighbour's average score
- * is in comparison to the evolving player, that neighbour is exponentially more likely to be selected.
- * The evolver includes themselves as a player that could be copied. If selected, no evolution occurs.
- *
- * This SADG version does not keep track of the highest or lowest value of p in the pop.
- * This SADG version replaces its complementary runner class (Runner4.java) with SADG9.main().
- * This SADG version reintroduces reset() and getStats().
+ * This will be a SADG program that produces a screenshot of the pop using a JFrame.
  */
-public class SADG9 extends Thread{
+public class SADG10 extends Thread{
     static int rows; // all instances of a class share the same value of a static attribute
     static int columns;
     static int N;
