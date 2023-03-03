@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * This SADG version replaces its complementary runner class (Runner4.java) with SADG9.main().
  * This SADG version reintroduces reset() and getStats().
  */
-public class SADG9 extends Thread{
+public class SADG9 extends Thread {
     static int rows; // all instances of a class share the same value of a static attribute
     static int columns;
     static int N;
@@ -146,6 +146,13 @@ public class SADG9 extends Thread{
         int[] avg_abstainers_values = new int[runs];
         double sd_avg_abstainers = 0;
 
+        // track how often the value of the number of remaining abstainers occurs across the runs.
+        // the length of the array is set to N+1 to allow for an index at position 900.
+        // otherwise, later in the code, when runs.abstainers=900, an ArrayIndexOutOfBoundsException
+        // may be thrown because runs.abstainers would be applied as an index while index 900
+        // didn't exist.
+        int[] avg_abstainers_value_occurrences = new int[N+1];
+
         // run the experiment
         Instant start = Instant.now(); // start the stopwatch
         for(int i=0;i<runs;i++){
@@ -155,6 +162,8 @@ public class SADG9 extends Thread{
             avg_p_values[i] = run.avg_p;
             avg_abstainers += run.abstainers;
             avg_abstainers_values[i] = run.abstainers;
+
+            avg_abstainers_value_occurrences[run.abstainers]++;
         }
         Instant finish = Instant.now(); // stop the stopwatch
 
@@ -174,6 +183,14 @@ public class SADG9 extends Thread{
                 + ", avg abstainers="+avg_abstainers
                 + ", avg abstainers SD="+df.format(sd_avg_abstainers)
         );
+
+        // display the number of times that a certain amount of remaining abstainers occurred across the runs
+        for(int i=0;i<avg_abstainers_value_occurrences.length;i++){
+            if(avg_abstainers_value_occurrences[i] > 0){
+                System.out.println("How many times was there "+i+" abstainers left: "
+                        +avg_abstainers_value_occurrences[i]);
+            }
+        }
 
         // display the time taken by the experiment
         long secondsElapsed = Duration.between(start, finish).toSeconds();
@@ -216,7 +233,7 @@ public class SADG9 extends Thread{
             }
         }
         avg_p /= N;
-//        System.out.println(abstainers);
+        System.out.println(abstainers);
     }
 
     // reset the players' scores, GPTG, old p value and old abstainer values.
