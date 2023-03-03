@@ -9,6 +9,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This will be a SADG program that produces a screenshot of the pop using a JFrame.
+ *
+ * NOT FULLY IMPLEMENTED YET.
  */
 public class SADG10 extends Thread{
     static int rows; // all instances of a class share the same value of a static attribute

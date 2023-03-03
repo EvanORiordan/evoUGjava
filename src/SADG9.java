@@ -116,14 +116,14 @@ public class SADG9 extends Thread{
         // variables that define the characteristics/settings of the experiment
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.2);
+        Player.setLoners_payoff(Player.getPrize() * 0.3);
         Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
         SADG9.rows = 30;
         SADG9.columns = 30;
         SADG9.N = SADG9.rows * SADG9.columns;
         SADG9.max_gens = 10000;
-        SADG9.initial_num_abstainers = SADG9.N / 2;
+        SADG9.initial_num_abstainers = SADG9.N / 20;
 
         // display settings
         System.out.println("Runs="+runs
@@ -184,6 +184,7 @@ public class SADG9 extends Thread{
 
 
     // displays a screenshot of some cluster of the population
+    // this method helps me inspect the effect of the evolution process
     public void displayScreenshotOfPop(){
         System.out.println("p    S    A?");
         int cluster_height = 3;
@@ -215,7 +216,7 @@ public class SADG9 extends Thread{
             }
         }
         avg_p /= N;
-        System.out.println(abstainers);
+//        System.out.println(abstainers);
     }
 
     // reset the players' scores, GPTG, old p value and old abstainer values.
