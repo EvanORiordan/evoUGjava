@@ -116,7 +116,13 @@ public class Player {
         }
     }
 
-    // update the status of this player after playing, including score.
+    /**
+     * Update the status of this player after playing, including score and average score.
+     * The average score calculation is usual for seeing what score a player accrued over
+     * the gen.
+     *
+     * 6/3/23: I have changed this to dividing by games_played_this_gen to games_played_in_total.
+     */
     public void updateStats(double payoff, boolean role1){
         score+=payoff;
         games_played_in_total++;
@@ -126,7 +132,7 @@ public class Player {
         } else{
             role2_games++;
         }
-        average_score = score / games_played_in_total;
+        average_score = score / games_played_this_gen;
     }
 
     // copy another player's strategy.
