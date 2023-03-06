@@ -12,9 +12,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * is in comparison to the evolving player, that neighbour is exponentially more likely to be selected.
  * The evolver includes themselves as a player that could be copied. If selected, no evolution occurs.
  *
- * This SADG version does not keep track of the highest or lowest value of p in the pop.
- * This SADG version replaces its complementary runner class (Runner4.java) with SADG9.main().
- * This SADG version reintroduces reset() and getStats().
+ * This SADG version:
+ * Does not keep track of the highest or lowest value of p in the pop.
+ * Replaces its complementary runner class (Runner4.java) with SADG9.main().
+ * Reintroduces reset() and getStats().
+ * Introduces a mechanism for counting how many experiment runs end up with all players being abstainers.
  */
 public class SADG9 extends Thread {
     static int rows; // all instances of a class share the same value of a static attribute

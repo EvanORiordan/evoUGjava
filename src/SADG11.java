@@ -14,8 +14,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * will just be a sanity check for us to see that rational non-abstaining should spread with such
  * constraints.
  *
- * This SADG program similar to / based on SADG9.java but with a "copy best neighbour" update rule
- * where for all players, p < 0.3.
+ * This SADG program similar to / based on SADG9.java but with a "copy best neighbour" update rule and
+ * where for all players, p < 0.3. I.e. Players evolve by copying the neighbour that scored the
+ * greatest amount more than them (no evolution if no such neighbour exists).
  */
 public class SADG11 extends Thread {
 

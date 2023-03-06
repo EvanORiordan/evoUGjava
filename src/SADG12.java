@@ -107,7 +107,7 @@ public class SADG12 extends Thread {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
-        int runs=1;
+        int runs=5000;
         Player.setPrize(1.0);
         Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
@@ -115,7 +115,7 @@ public class SADG12 extends Thread {
         rows = 30;
         columns = 30;
         N = rows * columns;
-        max_gens = 100;
+        max_gens = 10000;
         initial_num_abstainers = N / 10;
         System.out.println("Runs="+runs
                 + ", gens="+max_gens
