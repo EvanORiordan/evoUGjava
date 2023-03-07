@@ -73,7 +73,7 @@ public class SADG12 extends Thread {
             }
 
             // print cluster info into the console
-            displayScreenshotOfPop();
+//            displayScreenshotOfPop();
 
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
@@ -109,14 +109,14 @@ public class SADG12 extends Thread {
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.2);
+        Player.setLoners_payoff(Player.getPrize() * 0.3);
         Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
         rows = 30;
         columns = 30;
         N = rows * columns;
         max_gens = 10000;
-        initial_num_abstainers = N / 10;
+        initial_num_abstainers = N / 20;
         System.out.println("Runs="+runs
                 + ", gens="+max_gens
                 + ", l="+Player.getLoners_payoff()
@@ -130,6 +130,7 @@ public class SADG12 extends Thread {
         int avg_abstainers = 0;
         int[] avg_abstainers_values = new int[runs];
         double sd_avg_abstainers = 0;
+        int[] avg_abstainers_value_occurrences = new int[N+1];
         Instant start = Instant.now();
         for(int i=0;i<runs;i++){
             SADG12 run = new SADG12();
@@ -138,6 +139,7 @@ public class SADG12 extends Thread {
             avg_p_values[i] = run.avg_p;
             avg_abstainers += run.abstainers;
             avg_abstainers_values[i] = run.abstainers;
+            avg_abstainers_value_occurrences[run.abstainers]++;
         }
         Instant finish = Instant.now();
         avg_p /= runs;
@@ -153,6 +155,12 @@ public class SADG12 extends Thread {
                 + ", avg abstainers="+avg_abstainers
                 + ", avg abstainers SD="+df.format(sd_avg_abstainers)
         );
+        for(int i=0;i<avg_abstainers_value_occurrences.length;i++){
+            if(avg_abstainers_value_occurrences[i] > 0){
+                System.out.println("How many times was there "+i+" abstainers left: "
+                        +avg_abstainers_value_occurrences[i]);
+            }
+        }
         long secondsElapsed = Duration.between(start, finish).toSeconds();
         long minutesElapsed = Duration.between(start, finish).toMinutes();
         System.out.print("Time elapsed: "+minutesElapsed+" minutes, "+secondsElapsed%60+" seconds");
