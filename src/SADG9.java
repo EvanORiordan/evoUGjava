@@ -118,14 +118,14 @@ public class SADG9 extends Thread {
         // variables that define the characteristics/settings of the experiment
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.3);
+        Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
         SADG9.rows = 30;
         SADG9.columns = 30;
         SADG9.N = SADG9.rows * SADG9.columns;
         SADG9.max_gens = 10000;
-        SADG9.initial_num_abstainers = SADG9.N / 20;
+        SADG9.initial_num_abstainers = SADG9.N / 2;
 
         // display settings
         System.out.println("Runs="+runs
@@ -235,7 +235,7 @@ public class SADG9 extends Thread {
             }
         }
         avg_p /= N;
-        System.out.println(abstainers);
+//        System.out.println(abstainers);
     }
 
     // reset the players' scores, GPTG, old p value and old abstainer values.

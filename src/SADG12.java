@@ -13,9 +13,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * gen 0 (hard code it in). See if abstaining or non-abstaining spreads! For instance, insert the
  * 3x3 cluster and observe the nearby 5x5 of players and observe the results.
  *
- * The pop initialises like usual (similar to SADG9). Before the first gen begins, a cluster of
- * abstainer is hard-coded, i.e. inserted into the pop.
- *
+ * This program is the same as SADG9 except for, before the first gen begins, a cluster of
+ * abstainer is hard-coded, i.e. inserted into the pop. displayScreenshotOfPop() has also
+ * been tailored to produce a screenshot of the cluster and its neighbours.
  */
 public class SADG12 extends Thread {
     static int rows;
@@ -109,14 +109,14 @@ public class SADG12 extends Thread {
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.3);
+        Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
         rows = 30;
         columns = 30;
         N = rows * columns;
         max_gens = 10000;
-        initial_num_abstainers = N / 20;
+        initial_num_abstainers = N / 5;
         System.out.println("Runs="+runs
                 + ", gens="+max_gens
                 + ", l="+Player.getLoners_payoff()
