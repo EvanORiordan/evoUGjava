@@ -106,7 +106,7 @@ public class SADG11 extends Thread {
         columns = 30;
         N = rows * columns;
         max_gens = 10000;
-        initial_num_abstainers = N / 5;
+        initial_num_abstainers = N / 2;
         System.out.println("Runs="+runs
                 + ", gens="+max_gens
                 + ", l="+Player.getLoners_payoff()

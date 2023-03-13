@@ -109,14 +109,14 @@ public class SADG12 extends Thread {
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.52);
+        Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
-        rows = 30;
-        columns = 30;
+        rows = 35;
+        columns = 35;
         N = rows * columns;
         max_gens = 10000;
-        initial_num_abstainers = N / 10;
+        initial_num_abstainers = 1200;
         System.out.println("Runs="+runs
                 + ", gens="+max_gens
                 + ", l="+Player.getLoners_payoff()
