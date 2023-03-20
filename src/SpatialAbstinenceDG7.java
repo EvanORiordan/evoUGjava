@@ -5,7 +5,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Spatial abstinence evo DG program that is capable of assigning a fixed number of initial abstainers.
- * Some variables of this program are now static and are assigned values at runtime by Runner2.
+ *
+ * Rather than using StorageObject1.java to distribute statistics, this program stores them in static
+ * attributes which can be assigned at run time by Runner2.
  */
 public class SpatialAbstinenceDG7 extends Thread{
     static int rows;

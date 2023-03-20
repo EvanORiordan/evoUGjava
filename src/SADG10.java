@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * This will be a SADG program that produces a screenshot of the pop using a JFrame.
+ * This will be a SADG program that produces a screenshot of the pop using a JFrame GUI.
  *
  * NOT FULLY IMPLEMENTED YET.
  */

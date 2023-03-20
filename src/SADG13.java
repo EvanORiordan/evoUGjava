@@ -8,11 +8,17 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * This version is similar to SADG9 except that a cluster of players is initially converted to abstain.
+ * 20/3/23
  *
- * displayScreenshotOfPop() now produces a screenshot of a cluster and its immediate neighbours.
+ * This program copies SADG12.java without the initial abstainer cluster mechanism. It introduces a
+ * mechanism for edge decay to punish exploitative dictators.
+ *
+ * QUESTION: When should edge decay occur?
+ *
+ * INCOMPLETE SO FAR...
+ *
  */
-public class SADG12 extends Thread {
+public class SADG13 extends Thread {
     static int rows;
     static int columns;
     static int N;
@@ -32,9 +38,9 @@ public class SADG12 extends Thread {
         for(int i=0;i<rows;i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j=0;j<columns;j++){
-                boolean abstainer = false; // by default, a player initialises as a non-abstainer
+                boolean abstainer = false;
                 for(Integer abstainer_position: abstainer_positions){
-                    if(pop_position == abstainer_position){ // if true, this player is an abstainer
+                    if(pop_position == abstainer_position){
                         abstainer=true;
                         break;
                     }
@@ -44,16 +50,6 @@ public class SADG12 extends Thread {
             }
             grid.add(row);
         }
-
-        // insert 3x3 abstainer cluster into the population
-        int inner_cluster_height = 3;
-        int inner_cluster_width = 3;
-        for(int i=1;i<inner_cluster_height+1;i++){
-            for(int j=1;j<inner_cluster_width+1;j++) {
-                grid.get(i).get(j).setAbstainer(true);
-            }
-        }
-
         for(int i=0;i<rows;i++){
             for(int j=0;j<columns;j++){
                 grid.get(i).get(j).findNeighbours2D(grid, i, j);
@@ -67,9 +63,7 @@ public class SADG12 extends Thread {
                 }
             }
 
-            // print cluster info into the console
-//            displayScreenshotOfPop();
-
+            // evolution
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
                     ArrayList<Player> neighbourhood = player.getNeighbourhood();
@@ -97,6 +91,7 @@ public class SADG12 extends Thread {
         }
         getStats();
     }
+
 
     public static void main(String[] args) {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
@@ -128,7 +123,7 @@ public class SADG12 extends Thread {
         int[] avg_abstainers_value_occurrences = new int[N+1];
         Instant start = Instant.now();
         for(int i=0;i<runs;i++){
-            SADG12 run = new SADG12();
+            SADG13 run = new SADG13();
             run.start();
             avg_p += run.avg_p;
             avg_p_values[i] = run.avg_p;
@@ -162,30 +157,6 @@ public class SADG12 extends Thread {
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
     }
 
-    /**
-     * Allows the observation of the genes of a cluster of players and their immediate neighbours.
-     * For example, one may observe a 3x3 inner cluster and a 5x5 outer cluster which contains
-     * the inner cluster as well as the neighbouring players.
-     */
-    public void displayScreenshotOfPop(){
-        System.out.println("p    S    A");
-        int outer_cluster_height = 5;
-        int outer_cluster_width = 5;
-        for(int i=0;i<outer_cluster_height;i++){
-            for(int j=0;j<outer_cluster_width;j++){
-                Player player = grid.get(i).get(j);
-                double p = player.getP();
-                double avg_score = player.getAverage_score();
-                String abstainer = "NA"; // indicates "non-abstainer"
-                if(player.getAbstainer()){
-                    abstainer = "A ";
-                }
-                System.out.print(df.format(p) + " " + df.format(avg_score) + " " + abstainer + "      ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
 
     public void getStats(){
         for(ArrayList<Player> row: grid){

@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Spatial abstinence evo DG program that is capable of assigning a fixed number of initial abstainers.
+ *
+ * Uses the StorageObject1 class to distribute statistics to Runner1.java
  */
 public class SpatialAbstinenceDG6 extends Thread{
     double prize=1.0;

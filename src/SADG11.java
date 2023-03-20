@@ -8,15 +8,8 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Excerpt from meeting from 28/2/23:
- * Do an experiment with a ``copy best neighbour'' update rule where all players have p < 0.3. This is
- * the same update rule type as we were using in earlier SADG program versions a few weeks ago. This
- * will just be a sanity check for us to see that rational non-abstaining should spread with such
- * constraints.
- *
- * This SADG program similar to / based on SADG9.java but with a "copy best neighbour" update rule and
- * where for all players, p < 0.3. I.e. Players evolve by copying the neighbour that scored the
- * greatest amount more than them (no evolution if no such neighbour exists).
+ * Basically, this program is a combination the evolution process of SpatialAbstinenceDG7.java and a
+ * constraint that for all player, p < 0.3, while also adopting some minor characteristics of SADG9.java.
  */
 public class SADG11 extends Thread {
 

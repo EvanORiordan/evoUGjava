@@ -8,11 +8,10 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Spatial abstinence evo DG program. Update rule specifies that the greater a neighbour's average score
- * is in comparison to the evolving player, that neighbour is exponentially more likely to be selected.
- * The evolver includes themselves as a player that could be copied. If selected, no evolution occurs.
+ * This program is similar to SADG8.java except during the evolution process, the evolver INCLUDES
+ * THEMSELVES as a player that could be copied. If evolver is selected as parent, no evolution occurs.
  *
- * This SADG version:
+ * Minor changes with this SADG version:
  * Does not keep track of the highest or lowest value of p in the pop.
  * Replaces its complementary runner class (Runner4.java) with SADG9.main().
  * Reintroduces reset() and getStats().
@@ -116,16 +115,16 @@ public class SADG9 extends Thread {
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
 
         // variables that define the characteristics/settings of the experiment
-        int runs=5000;
+        int runs=100;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.2);
+        Player.setLoners_payoff(Player.getPrize() * 0.55);
         Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
         SADG9.rows = 30;
         SADG9.columns = 30;
         SADG9.N = SADG9.rows * SADG9.columns;
         SADG9.max_gens = 10000;
-        SADG9.initial_num_abstainers = SADG9.N / 2;
+        SADG9.initial_num_abstainers = SADG9.N / 1;
 
         // display settings
         System.out.println("Runs="+runs
@@ -179,9 +178,11 @@ public class SADG9 extends Thread {
         sd_avg_p = Math.pow(sd_avg_p / runs, 0.5);
         sd_avg_abstainers = Math.pow(sd_avg_abstainers / runs, 0.5);
 
+        // df.format(avg_p)
+        // df.format(sd_avg_p)
         // display experiment results
-        System.out.println("avg p="+df.format(avg_p)
-                + ", avg p SD="+df.format(sd_avg_p)
+        System.out.println("avg p="+avg_p
+                + ", avg p SD="+sd_avg_p
                 + ", avg abstainers="+avg_abstainers
                 + ", avg abstainers SD="+df.format(sd_avg_abstainers)
         );
@@ -197,7 +198,7 @@ public class SADG9 extends Thread {
         // display the time taken by the experiment
         long secondsElapsed = Duration.between(start, finish).toSeconds();
         long minutesElapsed = Duration.between(start, finish).toMinutes();
-        System.out.print("Time elapsed: "+minutesElapsed+" minutes, "+secondsElapsed%60+" seconds");
+        System.out.println("Time elapsed: "+minutesElapsed+" minutes, "+secondsElapsed%60+" seconds");
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
     }
 
