@@ -28,6 +28,10 @@ public class Player {
     private double average_score; // average score of this player this gen
     private static DecimalFormat df = new DecimalFormat("0.00"); // format for printing doubles
 
+    // these help determine how often edge decay will occur
+    private static double edge_decay_factor;
+    private double edge_decay_score;
+
 
     public Player(){}  // empty constructor
 
@@ -206,6 +210,22 @@ public class Player {
         }
     }
 
+    /**
+     * If threshold is overcome by an edge_decay_score, an edge is decayed.
+     */
+    public void edgeDecay(){
+        if(!abstainer){ // only non-abstainers may remove edges
+            ArrayList<Player> neighbourhood_copy = (ArrayList<Player>) neighbourhood.clone();
+            for(Player neighbour: neighbourhood_copy){
+                double threshold = ThreadLocalRandom.current().nextDouble();
+                if(threshold < neighbour.edge_decay_score){
+                    neighbourhood.remove(neighbour);
+                    neighbour.neighbourhood.remove(this);
+                }
+            }
+        }
+    }
+
     public static double getPrize(){
         return prize;
     }
@@ -266,6 +286,17 @@ public class Player {
         return df;
     }
 
+    public static double getEdge_decay_factor(){
+        return edge_decay_factor;
+    }
+
+    public static void setEdge_decay_factor(double d){
+        edge_decay_factor = d;
+    }
+
+    public void setEdge_decay_score(double d){
+        edge_decay_score=d;
+    }
 
 
 

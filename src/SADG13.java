@@ -13,9 +13,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * This program copies SADG12.java without the initial abstainer cluster mechanism. It introduces a
  * mechanism for edge decay to punish exploitative dictators.
  *
- * QUESTION: When should edge decay occur?
- *
- * INCOMPLETE SO FAR...
+ * QUESTION: When should edge decay occur? After playing and before evolution? Directly after meeting an
+ * unfair dictator?
+ * Right now, it occurs after a player plays with their neighbourhood.
  *
  */
 public class SADG13 extends Thread {
@@ -60,6 +60,9 @@ public class SADG13 extends Thread {
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
                     player.playSpatialAbstinenceUG();
+
+                    // players got a chance to remove edges with dictators
+                     player.edgeDecay();
                 }
             }
 
@@ -97,11 +100,12 @@ public class SADG13 extends Thread {
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
-        int runs=10;
-        Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.3);
-        Player.setNeighbourhoodType("VN");
         df.setRoundingMode(RoundingMode.UP);
+        int runs=5000;
+        Player.setPrize(1.0);
+        Player.setLoners_payoff(Player.getPrize() * 0.2);
+        Player.setNeighbourhoodType("VN");
+        Player.setEdge_decay_factor(0.01);
         rows = 30;
         columns = 30;
         N = rows * columns;
@@ -113,6 +117,7 @@ public class SADG13 extends Thread {
                 + ", neighbourhood="+Player.getNeighbourhoodType()
                 + ", pop size="+N
                 + ", init abstainers="+initial_num_abstainers
+                + ", edge decay rate="+Player.getEdge_decay_factor()
                 +": ");
         double avg_p = 0;
         double[] avg_p_values = new double[runs];
@@ -177,6 +182,9 @@ public class SADG13 extends Thread {
                 player.setGamesPlayedThisGen(0);
                 player.setOld_p(player.getP());
                 player.setOldAbstainer(player.getAbstainer());
+
+                // reset player's edge decay score
+                player.setEdge_decay_score(Player.getEdge_decay_factor() * (1 / player.getP()));
             }
         }
     }
