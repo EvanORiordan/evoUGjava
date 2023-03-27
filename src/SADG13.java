@@ -14,8 +14,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * mechanism for edge decay to punish exploitative dictators.
  *
  * QUESTION: When should edge decay occur? After playing and before evolution? Directly after meeting an
- * unfair dictator?
- * Right now, it occurs after a player plays with their neighbourhood.
+ * unfair dictator? UPDATE: Right now, it occurs after a player plays with their neighbourhood.
+ *
+ * QUESTION: Should a player be forced to have at least one neighbour? Otherwise, they play with no one,
+ * therefore earning no score. UPDATE: This has been implemented.
+ *
+ * QUESTION: Should a recipient only have a chance to decay the edge if they are earning less than l from
+ * the dictator? Would this have an appreciable effect on the results? I do not think so...
  *
  */
 public class SADG13 extends Thread {
@@ -25,9 +30,10 @@ public class SADG13 extends Thread {
     static int max_gens;
     static int initial_num_abstainers;
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
-    double avg_p=0;
-    int abstainers = 0;
+    double avg_p;
+    int abstainers;
     static DecimalFormat df = Player.getDf();
+    int gen = 0;
 
     public void start(){
         Set<Integer> abstainer_positions = new HashSet<>();
@@ -55,7 +61,6 @@ public class SADG13 extends Thread {
                 grid.get(i).get(j).findNeighbours2D(grid, i, j);
             }
         }
-        int gen = 0;
         while(gen != max_gens) {
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
@@ -90,6 +95,15 @@ public class SADG13 extends Thread {
                 }
             }
             reset();
+
+            // you should only call this function if you want extra info printed on the console.
+            // this is particularly useful for observing the number players who are on islands.
+//            displayAllNumEdges();
+
+
+            // this is for observing the average p and the number of abstainers remaining for this gen.
+//            getStats();
+
             gen++;
         }
         getStats();
@@ -103,9 +117,12 @@ public class SADG13 extends Thread {
         df.setRoundingMode(RoundingMode.UP);
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.2);
+        Player.setLoners_payoff(Player.getPrize() * 0.4);
         Player.setNeighbourhoodType("VN");
-        Player.setEdge_decay_factor(0.01);
+
+        // set edge decay factor
+        Player.setEdge_decay_factor(0.000001);
+
         rows = 30;
         columns = 30;
         N = rows * columns;
@@ -115,9 +132,9 @@ public class SADG13 extends Thread {
                 + ", gens="+max_gens
                 + ", l="+Player.getLoners_payoff()
                 + ", neighbourhood="+Player.getNeighbourhoodType()
-                + ", pop size="+N
+                + ", N="+N
                 + ", init abstainers="+initial_num_abstainers
-                + ", edge decay rate="+Player.getEdge_decay_factor()
+                + ", EDF="+Player.getEdge_decay_factor()
                 +": ");
         double avg_p = 0;
         double[] avg_p_values = new double[runs];
@@ -150,12 +167,19 @@ public class SADG13 extends Thread {
                 + ", avg abstainers="+avg_abstainers
                 + ", avg abstainers SD="+df.format(sd_avg_abstainers)
         );
+
+
+        // uncomment this if you want info on the number of runs with specific numbers of abstainers
+        // remaining to appear at the end of runtime. alternatively, I could simply refrain from
+        // adding these statistics to the experiment notebook.
         for(int i=0;i<avg_abstainers_value_occurrences.length;i++){
             if(avg_abstainers_value_occurrences[i] > 0){
                 System.out.println("How many times was there "+i+" abstainers left: "
                         +avg_abstainers_value_occurrences[i]);
             }
         }
+
+
         long secondsElapsed = Duration.between(start, finish).toSeconds();
         long minutesElapsed = Duration.between(start, finish).toMinutes();
         System.out.println("Time elapsed: "+minutesElapsed+" minutes, "+secondsElapsed%60+" seconds");
@@ -163,7 +187,11 @@ public class SADG13 extends Thread {
     }
 
 
+    // method for recording statistics after an experiment has been conducted.
+    // in general, this should only get called after the final gen.
     public void getStats(){
+        avg_p = 0.0;
+        abstainers = 0;
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 avg_p+=player.getP();
@@ -173,6 +201,9 @@ public class SADG13 extends Thread {
             }
         }
         avg_p /= N;
+
+        // uncomment to observe the average p and abstainers remaining during runtime.
+//        System.out.println("avg p="+avg_p+"\tabstainers="+abstainers);
     }
 
     public void reset(){
@@ -183,9 +214,27 @@ public class SADG13 extends Thread {
                 player.setOld_p(player.getP());
                 player.setOldAbstainer(player.getAbstainer());
 
-                // reset player's edge decay score
+                // reset player's edge decay score using the edge decay factor and their p attribute.
                 player.setEdge_decay_score(Player.getEdge_decay_factor() * (1 / player.getP()));
+//                System.out.println(player.getP() + "\t" + player.getEdge_decay_score());
             }
         }
+    }
+
+    // display how many players have some amount of edges
+    public void displayAllNumEdges(){
+        int[] edges_count = new int[5];
+        for(ArrayList<Player> row: grid){
+            for(Player player: row){
+                edges_count[player.getNeighbourhood().size()]++;
+            }
+        }
+        System.out.println("gen: "+gen
+                + "\nplayers with 0 edges: "+edges_count[0]
+                + "\nplayers with 1 edges: "+edges_count[1]
+                + "\nplayers with 2 edges: "+edges_count[2]
+                + "\nplayers with 3 edges: "+edges_count[3]
+                + "\nplayers with 4 edges: "+edges_count[4]
+                +"\n");
     }
 }

@@ -27,10 +27,8 @@ public class Player {
     private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
     private static DecimalFormat df = new DecimalFormat("0.00"); // format for printing doubles
-
-    // these help determine how often edge decay will occur
-    private static double edge_decay_factor;
-    private double edge_decay_score;
+    private static double edge_decay_factor; // EDF affects the rate of edge decay
+    private double edge_decay_score; // EDS determines this player's probability of edge decay
 
 
     public Player(){}  // empty constructor
@@ -44,6 +42,10 @@ public class Player {
         this.q=q; // assign q value
         this.abstainer=abstainer; // indicate whether this player initialises as an abstainer
         old_p=p;
+
+        // edge decay mechanism: calculate initial EDS based on initial value of p
+        edge_decay_score = edge_decay_factor * (1 / p);
+//        System.out.println("p="+p+"\tEDS="+edge_decay_score);
     }
 
     // method for playing the UG.
@@ -214,11 +216,14 @@ public class Player {
      * If threshold is overcome by an edge_decay_score, an edge is decayed.
      */
     public void edgeDecay(){
-        if(!abstainer){ // only non-abstainers may remove edges
+        if (!abstainer) { // only non-abstainers may remove edges
             ArrayList<Player> neighbourhood_copy = (ArrayList<Player>) neighbourhood.clone();
-            for(Player neighbour: neighbourhood_copy){
+            for (Player neighbour : neighbourhood_copy) {
+                if(neighbourhood.size() == 1 || neighbour.neighbourhood.size() == 1){
+                    break;
+                }
                 double threshold = ThreadLocalRandom.current().nextDouble();
-                if(threshold < neighbour.edge_decay_score){
+                if (threshold < neighbour.edge_decay_score) {
                     neighbourhood.remove(neighbour);
                     neighbour.neighbourhood.remove(this);
                 }
@@ -294,6 +299,10 @@ public class Player {
         edge_decay_factor = d;
     }
 
+    public double getEdge_decay_score(){
+        return edge_decay_score;
+    }
+
     public void setEdge_decay_score(double d){
         edge_decay_score=d;
     }
@@ -303,7 +312,7 @@ public class Player {
 
     @Override
     public String toString(){
-        // comment out a variable if you don't want it to appear in the player description
+        // comment out a variable if you don't want it to appear in the player description when debugging
         String description = "";
         description += "ID="+ID;
         description += " p="+df.format(p);
