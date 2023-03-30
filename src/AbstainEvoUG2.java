@@ -11,8 +11,7 @@
  *
  * Initial conclusions: pop is not particularly fair or rational
  *
- * DO NOT DELETE THIS FILE: it features the player_id_list mechanism for matching players up in a non-spatial
- * UG environment!
+ * This program features the player_id_list mechanism for matching players together.
  */
 //public class AbstainEvoUG2 {
 //    static double prize = 1.0;

@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
  *  Evo DG. For each gen, a player plays once. At end of gen, the highest scoring individual has
  *  their strategy copied by the lowest scoring individual. It is assumed that each player's score
  *  resets to zero after each gen.
+ *
+ *  This program uses the player_id_list mechanism for selecting a unique player from the population.
  */
 public class EvoDG1 {
     static final double prize = 10.0;

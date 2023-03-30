@@ -30,6 +30,13 @@ public class Player {
     private static double edge_decay_factor; // EDF affects the rate of edge decay
     private double edge_decay_score; // EDS determines this player's probability of edge decay
 
+    // 29/3/23: facilitates the selection of a player who has not been a dictator yet in a given gen.
+    private boolean selected = false;
+
+    // 29/3/23: tracks which players a player has left to play in a given gen.
+    private ArrayList<Player> players_left_to_play_this_gen;
+
+
 
     public Player(){}  // empty constructor
 
@@ -85,6 +92,32 @@ public class Player {
             playAbstinenceUG(neighbour);
         }
     }
+
+
+    // method for playing the game asymmetrically, spatially and with abstinence.
+    public void playAsymmSpatialAbstinenceUG(){
+//        for(Player neighbour: neighbourhood){
+//            if(games_played_this_gen != 4 || neighbour.games_played_this_gen != 4) {
+//                playAbstinenceUG(neighbour);
+//            }
+
+
+//        for(int i=0;i<players_left_to_play_this_gen.size();i++){
+//            Player neighbour = players_left_to_play_this_gen.get(i);
+//            playAbstinenceUG(neighbour);
+//
+//            // remove this player from neighbour's players left to play this gen.
+//            neighbour.players_left_to_play_this_gen.remove(this);
+//        }
+
+        for(Player neighbour: players_left_to_play_this_gen){
+            playAbstinenceUG(neighbour);
+            neighbour.players_left_to_play_this_gen.remove(this);
+        }
+    }
+
+
+
 
     public double getScore(){
         return score;
@@ -222,7 +255,7 @@ public class Player {
                 if(neighbourhood.size() == 1 || neighbour.neighbourhood.size() == 1){
                     break;
                 }
-                double threshold = ThreadLocalRandom.current().nextDouble();
+                double threshold = ThreadLocalRandom.current().nextDouble(); // should threshold be random
                 if (threshold < neighbour.edge_decay_score) {
                     neighbourhood.remove(neighbour);
                     neighbour.neighbourhood.remove(this);
@@ -306,6 +339,19 @@ public class Player {
     public void setEdge_decay_score(double d){
         edge_decay_score=d;
     }
+
+    public boolean getSelected(){
+        return selected;
+    }
+
+    public void setSelected(boolean b){
+        selected=b;
+    }
+
+    public void setPlayers_left_to_play_this_gen(ArrayList<Player> al){
+        players_left_to_play_this_gen=al;
+    }
+
 
 
 
