@@ -36,6 +36,16 @@ public class Player {
     // 29/3/23: tracks which players a player has left to play in a given gen.
     private ArrayList<Player> players_left_to_play_this_gen;
 
+    // tracks to which degree are neighbours exploiting the player
+    private double[] edge_weights;
+
+    // rate of change during edge decay
+    private static double rate_of_change;
+
+    // one decimal point DecimalFormat
+    private static DecimalFormat df2 = new DecimalFormat("0.0");
+
+
 
 
     public Player(){}  // empty constructor
@@ -115,6 +125,31 @@ public class Player {
             neighbour.players_left_to_play_this_gen.remove(this);
         }
     }
+
+
+    /**
+     * Method for playing with space and abstinence alongside edge weights.
+     *
+     * Works alongside edgeDecay2().
+     *
+     * If either player is an abstainer, the interaction goes ahead regardless of the edge weight.
+     * Else, when the player is the dictator, the neighbour's edge weight determines the chance of
+     * interaction of receiving from the dictator. Else if the neighbour's edge weight beats the
+     * double, you get to play with them. Else, the neighbour does not even arrive at the table to
+     * play with the dictator, hence neither player gets any payoff.
+     */
+    public void playEdgeDecaySpatialAbstinenceUG(){
+        for(int i=0;i<neighbourhood.size();i++){
+            Player neighbour = neighbourhood.get(i);
+            double random_double = ThreadLocalRandom.current().nextDouble();
+            double edge_weight = neighbour.getEdge_weights()[i];
+            if(edge_weight > random_double || abstainer || neighbour.getAbstainer()){
+                playAbstinenceUG(neighbour);
+            }
+        }
+    }
+
+
 
 
 
@@ -264,6 +299,56 @@ public class Player {
         }
     }
 
+    /**
+     * Allows edgeDecay2() to work by initialising edge_weights with respect to the
+     * neighbourhood size.
+     */
+    public void initialiseEdgeWeights() {
+        edge_weights = new double[neighbourhood.size()];
+        for(int i=0;i<neighbourhood.size();i++){
+            edge_weights[i] = 1.0;
+        }
+    }
+
+    /**
+     * Second attempt at an edge decay mechanism. The player looks back on their relationships
+     * with their neighbours in order to decide who to play less often with.
+     *
+     * This mechanism does not eject players from the neighbourhood. Instead, it uses an edge weight
+     * array to determine the chance of playing with the neighbour. Positive interactions result in
+     * weights increasing, to a max of 1.0, while negative interactions reduce the weight, to a min
+     * of 0.0. Once an edge weight w reaches 0.0, the neighbour can no longer dictate to the
+     * player. A positive interaction is defined as one where the neighbour dictator had higher p
+     * than the player, and vice versa for negative interactions.
+     *
+     * Abstainers abstain from edge decay.
+     *
+     * Question: What value should rate_of_change be assigned? right now, this is determined by
+     * a static SADG parameter.
+     *
+     * Question: Should you consider modifying edge weight with an abstainer? right now, you do.
+     */
+    public void edgeDecay2(){
+        if(!abstainer) {
+            for (int i = 0; i < neighbourhood.size(); i++) {
+                Player neighbour = neighbourhood.get(i);
+                if (neighbour.p > p) { // when neighbour is more generous than you
+                    if(edge_weights[i] + rate_of_change > 1.0) { // ensure edge_weights[i] <= 1.0
+                        edge_weights[i] = 1.0;
+                    } else {
+                        edge_weights[i] += rate_of_change; // play with neighbour less often
+                    }
+                } else if (neighbour.p < p) { // when neighbour is less generous than you
+                    if(edge_weights[i] - rate_of_change < 0.0){ // ensure edge_weights[i] >= 0.0
+                        edge_weights[i] = 0.0;
+                    } else {
+                        edge_weights[i] -= rate_of_change; // play with neighbour more often
+                    }
+                }
+            }
+        }
+    }
+
     public static double getPrize(){
         return prize;
     }
@@ -352,6 +437,17 @@ public class Player {
         players_left_to_play_this_gen=al;
     }
 
+    public double[] getEdge_weights(){
+        return edge_weights;
+    }
+
+    public static double getRate_of_change(){
+        return rate_of_change;
+    }
+
+    public static void setRate_of_change(double d){
+        rate_of_change=d;
+    }
 
 
 
@@ -362,14 +458,14 @@ public class Player {
         String description = "";
         description += "ID="+ID;
         description += " p="+df.format(p);
-        description += " old p="+df.format(old_p);
+//        description += " oldp="+df.format(old_p);
 //        description += " q="+df.format(q);
-        description += " Abstainer="+abstainer;
-        description += " Score="+df.format(score);
-        description += " AS="+df.format(average_score);
+        description += " A="+abstainer;
+        description += " score="+df.format(score);
+        description += " avgscore="+df.format(average_score);
 //        description += " EAP="+ EAP;
         if(neighbourhood.size() != 0){
-            description += " Neighbourhood=[";
+            description += " neighbours=[";
             for(int i=0;i<neighbourhood.size();i++){
                 description += neighbourhood.get(i).getId();
                 if((i+1) < neighbourhood.size()){ // are there more neighbours?
@@ -378,7 +474,17 @@ public class Player {
             }
             description +="]";
         }
-//        description += " GPTG="+ games_played_this_gen;
+        if(edge_weights.length != 0){
+            description += " EW=[";
+            for(int i=0;i<edge_weights.length;i++){
+                description += df2.format(edge_weights[i]);
+                if((i+1) < neighbourhood.size()){ // are there more neighbours?
+                    description +=", ";
+                }
+            }
+            description +="]";
+        }
+        description += " GPTG="+ games_played_this_gen;
 //        description += " GPIT="+games_played_in_total;
 //        description += " R1G="+role1_games;
 //        description += " R2G="+role2_games;
@@ -387,6 +493,7 @@ public class Player {
 
 
 
+    
 
     // place BPs to debug and test Player method functionality using the simple test methods below.
     public static void main(String[] args) {
