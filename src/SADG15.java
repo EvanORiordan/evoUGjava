@@ -65,9 +65,6 @@ public class SADG15 extends Thread {
             // after playing, each player gets a chance to modify their edge weights.
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
-                    if(player.getId()==0){
-                        int x=0; // placeholder for a BP
-                    }
                     player.edgeDecay2();
                 }
             }
@@ -114,9 +111,9 @@ public class SADG15 extends Thread {
         // experiment parameters
         int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.4);
+        Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
-        Player.setRate_of_change(0.1);
+        Player.setRate_of_change(0.99);
         rows = 30;
         columns = 30;
         N = rows * columns;

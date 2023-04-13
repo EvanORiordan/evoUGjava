@@ -7,8 +7,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created on 31/3/23
  *
- * This program copies SADG15.java but has no evolution phase and uses Player.edgeDecay2()
- * for ED.
+ * This program copies SADG15.java but has no evolution phase and ED.
+ *
+ * Uses Player.edgeDecay2() for ED.
  */
 public class SADG16 extends Thread {
 
@@ -18,11 +19,7 @@ public class SADG16 extends Thread {
     static int max_gens;
     static int initial_num_abstainers;
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
-    double avg_p;
-    int abstainers;
-    static DecimalFormat df = Player.getDf();
     int gen = 0;
-
 
 
     public static void main(String[] args) {
