@@ -142,13 +142,51 @@ public class Player {
         for(int i=0;i<neighbourhood.size();i++){
             Player neighbour = neighbourhood.get(i);
             double random_double = ThreadLocalRandom.current().nextDouble();
-            double edge_weight = neighbour.getEdge_weights()[i];
+
+            // ensures that the correct edge weight is retrieved from the neighbour
+            double edge_weight = 0.0;
+            for(int j=0;j<neighbour.neighbourhood.size();j++){
+                if(neighbour.getNeighbourhood().get(j).getId() == ID){
+                    edge_weight = neighbour.getEdge_weights()[j];
+                    break;
+                }
+            }
             if(edge_weight > random_double || abstainer || neighbour.getAbstainer()){
                 playAbstinenceUG(neighbour);
             }
         }
     }
 
+
+    /**
+     * Play the game with respect to space and edge decay.
+     *
+     * For each neighbour in your neighbourhood, propose to them if the weight of their edge
+     * to you, which represents their likelihood of receiving from you, is greater than a
+     * randomly generated double between 0 and 1.
+     *
+     * If the game is DG, you can mentally replace the word "propose" with "dictate".
+     */
+    public void playEdgeDecaySpatialUG(){
+        for(int i=0;i<neighbourhood.size();i++){
+            Player neighbour = neighbourhood.get(i);
+            double random_double = ThreadLocalRandom.current().nextDouble();
+            double edge_weight = 0.0;
+            for(int j=0;j<neighbour.neighbourhood.size();j++){ // find the edge weight.
+                Player neighbours_neighbour = neighbour.getNeighbourhood().get(j);
+                if(neighbours_neighbour.getId() == ID){
+                    edge_weight = neighbour.getEdge_weights()[j];
+                    break;
+                }
+            }
+            if(edge_weight > random_double){
+                playUG(neighbour);
+            }
+//            else {
+//                System.out.println("(place BP here) EW too low");
+//            }
+        }
+    }
 
 
 
@@ -349,6 +387,34 @@ public class Player {
         }
     }
 
+
+    /**
+     * Your edge weights indicates your neighbours' degree of exploitation towards you.
+     * Neighbour i's behaviour is represented by your edge weight i. If a neighbour is more
+     * generous than you, i.e. if their value of p is higher than yours, raise the weight
+     * of your edge to them by the rate of change parameter value. Reduce the edge weight
+     * if a neighbour is less generous than you.
+     */
+    public void edgeDecay3(){
+        for (int i = 0; i < neighbourhood.size(); i++) {
+            Player neighbour = neighbourhood.get(i);
+            if (neighbour.p > p) { // when neighbour is more generous than you
+                if(edge_weights[i] + rate_of_change > 1.0) { // ensure edge_weights[i] <= 1.0
+                    edge_weights[i] = 1.0;
+                } else {
+                    edge_weights[i] += rate_of_change; // play with neighbour less often
+                }
+            } else if (neighbour.p < p) { // when neighbour is less generous than you
+                if(edge_weights[i] - rate_of_change < 0.0){ // ensure edge_weights[i] >= 0.0
+                    edge_weights[i] = 0.0;
+                } else {
+                    edge_weights[i] -= rate_of_change; // play with neighbour more often
+                }
+            }
+        }
+    }
+
+
     public static double getPrize(){
         return prize;
     }
@@ -460,7 +526,7 @@ public class Player {
         description += " p="+df.format(p);
 //        description += " oldp="+df.format(old_p);
 //        description += " q="+df.format(q);
-        description += " A="+abstainer;
+//        description += " A="+abstainer;
         description += " score="+df.format(score);
         description += " avgscore="+df.format(average_score);
 //        description += " EAP="+ EAP;
@@ -485,9 +551,9 @@ public class Player {
             description +="]";
         }
         description += " GPTG="+ games_played_this_gen;
-//        description += " GPIT="+games_played_in_total;
-//        description += " R1G="+role1_games;
-//        description += " R2G="+role2_games;
+        description += " GPIT="+games_played_in_total;
+        description += " R1G="+role1_games;
+        description += " R2G="+role2_games;
         return description;
     }
 

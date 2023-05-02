@@ -3,45 +3,35 @@ import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 31/3/23
- *
- * This program copies SADG13.java but uses the edgeDecay2() edge decay mechanism.
+ * DG program with evolution, space and edge decay.
  */
-public class SADG15 extends Thread {
+public class DG17 extends Thread{
     static int rows;
     static int columns;
     static int N;
     static int max_gens;
-    static int initial_num_abstainers;
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
     double avg_p;
-    int abstainers;
     static DecimalFormat df = Player.getDf();
     int gen = 0;
 
+
     public void start(){
-        Set<Integer> abstainer_positions = new HashSet<>();
-        while(abstainer_positions.size() != initial_num_abstainers){
-            abstainer_positions.add(ThreadLocalRandom.current().nextInt(0, N));
-        }
-        int pop_position=0;
+
+        /**
+         * Space.
+         *
+         * Initialise population in the form of a square grid. A player situated at the start
+         * of a row is neighbours with the player situated at the end of the row. The similar
+         * case is also true for a player situated at the start of a column.
+         */
         for(int i=0;i<rows;i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j=0;j<columns;j++){
-                boolean abstainer = false;
-                for(Integer abstainer_position: abstainer_positions){
-                    if(pop_position == abstainer_position){
-                        abstainer=true;
-                        break;
-                    }
-                }
-                row.add(new Player(ThreadLocalRandom.current().nextDouble(), 0.0, abstainer));
-                pop_position++;
+                row.add(new Player(ThreadLocalRandom.current().nextDouble(), 0.0, false));
             }
             grid.add(row);
         }
@@ -53,29 +43,47 @@ public class SADG15 extends Thread {
                 grid.get(i).get(j).initialiseEdgeWeights();
             }
         }
+
+
+        // the experiment begins
         while(gen != max_gens) {
 
-            // each player plays the game (as dictator).
+
+            // playing phase
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
-                    player.playEdgeDecaySpatialAbstinenceUG();
+                    //player.playEdgeDecaySpatialAbstinenceUG();
+
+                    player.playEdgeDecaySpatialUG();
                 }
             }
 
-            // after playing, each player gets a chance to modify their edge weights.
+
+            // edge decay phase
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
-                    player.edgeDecay2();
+//                    player.edgeDecay2();
+
+                    player.edgeDecay3();
                 }
             }
 
-//            displayScreenshotOfPop();
 
-            // evolution
+            /**
+             * Selection and Evolution phase.
+             *
+             * In this weighted roulette wheel selection approach, each player in the neighbourhood
+             * of the evolving player compares their average payoff accrued this generation with
+             * that of the evolver. The greater the payoff is in comparison to the evolver, the
+             * exponentially more likely the neighbour is to be selected as the parent. A randomly
+             * generated double acts as the metaphorical ball of the roulette wheel as it ultimately
+             * determines the selection. The evolver copies the strategy of the parent. If the
+             * evolver is selected, effectively, no evolution occurs.
+             */
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
                     ArrayList<Player> neighbourhood = player.getNeighbourhood();
-                    double[] imitation_scores = new double[neighbourhood.size() + 1];
+                    double[] imitation_scores = new double[neighbourhood.size()];
                     double total_imitation_score = 0;
                     double player_avg_score = player.getAverage_score();
                     for(int i=0;i<neighbourhood.size();i++){
@@ -87,7 +95,8 @@ public class SADG15 extends Thread {
                     double random_double_to_beat = ThreadLocalRandom.current().nextDouble();
                     for(int j=0;j<neighbourhood.size();j++){
                         imitation_score_tally += imitation_scores[j];
-                        if(random_double_to_beat < imitation_score_tally / total_imitation_score) {
+                        double percentage = imitation_score_tally / total_imitation_score;
+                        if(random_double_to_beat < percentage) {
                             player.copyStrategy(neighbourhood.get(j));
                             break;
                         }
@@ -95,6 +104,11 @@ public class SADG15 extends Thread {
                 }
             }
             reset();
+
+            // this allows you to debug to observe the avg p at the end of a gen.
+//            getStats();
+//            System.out.println(avg_p);
+
             gen++;
         }
         getStats();
@@ -109,24 +123,20 @@ public class SADG15 extends Thread {
 
 
         // experiment parameters
-        int runs=10;
+        int runs=5000;
         Player.setPrize(1.0);
-        Player.setLoners_payoff(Player.getPrize() * 0.2);
         Player.setNeighbourhoodType("VN");
-        Player.setRate_of_change(0.1);
+        Player.setRate_of_change(1.0);
         rows = 30;
         columns = 30;
         N = rows * columns;
         max_gens = 10000;
-        initial_num_abstainers = N / 10;
 
 
         System.out.println("Runs="+runs
                 + ", gens="+max_gens
-                + ", l="+Player.getLoners_payoff()
                 + ", neighbourhood="+Player.getNeighbourhoodType()
                 + ", N="+N
-                + ", init abstainers="+initial_num_abstainers
                 + ", ROC="+Player.getRate_of_change()
                 +": ");
 
@@ -134,49 +144,26 @@ public class SADG15 extends Thread {
         double avg_p = 0;
         double[] avg_p_values = new double[runs];
         double sd_avg_p = 0;
-        int avg_abstainers = 0;
-        int[] avg_abstainers_values = new int[runs];
-        double sd_avg_abstainers = 0;
-        int[] avg_abstainers_value_occurrences = new int[N+1];
 
 
         Instant start = Instant.now();
         for(int i=0;i<runs;i++){
-            SADG15 run = new SADG15();
+            DG17 run = new DG17();
             run.start();
             avg_p += run.avg_p;
             avg_p_values[i] = run.avg_p;
-            avg_abstainers += run.abstainers;
-            avg_abstainers_values[i] = run.abstainers;
-            avg_abstainers_value_occurrences[run.abstainers]++;
         }
         Instant finish = Instant.now();
 
 
         avg_p /= runs;
-        avg_abstainers /= runs;
         for(int i=0;i<runs;i++){
             sd_avg_p += Math.pow(avg_p_values[i] - avg_p, 2);
-            sd_avg_abstainers += Math.pow(avg_abstainers_values[i] - avg_abstainers, 2);
         }
         sd_avg_p = Math.pow(sd_avg_p / runs, 0.5);
-        sd_avg_abstainers = Math.pow(sd_avg_abstainers / runs, 0.5);
         System.out.println("avg p="+df.format(avg_p)
                 + ", avg p SD="+df.format(sd_avg_p)
-                + ", avg abstainers="+avg_abstainers
-                + ", avg abstainers SD="+df.format(sd_avg_abstainers)
         );
-
-
-        // uncomment this if you want info on the number of runs with specific numbers of abstainers
-        // remaining to appear at the end of runtime. alternatively, I could simply refrain from
-        // adding these statistics to the experiment notebook.
-        for(int i=0;i<avg_abstainers_value_occurrences.length;i++){
-            if(avg_abstainers_value_occurrences[i] > 0){
-                System.out.println("How many times was there "+i+" abstainers left: "
-                        +avg_abstainers_value_occurrences[i]);
-            }
-        }
 
 
         long secondsElapsed = Duration.between(start, finish).toSeconds();
@@ -186,54 +173,31 @@ public class SADG15 extends Thread {
     }
 
 
-    // method for recording statistics after an experiment has been conducted.
-    // in general, this should only get called after the final gen.
+    /**
+     * Calculate the average value of p across the population.
+     */
     public void getStats(){
         avg_p = 0.0;
-        abstainers = 0;
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 avg_p+=player.getP();
-                if(player.getAbstainer()){
-                    abstainers++;
-                }
             }
         }
         avg_p /= N;
-
-        // uncomment to observe the average p and abstainers remaining during runtime.
-//        System.out.println("avg p="+avg_p+"\tabstainers="+abstainers);
     }
 
+
+    /**
+     * Player scores, games played in a generation and old p values are reset to accommodate for the
+     * upcoming generation.
+     */
     public void reset(){
         for(ArrayList<Player> row: grid){
             for(Player player: row){
                 player.setScore(0);
                 player.setGamesPlayedThisGen(0);
                 player.setOld_p(player.getP());
-                player.setOldAbstainer(player.getAbstainer());
             }
         }
-    }
-
-
-    public void displayScreenshotOfPop(){
-        System.out.println("p    s    A");
-        int outer_cluster_height = 5;
-        int outer_cluster_width = 5;
-        for(int i=0;i<outer_cluster_height;i++){
-            for(int j=0;j<outer_cluster_width;j++){
-                Player player = grid.get(i).get(j);
-                double p = player.getP();
-                double avg_score = player.getAverage_score();
-                String abstainer = "NA"; // indicates "non-abstainer"
-                if(player.getAbstainer()){
-                    abstainer = "A ";
-                }
-                System.out.print(df.format(p) + " " + df.format(avg_score) + " " + abstainer + "      ");
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 }
