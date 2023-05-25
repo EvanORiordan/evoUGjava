@@ -10,7 +10,28 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\DG19_per_gen_data.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\avg_p_per_gen_data.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\grid_diagram.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\per_gen_data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

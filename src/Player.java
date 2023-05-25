@@ -26,7 +26,7 @@ public class Player {
     private int role1_games; // how many games this player has played as role1
     private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
-    private static DecimalFormat df = new DecimalFormat("0.00"); // format for printing doubles
+    private static DecimalFormat df = new DecimalFormat("0.0000"); // format for printing doubles
     private static double edge_decay_factor; // EDF affects the rate of edge decay
     private double edge_decay_score; // EDS determines this player's probability of edge decay
 
@@ -36,7 +36,7 @@ public class Player {
     // 29/3/23: tracks which players a player has left to play in a given gen.
     private ArrayList<Player> players_left_to_play_this_gen;
 
-    // tracks to which degree are neighbours exploiting the player
+    // Tracks to what degree are neighbours less generous than the player.
     private double[] edge_weights;
 
     // rate of change during edge decay

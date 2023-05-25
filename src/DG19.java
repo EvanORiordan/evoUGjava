@@ -8,10 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Similar to DG17.java except ED occurs each gen and evo occurs every
- * evo_phase_rate gens.
+ * Similar to DG18.java except this has an evolution mechanism where
  */
-public class DG18 extends Thread{
+public class DG19 extends Thread{
     static int rows;
     static int columns;
     static int N;
@@ -82,39 +81,22 @@ public class DG18 extends Thread{
              *
              * This phase occurs every evo_phase_rate gens.
              *
-             * In this weighted roulette wheel selection approach, each player in the neighbourhood
-             * of the evolving player compares their average payoff accrued this generation with
-             * that of the evolver. The greater the payoff is in comparison to the evolver, the
-             * exponentially more likely the neighbour is to be selected as the parent. A randomly
-             * generated double acts as the metaphorical ball of the roulette wheel as it ultimately
-             * determines the selection. The evolver copies the strategy of the parent. If the
-             * evolver is selected, effectively, no evolution occurs.
+             * The evolving player copies their highest scoring neighbour.
              */
             if((gen + 1) % evo_phase_rate == 0) {
                 for (ArrayList<Player> row : grid) {
                     for (Player player : row) {
                         ArrayList<Player> neighbourhood = player.getNeighbourhood();
-                        double[] imitation_scores = new double[neighbourhood.size()];
-                        double total_imitation_score = 0;
-                        double player_avg_score = player.getAverage_score();
-                        for (int i = 0; i < neighbourhood.size(); i++) {
-                            imitation_scores[i] = Math.exp(neighbourhood.get(i).getAverage_score() - player_avg_score);
-                            total_imitation_score += imitation_scores[i];
-                        }
-                        total_imitation_score += 1.0;
-                        double imitation_score_tally = 0;
-                        double random_double_to_beat = ThreadLocalRandom.current().nextDouble();
-                        for (int j = 0; j < neighbourhood.size(); j++) {
-                            imitation_score_tally += imitation_scores[j];
-                            double percentage = imitation_score_tally / total_imitation_score;
-                            if (random_double_to_beat < percentage) {
-                                player.copyStrategy(neighbourhood.get(j));
-                                break;
+                        Player parent = neighbourhood.get(0);
+                        for(int a=1;a<neighbourhood.size();a++){
+                            Player neighbour = neighbourhood.get(a);
+                            if(neighbour.getScore() > parent.getScore()){
+                                parent = neighbour;
                             }
                         }
+                        player.copyStrategy(parent);
                     }
                 }
-
 
 
 
@@ -139,23 +121,24 @@ public class DG18 extends Thread{
 
 //            displayTotalScore();
 
+
             // calculate the avg p and SD wrt p of the pop during this gen and export it to
             // a .csv file.
-            getStats();
-            try {
-                writeSingleGenStats("per_gen_data.csv");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-
+//            getStats();
+//            try {
+//                writeSingleGenStats("DG19_per_gen_data.csv");
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//
             reset();
 
             gen++;
 
         }
 
-//        getStats();
+        getStats();
 
 //        try {
 //            writeToCSV("DG18_grid_diagram.csv");
@@ -177,10 +160,10 @@ public class DG18 extends Thread{
 
 
         // experiment parameters
-        runs=1;
+        runs=1000;
         Player.setPrize(1.0);
         Player.setNeighbourhoodType("VN");
-        Player.setRate_of_change(0.2);
+        Player.setRate_of_change(0.01);
         rows = 30;
         columns = 30;
         N = rows * columns;
@@ -203,7 +186,7 @@ public class DG18 extends Thread{
 
         Instant start = Instant.now();
         for(int i=0;i<runs;i++){
-            DG18 run = new DG18();
+            DG19 run = new DG19();
             run.start();
             avg_p += run.avg_p;
             avg_p_values[i] = run.avg_p;
@@ -359,10 +342,10 @@ public class DG18 extends Thread{
      * and avg p on y-axis. Now also supports SD visualisation.
      *
      * Steps:
-        * Export the data of a single run to a .csv file
-        * Import the .csv data into an Excel sheet
-        * Separate the data into columns: gen number, avg p and SD for that gen
-        * Create a line chart with the data.
+     * Export the data of a single run to a .csv file
+     * Import the .csv data into an Excel sheet
+     * Separate the data into columns: gen number, avg p and SD for that gen
+     * Create a line chart with the data.
      *
      * Note: There is no point running multiple runs when your aim is to use this method.
      */
