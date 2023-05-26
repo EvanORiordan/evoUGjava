@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,10 +38,10 @@ public class Player {
     private ArrayList<Player> players_left_to_play_this_gen;
 
     // Tracks to what degree are neighbours less generous than the player.
-    private double[] edge_weights;
+    private BigDecimal[] edge_weights;
 
     // rate of change during edge decay
-    private static double rate_of_change;
+    private static BigDecimal rate_of_change;
 
     // one decimal point DecimalFormat
     private static DecimalFormat df2 = new DecimalFormat("0.0");
@@ -144,14 +145,18 @@ public class Player {
             double random_double = ThreadLocalRandom.current().nextDouble();
 
             // ensures that the correct edge weight is retrieved from the neighbour
-            double edge_weight = 0.0;
+            BigDecimal edge_weight = new BigDecimal("0.0");
+
             for(int j=0;j<neighbour.neighbourhood.size();j++){
                 if(neighbour.getNeighbourhood().get(j).getId() == ID){
                     edge_weight = neighbour.getEdge_weights()[j];
                     break;
                 }
             }
-            if(edge_weight > random_double || abstainer || neighbour.getAbstainer()){
+
+            if(edge_weight.compareTo(BigDecimal.valueOf(random_double)) == 1 ||
+                    abstainer || neighbour.getAbstainer()){
+
                 playAbstinenceUG(neighbour);
             }
         }
@@ -171,7 +176,7 @@ public class Player {
         for(int i=0;i<neighbourhood.size();i++){
             Player neighbour = neighbourhood.get(i);
             double random_double = ThreadLocalRandom.current().nextDouble();
-            double edge_weight = 0.0;
+            BigDecimal edge_weight = new BigDecimal("0.0");
             for(int j=0;j<neighbour.neighbourhood.size();j++){ // find the edge weight.
                 Player neighbours_neighbour = neighbour.getNeighbourhood().get(j);
                 if(neighbours_neighbour.getId() == ID){
@@ -179,7 +184,7 @@ public class Player {
                     break;
                 }
             }
-            if(edge_weight > random_double){
+            if(edge_weight.compareTo(BigDecimal.valueOf(random_double)) == 1){
                 playUG(neighbour);
             }
 //            else {
@@ -342,9 +347,9 @@ public class Player {
      * neighbourhood size.
      */
     public void initialiseEdgeWeights() {
-        edge_weights = new double[neighbourhood.size()];
+        edge_weights = new BigDecimal[neighbourhood.size()];
         for(int i=0;i<neighbourhood.size();i++){
-            edge_weights[i] = 1.0;
+            edge_weights[i] = new BigDecimal("1.0");
         }
     }
 
@@ -359,56 +364,57 @@ public class Player {
      * player. A positive interaction is defined as one where the neighbour dictator had higher p
      * than the player, and vice versa for negative interactions.
      *
-     * Abstainers abstain from edge decay.
+     * Question: Should abstainers abstain from modifying their edges?
      *
-     * Question: What value should rate_of_change be assigned? right now, this is determined by
-     * a static SADG parameter.
+     * Question: What value should rate_of_change be assigned?
      *
-     * Question: Should you consider modifying edge weight with an abstainer? right now, you do.
+     * Question: Should you consider modifying edge weight with an abstainer neighbour?
      */
     public void edgeDecay2(){
-        if(!abstainer) {
-            for (int i = 0; i < neighbourhood.size(); i++) {
-                Player neighbour = neighbourhood.get(i);
-                if (neighbour.p > p) { // when neighbour is more generous than you
-                    if(edge_weights[i] + rate_of_change > 1.0) { // ensure edge_weights[i] <= 1.0
-                        edge_weights[i] = 1.0;
-                    } else {
-                        edge_weights[i] += rate_of_change; // play with neighbour less often
-                    }
-                } else if (neighbour.p < p) { // when neighbour is less generous than you
-                    if(edge_weights[i] - rate_of_change < 0.0){ // ensure edge_weights[i] >= 0.0
-                        edge_weights[i] = 0.0;
-                    } else {
-                        edge_weights[i] -= rate_of_change; // play with neighbour more often
-                    }
-                }
-            }
-        }
+//        if(!abstainer) {
+//            for (int i = 0; i < neighbourhood.size(); i++) {
+//                Player neighbour = neighbourhood.get(i);
+//                if (neighbour.p > p) { // if neighbour is more generous than you, increase EW
+//                    if(edge_weights[i].add(rate_of_change).compareTo(new BigDecimal("1.0"))
+//                            == 1){
+//                        edge_weights[i] = new BigDecimal("1.0");
+//                    } else {
+//                        edge_weights[i].add(rate_of_change);
+//                    }
+//                } else if(neighbour.p < p){ // if neighbour is less generous, decrease EW
+//                    if(edge_weights[i].subtract(rate_of_change).compareTo(new BigDecimal("0.0"))
+//                            == -1){
+//                        edge_weights[i] = new BigDecimal("0.0");
+//                    } else {
+//                        edge_weights[i].subtract(rate_of_change);
+//                    }
+//                }
+//            }
+//        }
     }
 
 
     /**
+     * Method that allows players to perform "edge weight learning".
+     *
      * Your edge weights indicates your neighbours' degree of exploitation towards you.
      * Neighbour i's behaviour is represented by your edge weight i. If a neighbour is more
      * generous than you, i.e. if their value of p is higher than yours, raise the weight
      * of your edge to them by the rate of change parameter value. Reduce the edge weight
      * if a neighbour is less generous than you.
      */
-    public void edgeDecay3(){
+    public void edgeWeightLearning(){
         for (int i = 0; i < neighbourhood.size(); i++) {
             Player neighbour = neighbourhood.get(i);
-            if (neighbour.p > p) { // when neighbour is more generous than you
-                if(edge_weights[i] + rate_of_change > 1.0) { // ensure edge_weights[i] <= 1.0
-                    edge_weights[i] = 1.0;
-                } else {
-                    edge_weights[i] += rate_of_change; // play with neighbour less often
+            if (neighbour.p > p) { // if neighbour is more generous than you, increase EW
+                edge_weights[i] = edge_weights[i].add(rate_of_change);
+                if(edge_weights[i].add(rate_of_change).compareTo(new BigDecimal("1.0")) == 1){
+                    edge_weights[i] = new BigDecimal("1.0");
                 }
-            } else if (neighbour.p < p) { // when neighbour is less generous than you
-                if(edge_weights[i] - rate_of_change < 0.0){ // ensure edge_weights[i] >= 0.0
-                    edge_weights[i] = 0.0;
-                } else {
-                    edge_weights[i] -= rate_of_change; // play with neighbour more often
+            } else if(neighbour.p < p){ // if neighbour is less generous, decrease EW
+                edge_weights[i] = edge_weights[i].subtract(rate_of_change);
+                if(edge_weights[i].subtract(rate_of_change).compareTo(new BigDecimal("0.0")) == -1){
+                    edge_weights[i] = new BigDecimal("0.0");
                 }
             }
         }
@@ -503,17 +509,18 @@ public class Player {
         players_left_to_play_this_gen=al;
     }
 
-    public double[] getEdge_weights(){
+    public BigDecimal[] getEdge_weights(){
         return edge_weights;
     }
 
-    public static double getRate_of_change(){
+    public static BigDecimal getRate_of_change(){
         return rate_of_change;
     }
 
-    public static void setRate_of_change(double d){
+    public static void setRate_of_change(BigDecimal d){
         rate_of_change=d;
     }
+
 
 
 
