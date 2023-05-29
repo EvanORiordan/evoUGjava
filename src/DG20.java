@@ -1,13 +1,17 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Similar to DG18.java except this program extends its ability for experimentation.
+ * Description of program: DG18 but with improved experimentation features.
  */
 public class DG20 extends Thread{
     // experiment parameters
@@ -56,7 +60,7 @@ public class DG20 extends Thread{
             }
         }
 
-        // the experiment begins
+        // preparation over; the games begin
         while(gen != max_gens) {
 
 
@@ -69,11 +73,11 @@ public class DG20 extends Thread{
 
 
             // edge weight learning phase
-//            for(ArrayList<Player> row: grid){
-//                for(Player player: row){
-//                    player.edgeWeightLearning();
-//                }
-//            }
+            for(ArrayList<Player> row: grid){
+                for(Player player: row){
+                    player.edgeWeightLearning();
+                }
+            }
 
 
             /**
@@ -132,21 +136,28 @@ public class DG20 extends Thread{
 
     public static void main(String[] args) {
         // marks the beginning of the program's runtime
+        Instant start = Instant.now();
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
 
-        df.setRoundingMode(RoundingMode.UP);
-
         // define name of .csv file for storing experiment data
-        String data_filename = Thread.currentThread().getStackTrace()[1].getClassName()
-                + "data.csv";
+        String data_filename = Thread.currentThread().getStackTrace()[1].getClassName() + "data.csv";
 
         // define parameters
-        runs=5;
+        runs=1000;
         Player.setPrize(1.0);
         Player.setNeighbourhoodType("VN");
-        Player.setRate_of_change(new BigDecimal("0.2"));
+
+
+
+        //bd version
+//        Player.setRate_of_change(new BigDecimal("0.2"));
+        //double version
+        Player.setRate_of_change(0.2);
+
+
+
         rows = 30;
         columns = 30;
         N = rows * columns;
@@ -159,7 +170,18 @@ public class DG20 extends Thread{
          * With this variable, you can define the amount by which one parameter's value will be
          * altered between one experiment and the next.
          */
-        BigDecimal variation = new BigDecimal("-0.02");
+        //bd version
+//        BigDecimal variation = new BigDecimal("-0.02");
+        //double version
+        double variation = -0.02;
+
+
+
+        // manually display which variable is being modified and by how much per experiment.
+        // do not forget to keep this up to date per experiment series.
+        System.out.println("Varying ROC by "+variation+" per experiment with settings: ");
+
+
         int num_experiments = 6; // define number of experiments to occur here
         per_gen_data = false;
         experimentSeries(data_filename, variation, num_experiments); // run multiple experiments
@@ -171,6 +193,10 @@ public class DG20 extends Thread{
 
         // marks the end of the program's runtime
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
+        Instant finish = Instant.now();
+        long secondsElapsed = Duration.between(start, finish).toSeconds();
+        long minutesElapsed = Duration.between(start, finish).toMinutes();
+        System.out.println("Time elapsed: "+minutesElapsed+" minutes, "+secondsElapsed%60+" seconds");
     }
 
 
@@ -229,7 +255,7 @@ public class DG20 extends Thread{
                 + ", gens="+max_gens
                 + ", neighbourhood="+Player.getNeighbourhoodType()
                 + ", N="+N
-                + ", ROC="+Player.getRate_of_change()
+                + ", ROC="+df.format(Player.getRate_of_change())
                 + ", EPR="+evo_phase_rate
                 +": ");
     }
@@ -389,23 +415,24 @@ public class DG20 extends Thread{
                 + ", avg p SD="+df.format(sd_avg_p_of_experiment)
         );
 
-        // write results and settings to the .csv data file.
+        // write stats/results and settings to the .csv data file.
         try{
             FileWriter fw;
 
             if(experiment_number == 0){
                 fw = new FileWriter(filename, false);
 
-                fw.append("mean avg p" + // heading 1
-                        ",avg p SD" + // heading 2
+                fw.append("experiment"
+                        + ",mean avg p"
+                        + ",avg p SD"
 
                         // these are the settings of the experiment
-                        ",runs="+runs+
-                        ",gens="+max_gens+
-                        ",neighbourhood="+Player.getNeighbourhoodType()+
-                        ",N="+N+
-                        ",ROC="+Player.getRate_of_change()+
-                        ",EPR="+evo_phase_rate
+                        + ",runs="+runs
+                        + ",gens="+max_gens
+                        + ",neighbourhood="+Player.getNeighbourhoodType()
+                        + ",N="+N
+                        + ",ROC="+Player.getRate_of_change()
+                        + ",EPR="+evo_phase_rate
                 );
 
 
@@ -413,7 +440,10 @@ public class DG20 extends Thread{
             } else {
                 fw = new FileWriter(filename, true);
             }
-            fw.append(mean_avg_p_of_experiment+","+sd_avg_p_of_experiment);
+            fw.append("\n" + experiment_number
+                    + "," + mean_avg_p_of_experiment
+                    + "," + sd_avg_p_of_experiment
+            );
 
             fw.close();
         } catch(IOException e){
@@ -423,31 +453,84 @@ public class DG20 extends Thread{
 
 
     /**
-     * Allows for the running of multiple experiments.
+     * Allows for the running of multiple experiments, i.e. the running of a series of
+     * experiments, i.e. the running of an experiment series.
      */
-    public static void experimentSeries(String filename, BigDecimal variation, int num_experiments){
+    //bd version
+    //public static void experimentSeries(String filename, BigDecimal variation, int num_experiments){
+    //double version
+    public static void experimentSeries(String filename, double variation, int num_experiments){
+
+
+
         for(int i=0;i<num_experiments;i++){
             // run the experiment and store its final data
             experiment(filename, i);
 
             // write settings
-            try{
-                FileWriter fw = new FileWriter(filename, true);
-
-                fw.append("runs="+runs+
-                        "\ngens="+max_gens+
-                        "\nneighbourhood="+Player.getNeighbourhoodType()+
-                        "\nN="+N+
-                        "\nROC="+Player.getRate_of_change()+
-                        "\nEPR="+evo_phase_rate);
-
-                fw.close();
-            } catch(IOException e){
-                e.printStackTrace();
-            }
+//            try{
+//                FileWriter fw = new FileWriter(filename, true);
+//
+//                fw.append("runs="+runs
+//                        + "\ngens="+max_gens
+//                        + "\nneighbourhood="+Player.getNeighbourhoodType()
+//                        + "\nN="+N
+//                        + "\nROC="+Player.getRate_of_change()
+//                        + "\nEPR="+evo_phase_rate
+//                        + "\n"
+//                );
+//
+//                fw.close();
+//            } catch(IOException e){
+//                e.printStackTrace();
+//            }
 
             // alter a parameter's value in preparation for the next experiment.
-            Player.setRate_of_change(Player.getRate_of_change().add(variation));
+            //bd version
+//            Player.setRate_of_change(Player.getRate_of_change().add(variation));
+            //double version
+            Player.setRate_of_change(Player.getRate_of_change() + variation);
+
+
+
         }
+
+        // in console, print out all the macro experiment info in a nice format that I can copy
+        // and paste into my experiment notebook. achieve this by reading from the data file.
+        String summary = "";
+        ArrayList<String> experiment_number = new ArrayList<>();
+        ArrayList<Double> mean_avg_p = new ArrayList<>();
+        ArrayList<Double> avg_p_SD = new ArrayList<>();
+        int row_count = 0;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+            String line = "";
+            while((line = br.readLine()) != null){
+                String[] row_contents = line.split(",");
+                if(row_count != 0){
+                    experiment_number.add(row_contents[0]);
+                    mean_avg_p.add(Double.valueOf(row_contents[1]));
+                    avg_p_SD.add(Double.valueOf(row_contents[2]));
+                }
+                row_count++;
+            }
+
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+
+        // do something with data
+        for(int i=0;i<row_count-1;i++){
+            summary += "experiment="+experiment_number.get(i)
+                    + "\tmean avg p="+mean_avg_p.get(i)
+                    + "\tavg p SD="+avg_p_SD.get(i)
+                    + "\n"
+            ;
+        }
+
+
+        System.out.println(summary);
+
+
     }
 }

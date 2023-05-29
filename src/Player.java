@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,7 +28,7 @@ public class Player {
     private int role1_games; // how many games this player has played as role1
     private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
-    private static DecimalFormat df = new DecimalFormat("0.0000"); // format for printing doubles
+    private static DecimalFormat df = new DecimalFormat("0.0000"); // general df for doubles
     private static double edge_decay_factor; // EDF affects the rate of edge decay
     private double edge_decay_score; // EDS determines this player's probability of edge decay
 
@@ -37,14 +38,26 @@ public class Player {
     // 29/3/23: tracks which players a player has left to play in a given gen.
     private ArrayList<Player> players_left_to_play_this_gen;
 
+
+
     // Tracks to what degree are neighbours less generous than the player.
-    private BigDecimal[] edge_weights;
+    //bd version
+//    private BigDecimal[] edge_weights;
+    //double version
+     private double[] edge_weights;
+
+
 
     // rate of change during edge decay
-    private static BigDecimal rate_of_change;
+    //bd version
+//    private static BigDecimal rate_of_change;
+    //double version
+    private static double rate_of_change;
+
+
 
     // one decimal point DecimalFormat
-    private static DecimalFormat df2 = new DecimalFormat("0.0");
+    private static DecimalFormat EW_df = new DecimalFormat("0.0");
 
 
 
@@ -62,8 +75,10 @@ public class Player {
         old_p=p;
 
         // edge decay mechanism: calculate initial EDS based on initial value of p
-        edge_decay_score = edge_decay_factor * (1 / p);
+//        edge_decay_score = edge_decay_factor * (1 / p);
 //        System.out.println("p="+p+"\tEDS="+edge_decay_score);
+
+//        df.setRoundingMode(RoundingMode.UP); // set df to round doubles up
     }
 
     // method for playing the UG.
@@ -144,8 +159,15 @@ public class Player {
             Player neighbour = neighbourhood.get(i);
             double random_double = ThreadLocalRandom.current().nextDouble();
 
+
+
             // ensures that the correct edge weight is retrieved from the neighbour
-            BigDecimal edge_weight = new BigDecimal("0.0");
+            //bd version
+//            BigDecimal edge_weight = new BigDecimal("0.0");
+            //double version
+            double edge_weight = 0.0;
+
+
 
             for(int j=0;j<neighbour.neighbourhood.size();j++){
                 if(neighbour.getNeighbourhood().get(j).getId() == ID){
@@ -154,7 +176,15 @@ public class Player {
                 }
             }
 
-            if(edge_weight.compareTo(BigDecimal.valueOf(random_double)) == 1 ||
+
+
+            //bd version
+//            if(edge_weight.compareTo(BigDecimal.valueOf(random_double)) == 1 ||
+            //double version
+            if(edge_weight > random_double ||
+
+
+
                     abstainer || neighbour.getAbstainer()){
 
                 playAbstinenceUG(neighbour);
@@ -176,7 +206,16 @@ public class Player {
         for(int i=0;i<neighbourhood.size();i++){
             Player neighbour = neighbourhood.get(i);
             double random_double = ThreadLocalRandom.current().nextDouble();
-            BigDecimal edge_weight = new BigDecimal("0.0");
+
+
+
+            //bd version
+//            BigDecimal edge_weight = new BigDecimal("0.0");
+            //double version
+            double edge_weight = 0.0;
+
+
+
             for(int j=0;j<neighbour.neighbourhood.size();j++){ // find the edge weight.
                 Player neighbours_neighbour = neighbour.getNeighbourhood().get(j);
                 if(neighbours_neighbour.getId() == ID){
@@ -184,7 +223,16 @@ public class Player {
                     break;
                 }
             }
-            if(edge_weight.compareTo(BigDecimal.valueOf(random_double)) == 1){
+
+
+
+            //bd version
+//            if(edge_weight.compareTo(BigDecimal.valueOf(random_double)) == 1){
+            //double version
+            if(edge_weight > random_double){
+
+
+
                 playUG(neighbour);
             }
 //            else {
@@ -347,9 +395,27 @@ public class Player {
      * neighbourhood size.
      */
     public void initialiseEdgeWeights() {
-        edge_weights = new BigDecimal[neighbourhood.size()];
+
+
+
+        //bd version
+//        edge_weights = new BigDecimal[neighbourhood.size()];
+        //double version
+        edge_weights = new double[neighbourhood.size()];
+
+
+
         for(int i=0;i<neighbourhood.size();i++){
-            edge_weights[i] = new BigDecimal("1.0");
+
+
+
+            //bd version
+//            edge_weights[i] = new BigDecimal("1.0");
+            //double version
+            edge_weights[i] = 1.0;
+
+
+
         }
     }
 
@@ -407,15 +473,35 @@ public class Player {
         for (int i = 0; i < neighbourhood.size(); i++) {
             Player neighbour = neighbourhood.get(i);
             if (neighbour.p > p) { // if neighbour is more generous than you, increase EW
-                edge_weights[i] = edge_weights[i].add(rate_of_change);
-                if(edge_weights[i].add(rate_of_change).compareTo(new BigDecimal("1.0")) == 1){
-                    edge_weights[i] = new BigDecimal("1.0");
+
+                //bd version (this code is also not refined)
+//                edge_weights[i] = edge_weights[i].add(rate_of_change);
+//                if(edge_weights[i].add(rate_of_change).compareTo(new BigDecimal("1.0")) == 1){
+//                    edge_weights[i] = new BigDecimal("1.0");
+//                }
+                //double version
+                edge_weights[i] += rate_of_change;
+                if(edge_weights[i] > 1.0){
+                    edge_weights[i] = 1.0;
                 }
+
+
+
             } else if(neighbour.p < p){ // if neighbour is less generous, decrease EW
-                edge_weights[i] = edge_weights[i].subtract(rate_of_change);
-                if(edge_weights[i].subtract(rate_of_change).compareTo(new BigDecimal("0.0")) == -1){
-                    edge_weights[i] = new BigDecimal("0.0");
+
+                //bd version (this code is also not refined)
+//                edge_weights[i] = edge_weights[i].subtract(rate_of_change);
+//                if(edge_weights[i].subtract(rate_of_change).compareTo(new BigDecimal("0.0")) == -1){
+//                    edge_weights[i] = new BigDecimal("0.0");
+//                }
+                //double version
+                edge_weights[i] -= rate_of_change;
+                if(edge_weights[i] < 0.0){
+                    edge_weights[i] = 0.0;
                 }
+
+
+
             }
         }
     }
@@ -509,15 +595,26 @@ public class Player {
         players_left_to_play_this_gen=al;
     }
 
-    public BigDecimal[] getEdge_weights(){
+
+
+    //bd version
+//    public BigDecimal[] getEdge_weights(){
+//        return edge_weights;
+//    }
+//    public static BigDecimal getRate_of_change(){
+//        return rate_of_change;
+//    }
+//    public static void setRate_of_change(BigDecimal d){
+//        rate_of_change=d;
+//    }
+    //double version
+    public double[] getEdge_weights(){
         return edge_weights;
     }
-
-    public static BigDecimal getRate_of_change(){
+    public static double getRate_of_change(){
         return rate_of_change;
     }
-
-    public static void setRate_of_change(BigDecimal d){
+    public static void setRate_of_change(double d){
         rate_of_change=d;
     }
 
@@ -550,7 +647,7 @@ public class Player {
         if(edge_weights.length != 0){
             description += " EW=[";
             for(int i=0;i<edge_weights.length;i++){
-                description += df2.format(edge_weights[i]);
+                description += EW_df.format(edge_weights[i]);
                 if((i+1) < neighbourhood.size()){ // are there more neighbours?
                     description +=", ";
                 }

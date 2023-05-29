@@ -8,7 +8,7 @@
 //import java.io.IOException;
 //
 ///**
-// * Similar to DG18.java except this program uses the copy best neighbour selection mechanism.
+// * Description of program: DG18 but with copy best neighbour selection and evolution mechanism.
 // */
 //public class DG19 extends Thread{
 //    static int rows;

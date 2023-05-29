@@ -1,3 +1,4 @@
+//import java.math.BigDecimal;
 //import java.math.RoundingMode;
 //import java.text.DecimalFormat;
 //import java.time.Duration;
@@ -98,7 +99,8 @@
 //                        double total_imitation_score = 0;
 //                        double player_avg_score = player.getAverage_score();
 //                        for (int i = 0; i < neighbourhood.size(); i++) {
-//                            imitation_scores[i] = Math.exp(neighbourhood.get(i).getAverage_score() - player_avg_score);
+//                            imitation_scores[i] = Math.exp(neighbourhood.get(i).getAverage_score()
+//                                    - player_avg_score);
 //                            total_imitation_score += imitation_scores[i];
 //                        }
 //                        total_imitation_score += 1.0;
@@ -141,12 +143,12 @@
 //
 //            // calculate the avg p and SD wrt p of the pop during this gen and export it to
 //            // a .csv file.
-//            getStats();
-//            try {
-//                writeSingleGenStats("per_gen_data.csv");
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
+////            getStats();
+////            try {
+////                writeSingleGenStats("per_gen_data.csv");
+////            } catch (IOException e) {
+////                throw new RuntimeException(e);
+////            }
 //
 //
 //            reset();
@@ -155,7 +157,7 @@
 //
 //        }
 //
-////        getStats();
+//        getStats();
 //
 ////        try {
 ////            writeToCSV("DG18_grid_diagram.csv");
@@ -180,7 +182,7 @@
 //        runs=1;
 //        Player.setPrize(1.0);
 //        Player.setNeighbourhoodType("VN");
-//        Player.setRate_of_change(0.2);
+//        Player.setRate_of_change(new BigDecimal("0.2"));
 //        rows = 30;
 //        columns = 30;
 //        N = rows * columns;
@@ -298,45 +300,45 @@
 //     * Displays the number of players for whom all associated edge weights are set to 0.0.
 //     */
 //    public void displayNeighbourhoodStatus(){
-//        int num_players_with_all_associated_edge_weights_at_0 = 0;
-//        int num_associated_edge_weights_per_player = grid.get(0).get(0).getEdge_weights().length * 2;
-//        for(ArrayList<Player> row: grid){
-//
-//            for(Player player: row){
-//
-//                // look at player's own edge weights
-//                int num_edge_weights_at_0 = 0;
-//                for(int i=0;i<player.getEdge_weights().length;i++){
-//                    if(player.getEdge_weights()[i] == 0.0){
-//                        num_edge_weights_at_0++;
-//                    }
-//                }
-//
-//                // look at neighbours' edge weights associated to player
-//                ArrayList<Player> neighbourhood = player.getNeighbourhood();
-//                for(int i=0;i<neighbourhood.size();i++) {
-//                    Player neighbour = neighbourhood.get(i);
-//                    double edge_weight = 0.0;
-//                    for (int j = 0; j < neighbour.getNeighbourhood().size(); j++){
-//                        Player neighbours_neighbour = neighbour.getNeighbourhood().get(j);
-//                        if (neighbours_neighbour.getId() == player.getId()) {
-//                            edge_weight = neighbour.getEdge_weights()[j];
-//                            break;
-//                        }
-//                    }
-//                    if(edge_weight == 0.0){
-//                        num_edge_weights_at_0++;
-//                    }
-//                }
-//
-//                if(num_edge_weights_at_0 == num_associated_edge_weights_per_player){
-//                    num_players_with_all_associated_edge_weights_at_0++;
-//                }
-//
-//            }
-//        }
-//        System.out.println("Number of players for whom all associated edge weights are set " +
-//                "to 0.0: "+num_players_with_all_associated_edge_weights_at_0);
+////        int num_players_with_all_associated_edge_weights_at_0 = 0;
+////        int num_associated_edge_weights_per_player = grid.get(0).get(0).getEdge_weights().length * 2;
+////        for(ArrayList<Player> row: grid){
+////
+////            for(Player player: row){
+////
+////                // look at player's own edge weights
+////                int num_edge_weights_at_0 = 0;
+////                for(int i=0;i<player.getEdge_weights().length;i++){
+////                    if(player.getEdge_weights()[i] == 0.0){
+////                        num_edge_weights_at_0++;
+////                    }
+////                }
+////
+////                // look at neighbours' edge weights associated to player
+////                ArrayList<Player> neighbourhood = player.getNeighbourhood();
+////                for(int i=0;i<neighbourhood.size();i++) {
+////                    Player neighbour = neighbourhood.get(i);
+////                    double edge_weight = 0.0;
+////                    for (int j = 0; j < neighbour.getNeighbourhood().size(); j++){
+////                        Player neighbours_neighbour = neighbour.getNeighbourhood().get(j);
+////                        if (neighbours_neighbour.getId() == player.getId()) {
+////                            edge_weight = neighbour.getEdge_weights()[j];
+////                            break;
+////                        }
+////                    }
+////                    if(edge_weight == 0.0){
+////                        num_edge_weights_at_0++;
+////                    }
+////                }
+////
+////                if(num_edge_weights_at_0 == num_associated_edge_weights_per_player){
+////                    num_players_with_all_associated_edge_weights_at_0++;
+////                }
+////
+////            }
+////        }
+////        System.out.println("Number of players for whom all associated edge weights are set " +
+////                "to 0.0: "+num_players_with_all_associated_edge_weights_at_0);
 //    }
 //
 //
