@@ -31,6 +31,8 @@ public class DG20 extends Thread{
 
     static boolean per_gen_data; // indicates whether per gen data will be stored
 
+    static String varying_parameter; // indicates which parameter to be varied over experiments
+
 
     /**
      * Method for starting a run of an experiment.
@@ -145,7 +147,7 @@ public class DG20 extends Thread{
         String data_filename = Thread.currentThread().getStackTrace()[1].getClassName() + "data.csv";
 
         // define parameters
-        runs=1000;
+        runs=1;
         Player.setPrize(1.0);
         Player.setNeighbourhoodType("VN");
 
@@ -165,28 +167,32 @@ public class DG20 extends Thread{
         evo_phase_rate = 5;
 
 
+        // assign the parameter to be varied across the experiment series.
+        varying_parameter = "ROC";
+//        varying_parameter = "EPR";
 
-        /**
-         * With this variable, you can define the amount by which one parameter's value will be
-         * altered between one experiment and the next.
-         */
+
+
+        // define the amount by which the varying parameter will vary between subsequent experiments.
         //bd version
 //        BigDecimal variation = new BigDecimal("-0.02");
         //double version
-        double variation = -0.02;
+        double variation = -0.05;
 
-
-
-        // manually display which variable is being modified and by how much per experiment.
-        // do not forget to keep this up to date per experiment series.
-        System.out.println("Varying ROC by "+variation+" per experiment with settings: ");
 
 
         int num_experiments = 6; // define number of experiments to occur here
-        per_gen_data = false;
+
+        // display which parameter is being modified and by how much per experiment.
+        System.out.println("Varying "+varying_parameter+" by "+variation+" between "+num_experiments+
+                " experiments with settings: ");
+
+
+        per_gen_data = false; // with an experiment series, I typically won't want to collect per gen data.
         experimentSeries(data_filename, variation, num_experiments); // run multiple experiments
 
 
+        // for carrying out a single experiment.
 //        per_gen_data = true;
 //        experiment(data_filename, 0); // run 1 experiment
 
@@ -427,12 +433,20 @@ public class DG20 extends Thread{
                         + ",avg p SD"
 
                         // these are the settings of the experiment
-                        + ",runs="+runs
-                        + ",gens="+max_gens
-                        + ",neighbourhood="+Player.getNeighbourhoodType()
-                        + ",N="+N
-                        + ",ROC="+Player.getRate_of_change()
-                        + ",EPR="+evo_phase_rate
+//                        + ",runs="+runs
+//                        + ",gens="+max_gens
+//                        + ",neighbourhood="+Player.getNeighbourhoodType()
+//                        + ",N="+N
+//                        + ",ROC="+Player.getRate_of_change()
+//                        + ",EPR="+evo_phase_rate
+
+
+                        + ",runs"
+                        + ",gens"
+                        + ",neighbourhood"
+                        + ",N"
+                        + ",ROC"
+                        + ",EPR"
                 );
 
 
@@ -443,6 +457,12 @@ public class DG20 extends Thread{
             fw.append("\n" + experiment_number
                     + "," + mean_avg_p_of_experiment
                     + "," + sd_avg_p_of_experiment
+                    + "," + runs
+                    + "," + max_gens
+                    + "," + Player.getNeighbourhoodType()
+                    + "," + N
+                    + "," + Player.getRate_of_change()
+                    + "," + evo_phase_rate
             );
 
             fw.close();
@@ -489,18 +509,37 @@ public class DG20 extends Thread{
             //bd version
 //            Player.setRate_of_change(Player.getRate_of_change().add(variation));
             //double version
-            Player.setRate_of_change(Player.getRate_of_change() + variation);
+//            Player.setRate_of_change(Player.getRate_of_change() + variation);
 
+
+
+            if(varying_parameter.equals("ROC")){
+                Player.setRate_of_change(Player.getRate_of_change() + variation);
+            } else if(varying_parameter.equals("EPR")){
+                evo_phase_rate += variation;
+            } // else if ...
 
 
         }
 
-        // in console, print out all the macro experiment info in a nice format that I can copy
-        // and paste into my experiment notebook. achieve this by reading from the data file.
+
+        /**
+         * displayExperimentSeriesSummary(); // you could put this code into a modular method.
+         *
+         * in console, print out all the macro experiment info in a nice format that I can copy
+         * and paste into my experiment notebook. achieve this by reading from the data file.
+         */
+
         String summary = "";
         ArrayList<String> experiment_number = new ArrayList<>();
         ArrayList<Double> mean_avg_p = new ArrayList<>();
         ArrayList<Double> avg_p_SD = new ArrayList<>();
+        ArrayList<Integer> runs = new ArrayList<>();
+        ArrayList<Integer> gens = new ArrayList<>();
+        ArrayList<String> neighbourhood = new ArrayList<>();
+        ArrayList<Integer> N = new ArrayList<>();
+        ArrayList<Double> ROC = new ArrayList<>();
+        ArrayList<Double> EPR = new ArrayList<>();
         int row_count = 0;
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -511,6 +550,17 @@ public class DG20 extends Thread{
                     experiment_number.add(row_contents[0]);
                     mean_avg_p.add(Double.valueOf(row_contents[1]));
                     avg_p_SD.add(Double.valueOf(row_contents[2]));
+
+//                    runs.add(Integer.valueOf(row_contents[3]));
+//                    gens.add(Integer.valueOf(row_contents[4]));
+//                    neighbourhood.add(String.valueOf(row_contents[5]));
+//                    N.add(Integer.valueOf(row_contents[6]));
+
+                    if(varying_parameter.equals("ROC")){
+                        ROC.add(Double.valueOf(row_contents[7]));
+                    } else if(varying_parameter.equals("EPR")){
+                        EPR.add(Double.valueOf(row_contents[8]));
+                    }
                 }
                 row_count++;
             }
@@ -519,15 +569,19 @@ public class DG20 extends Thread{
             e.printStackTrace();
         }
 
-        // do something with data
         for(int i=0;i<row_count-1;i++){
             summary += "experiment="+experiment_number.get(i)
-                    + "\tmean avg p="+mean_avg_p.get(i)
-                    + "\tavg p SD="+avg_p_SD.get(i)
-                    + "\n"
+                    + "\tmean avg p="+df.format(mean_avg_p.get(i))
+                    + "\tavg p SD="+df.format(avg_p_SD.get(i))
             ;
-        }
+            if(varying_parameter.equals("ROC")){
+                summary += "\tROC="+df.format(ROC.get(i));
+            } else if(varying_parameter.equals("EPR")){
+                summary += "\tEPR="+df.format(EPR.get(i));
+            } // else if...
 
+            summary += "\n";
+        }
 
         System.out.println(summary);
 
