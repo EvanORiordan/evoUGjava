@@ -18,7 +18,7 @@ public class DG20 extends Thread{
     static int rows;
     static int columns;
     static int N;
-    static int max_gens;
+    static int gens;
     static int runs; // how many times this experiment will be run.
     static int evo_phase_rate; // how often the evolution phase occurs.
 
@@ -63,7 +63,7 @@ public class DG20 extends Thread{
         }
 
         // preparation over; the games begin
-        while(gen != max_gens) {
+        while(gen != gens) {
 
 
             // playing phase
@@ -147,46 +147,36 @@ public class DG20 extends Thread{
         String data_filename = Thread.currentThread().getStackTrace()[1].getClassName() + "data.csv";
 
         // define parameters
-        runs=1;
+        runs=1000;
         Player.setPrize(1.0);
         Player.setNeighbourhoodType("VN");
-
-
-
-        //bd version
-//        Player.setRate_of_change(new BigDecimal("0.2"));
-        //double version
         Player.setRate_of_change(0.2);
-
-
-
         rows = 30;
         columns = 30;
         N = rows * columns;
-        max_gens = 10000;
+        gens = 2700;
         evo_phase_rate = 5;
 
 
         // assign the parameter to be varied across the experiment series.
-        varying_parameter = "ROC";
+//        varying_parameter = "ROC";
 //        varying_parameter = "EPR";
+        varying_parameter = "gens";
+
 
 
 
         // define the amount by which the varying parameter will vary between subsequent experiments.
-        //bd version
-//        BigDecimal variation = new BigDecimal("-0.02");
-        //double version
-        double variation = -0.05;
+//        double variation = -0.05;
+        int variation = 50;
 
 
 
-        int num_experiments = 6; // define number of experiments to occur here
+        int num_experiments = 10; // define number of experiments to occur here
 
         // display which parameter is being modified and by how much per experiment.
         System.out.println("Varying "+varying_parameter+" by "+variation+" between "+num_experiments+
                 " experiments with settings: ");
-
 
         per_gen_data = false; // with an experiment series, I typically won't want to collect per gen data.
         experimentSeries(data_filename, variation, num_experiments); // run multiple experiments
@@ -258,7 +248,7 @@ public class DG20 extends Thread{
      */
     public static void displaySettings(){
         System.out.println("runs="+runs
-                + ", gens="+max_gens
+                + ", gens="+gens
                 + ", neighbourhood="+Player.getNeighbourhoodType()
                 + ", N="+N
                 + ", ROC="+df.format(Player.getRate_of_change())
@@ -336,8 +326,6 @@ public class DG20 extends Thread{
      * Import the .csv data into an Excel sheet
      * Separate the data into columns: gen number, avg p and SD for that gen
      * Create a line chart with the data.
-     *
-     * Note: There is no point running multiple runs when your aim is to use this method.
      */
     public void writeSingleGenStats(String filename){
         FileWriter fw;
@@ -427,20 +415,9 @@ public class DG20 extends Thread{
 
             if(experiment_number == 0){
                 fw = new FileWriter(filename, false);
-
                 fw.append("experiment"
                         + ",mean avg p"
                         + ",avg p SD"
-
-                        // these are the settings of the experiment
-//                        + ",runs="+runs
-//                        + ",gens="+max_gens
-//                        + ",neighbourhood="+Player.getNeighbourhoodType()
-//                        + ",N="+N
-//                        + ",ROC="+Player.getRate_of_change()
-//                        + ",EPR="+evo_phase_rate
-
-
                         + ",runs"
                         + ",gens"
                         + ",neighbourhood"
@@ -448,9 +425,6 @@ public class DG20 extends Thread{
                         + ",ROC"
                         + ",EPR"
                 );
-
-
-
             } else {
                 fw = new FileWriter(filename, true);
             }
@@ -458,13 +432,12 @@ public class DG20 extends Thread{
                     + "," + mean_avg_p_of_experiment
                     + "," + sd_avg_p_of_experiment
                     + "," + runs
-                    + "," + max_gens
+                    + "," + gens
                     + "," + Player.getNeighbourhoodType()
                     + "," + N
                     + "," + Player.getRate_of_change()
                     + "," + evo_phase_rate
             );
-
             fw.close();
         } catch(IOException e){
             e.printStackTrace();
@@ -476,48 +449,17 @@ public class DG20 extends Thread{
      * Allows for the running of multiple experiments, i.e. the running of a series of
      * experiments, i.e. the running of an experiment series.
      */
-    //bd version
-    //public static void experimentSeries(String filename, BigDecimal variation, int num_experiments){
-    //double version
     public static void experimentSeries(String filename, double variation, int num_experiments){
-
-
-
         for(int i=0;i<num_experiments;i++){
-            // run the experiment and store its final data
-            experiment(filename, i);
-
-            // write settings
-//            try{
-//                FileWriter fw = new FileWriter(filename, true);
-//
-//                fw.append("runs="+runs
-//                        + "\ngens="+max_gens
-//                        + "\nneighbourhood="+Player.getNeighbourhoodType()
-//                        + "\nN="+N
-//                        + "\nROC="+Player.getRate_of_change()
-//                        + "\nEPR="+evo_phase_rate
-//                        + "\n"
-//                );
-//
-//                fw.close();
-//            } catch(IOException e){
-//                e.printStackTrace();
-//            }
-
-            // alter a parameter's value in preparation for the next experiment.
-            //bd version
-//            Player.setRate_of_change(Player.getRate_of_change().add(variation));
-            //double version
-//            Player.setRate_of_change(Player.getRate_of_change() + variation);
-
-
-
+            experiment(filename, i); // run the experiment and store its final data
             if(varying_parameter.equals("ROC")){
                 Player.setRate_of_change(Player.getRate_of_change() + variation);
             } else if(varying_parameter.equals("EPR")){
                 evo_phase_rate += variation;
-            } // else if ...
+            } else if(varying_parameter.equals("gens")){
+                gens += variation;
+            }
+            // else if ...
 
 
         }
@@ -552,15 +494,17 @@ public class DG20 extends Thread{
                     avg_p_SD.add(Double.valueOf(row_contents[2]));
 
 //                    runs.add(Integer.valueOf(row_contents[3]));
-//                    gens.add(Integer.valueOf(row_contents[4]));
 //                    neighbourhood.add(String.valueOf(row_contents[5]));
 //                    N.add(Integer.valueOf(row_contents[6]));
 
-                    if(varying_parameter.equals("ROC")){
+                    if(varying_parameter.equals("gens")){
+                        gens.add(Integer.valueOf(row_contents[4]));
+                    } else if(varying_parameter.equals("ROC")){
                         ROC.add(Double.valueOf(row_contents[7]));
                     } else if(varying_parameter.equals("EPR")){
                         EPR.add(Double.valueOf(row_contents[8]));
-                    }
+                    } // else if ...
+
                 }
                 row_count++;
             }
@@ -574,7 +518,10 @@ public class DG20 extends Thread{
                     + "\tmean avg p="+df.format(mean_avg_p.get(i))
                     + "\tavg p SD="+df.format(avg_p_SD.get(i))
             ;
-            if(varying_parameter.equals("ROC")){
+
+            if(varying_parameter.equals("gens")){
+                summary += "\tgens="+gens.get(i);
+            } else if(varying_parameter.equals("ROC")){
                 summary += "\tROC="+df.format(ROC.get(i));
             } else if(varying_parameter.equals("EPR")){
                 summary += "\tEPR="+df.format(EPR.get(i));
