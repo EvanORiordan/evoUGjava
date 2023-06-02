@@ -154,25 +154,25 @@ public class DG20 extends Thread{
         rows = 30;
         columns = 30;
         N = rows * columns;
-        gens = 2700;
-        evo_phase_rate = 5;
+        gens = 10000;
+        evo_phase_rate = 3;
 
 
         // assign the parameter to be varied across the experiment series.
 //        varying_parameter = "ROC";
-//        varying_parameter = "EPR";
-        varying_parameter = "gens";
+        varying_parameter = "EPR";
+//        varying_parameter = "gens";
 
 
 
 
         // define the amount by which the varying parameter will vary between subsequent experiments.
 //        double variation = -0.05;
-        int variation = 50;
+        int variation = 1;
 
 
 
-        int num_experiments = 10; // define number of experiments to occur here
+        int num_experiments = 6; // define number of experiments to occur here
 
         // display which parameter is being modified and by how much per experiment.
         System.out.println("Varying "+varying_parameter+" by "+variation+" between "+num_experiments+
@@ -452,6 +452,8 @@ public class DG20 extends Thread{
     public static void experimentSeries(String filename, double variation, int num_experiments){
         for(int i=0;i<num_experiments;i++){
             experiment(filename, i); // run the experiment and store its final data
+
+            // change the value of the parameter
             if(varying_parameter.equals("ROC")){
                 Player.setRate_of_change(Player.getRate_of_change() + variation);
             } else if(varying_parameter.equals("EPR")){
@@ -481,7 +483,7 @@ public class DG20 extends Thread{
         ArrayList<String> neighbourhood = new ArrayList<>();
         ArrayList<Integer> N = new ArrayList<>();
         ArrayList<Double> ROC = new ArrayList<>();
-        ArrayList<Double> EPR = new ArrayList<>();
+        ArrayList<Integer> EPR = new ArrayList<>();
         int row_count = 0;
         try {
             BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -502,7 +504,7 @@ public class DG20 extends Thread{
                     } else if(varying_parameter.equals("ROC")){
                         ROC.add(Double.valueOf(row_contents[7]));
                     } else if(varying_parameter.equals("EPR")){
-                        EPR.add(Double.valueOf(row_contents[8]));
+                        EPR.add(Integer.valueOf(row_contents[8]));
                     } // else if ...
 
                 }
@@ -520,11 +522,11 @@ public class DG20 extends Thread{
             ;
 
             if(varying_parameter.equals("gens")){
-                summary += "\tgens="+gens.get(i);
+                summary += "\tgens=" + gens.get(i);
             } else if(varying_parameter.equals("ROC")){
-                summary += "\tROC="+df.format(ROC.get(i));
+                summary += "\tROC=" + df.format(ROC.get(i));
             } else if(varying_parameter.equals("EPR")){
-                summary += "\tEPR="+df.format(EPR.get(i));
+                summary += "\tEPR=" + EPR.get(i);
             } // else if...
 
             summary += "\n";
