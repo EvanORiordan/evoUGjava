@@ -20,7 +20,7 @@ public class DG20 extends Thread{
     static int N;
     static int gens;
     static int runs; // how many times this experiment will be run.
-    static int evo_phase_rate; // how often the evolution phase occurs.
+    static int evo_phase_rate; // how often the evolutionary phase occurs.
 
 
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
@@ -83,7 +83,7 @@ public class DG20 extends Thread{
 
 
             /**
-             * Selection and Evolution phase:
+             * Selection and evolutionary phase:
              *
              * Selection: weighted roulette wheel
              * Evolution: copy parent's strategy
