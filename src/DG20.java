@@ -143,11 +143,11 @@ public class DG20 extends Thread{
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
         System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
 
-        // define name of .csv file for storing experiment data
+        // define name of .csv file for storing experiment data.
         String data_filename = Thread.currentThread().getStackTrace()[1].getClassName() + "data.csv";
 
-        // define parameters
-        runs=1000;
+        // define initial parameter values.
+        runs=5;
         Player.setPrize(1.0);
         Player.setNeighbourhoodType("VN");
         Player.setRate_of_change(0.2);
@@ -155,36 +155,37 @@ public class DG20 extends Thread{
         columns = 30;
         N = rows * columns;
         gens = 10000;
-        evo_phase_rate = 3;
+        evo_phase_rate = 1;
 
 
-        // assign the parameter to be varied across the experiment series.
+        boolean experiment_series; // indicate whether to run an experiment or a series.
+        experiment_series = true;
+//        experiment_series = false;
+
+        if(experiment_series){ // for carrying out an experiment series.
+            // define the parameter to be varied across the experiment series.
 //        varying_parameter = "ROC";
-        varying_parameter = "EPR";
+            varying_parameter = "EPR";
 //        varying_parameter = "gens";
 
-
-
-
-        // define the amount by which the varying parameter will vary between subsequent experiments.
+            // define the amount by which the varying parameter will vary between subsequent experiments.
 //        double variation = -0.05;
-        int variation = 1;
+            int variation = 1;
 
+            int num_experiments = 8; // define number of experiments to occur here
 
+            // display which parameter is being modified and by how much per experiment.
+            System.out.println("Varying "+varying_parameter+" by "+variation+" between "+num_experiments+
+                    " experiments with settings: ");
+//
+            per_gen_data = false; // with an experiment series, I typically won't want to collect per gen data.
+            experimentSeries(data_filename, variation, num_experiments); // run multiple experiments
+        }
 
-        int num_experiments = 6; // define number of experiments to occur here
-
-        // display which parameter is being modified and by how much per experiment.
-        System.out.println("Varying "+varying_parameter+" by "+variation+" between "+num_experiments+
-                " experiments with settings: ");
-
-        per_gen_data = false; // with an experiment series, I typically won't want to collect per gen data.
-        experimentSeries(data_filename, variation, num_experiments); // run multiple experiments
-
-
-        // for carrying out a single experiment.
-//        per_gen_data = true;
-//        experiment(data_filename, 0); // run 1 experiment
+        else { // for carrying out a single experiment.
+            per_gen_data = true;
+            experiment(data_filename, 0); // run 1 experiment
+        }
 
 
         // marks the end of the program's runtime
