@@ -14,7 +14,7 @@ import java.io.IOException;
  * Description of program: DG18 but with improved experimentation features.
  */
 public class DG20 extends Thread{
-    // experiment parameters
+    // experiment-wide parameters
     static int rows;
     static int columns;
     static int N;
@@ -22,16 +22,18 @@ public class DG20 extends Thread{
     static int runs; // how many times this experiment will be run.
     static int evo_phase_rate; // how often the evolutionary phase occurs.
 
-
+    // attributes of individual runs
     ArrayList<ArrayList<Player>> grid = new ArrayList<>();
     double avg_p; // the average value of p across this run's population.
     static DecimalFormat df = Player.getDf();
     int gen = 0;
 
 
+    // new variables of this version
     static boolean per_gen_data; // indicates whether per gen data will be stored
-
     static String varying_parameter; // indicates which parameter to be varied over experiments
+    static boolean experiment_series; // indicate whether to run an experiment or a series.
+
 
 
     /**
@@ -147,7 +149,7 @@ public class DG20 extends Thread{
         String data_filename = Thread.currentThread().getStackTrace()[1].getClassName() + "data.csv";
 
         // define initial parameter values.
-        runs=5;
+        runs=1;
         Player.setPrize(1.0);
         Player.setNeighbourhoodType("VN");
         Player.setRate_of_change(0.2);
@@ -155,12 +157,11 @@ public class DG20 extends Thread{
         columns = 30;
         N = rows * columns;
         gens = 10000;
-        evo_phase_rate = 1;
+        evo_phase_rate = 5;
 
 
-        boolean experiment_series; // indicate whether to run an experiment or a series.
-        experiment_series = true;
-//        experiment_series = false;
+//        experiment_series = true;
+        experiment_series = false;
 
         if(experiment_series){ // for carrying out an experiment series.
             // define the parameter to be varied across the experiment series.
@@ -336,9 +337,15 @@ public class DG20 extends Thread{
             // reset the .csv file for this run.
             if(gen == 0){
                 fw = new FileWriter(filename, false); // append set to false means writing mode.
-                fw.append("gen" + // heading 1
-                        ",mean avg p" + // heading 2
-                        ",avg p SD\n" // heading 3
+                fw.append("gen"
+                        + ",avg p"
+                        + ",p SD"
+                        + ",gens="+gens
+                        + ",neighbourhood="+Player.getNeighbourhoodType()
+                        + ",N="+N
+                        + ",ROC="+Player.getRate_of_change()
+                        + ",EPR="+evo_phase_rate
+                        + "\n"
                 );
                 fw.close();
             }
