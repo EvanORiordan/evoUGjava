@@ -349,6 +349,7 @@ public class Player {
         edge_weights = new double[neighbourhood.size()];
         for(int i=0;i<neighbourhood.size();i++){
             edge_weights[i] = 1.0;
+//            edge_weights[i] = 0.5;
         }
     }
 

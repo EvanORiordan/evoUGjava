@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,6 +34,9 @@ public class DG20 extends Thread{
     static boolean per_gen_data; // indicates whether per gen data will be stored
     static String varying_parameter; // indicates which parameter to be varied over experiments
     static boolean experiment_series; // indicate whether to run an experiment or a series.
+
+
+    static Scanner scan = new Scanner(System.in); // read user input
 
 
 
@@ -149,29 +153,31 @@ public class DG20 extends Thread{
         String data_filename = Thread.currentThread().getStackTrace()[1].getClassName() + "data.csv";
 
         // define initial parameter values.
-        runs=1;
+        runs=1000;
         Player.setPrize(1.0);
         Player.setNeighbourhoodType("VN");
-        Player.setRate_of_change(0.2);
+        Player.setRate_of_change(0.5);
         rows = 30;
         columns = 30;
         N = rows * columns;
         gens = 10000;
-        evo_phase_rate = 5;
+        evo_phase_rate = 1;
 
 
-//        experiment_series = true;
-        experiment_series = false;
+        // define whether an experiment or a series will be conducted.
+        experiment_series = true;
+//        experiment_series = false;
 
-        if(experiment_series){ // for carrying out an experiment series.
+
+        if(experiment_series){
             // define the parameter to be varied across the experiment series.
-//        varying_parameter = "ROC";
+//            varying_parameter = "ROC";
             varying_parameter = "EPR";
-//        varying_parameter = "gens";
+//            varying_parameter = "gens";
 
             // define the amount by which the varying parameter will vary between subsequent experiments.
-//        double variation = -0.05;
-            int variation = 1;
+            // note that the double type works even for variations that are integer values.
+            double variation = 1;
 
             int num_experiments = 8; // define number of experiments to occur here
 
@@ -195,6 +201,7 @@ public class DG20 extends Thread{
         long secondsElapsed = Duration.between(start, finish).toSeconds();
         long minutesElapsed = Duration.between(start, finish).toMinutes();
         System.out.println("Time elapsed: "+minutesElapsed+" minutes, "+secondsElapsed%60+" seconds");
+        scan.close();
     }
 
 
@@ -352,7 +359,7 @@ public class DG20 extends Thread{
 
             // now, add the data to the .csv file.
             fw = new FileWriter(filename, true); // append set to true means append mode.
-            fw.append(gen + "," + avg_p + "," + SD + "\n");
+            fw.append(gen + "," + df.format(avg_p) + "," + df.format(SD) + "\n");
             fw.close();
         } catch(IOException e){
             e.printStackTrace();
@@ -437,8 +444,8 @@ public class DG20 extends Thread{
                 fw = new FileWriter(filename, true);
             }
             fw.append("\n" + experiment_number
-                    + "," + mean_avg_p_of_experiment
-                    + "," + sd_avg_p_of_experiment
+                    + "," + df.format(mean_avg_p_of_experiment)
+                    + "," + df.format(sd_avg_p_of_experiment)
                     + "," + runs
                     + "," + gens
                     + "," + Player.getNeighbourhoodType()
