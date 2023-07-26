@@ -11,8 +11,8 @@ import java.io.IOException;
 
 /**
  * Programmed by Evan O'Riordan.
- * If you wish to take this code and recreate its results, please cite the following paper:
- * insertLinkToPaper.
+ * If recreating the results obtained from DGAlgorithmPaper1.java, please cite the following paper:
+ * insertLinkToPaperHere
  */
 
 
@@ -143,14 +143,17 @@ public class DGAlgorithmPaper1 extends Thread{
 
         // define initial parameter values.
         runs=1000;
-        Player.setPrize(1.0);
-        Player.setNeighbourhoodType("VN");
         Player.setRate_of_change(0.2);
         rows = 30;
-        columns = 30;
-        N = rows * columns;
         gens = 10000;
         evo_phase_rate = 1;
+
+
+        // below are attributes of the experiment that should not be changed.
+        Player.setPrize(1.0);
+        Player.setNeighbourhoodType("VN");
+        columns = rows;
+        N = rows * columns;
 
 
         // define whether an experiment or an experiment series will be conducted.

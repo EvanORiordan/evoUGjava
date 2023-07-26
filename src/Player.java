@@ -3,9 +3,12 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * Programmed by Evan O'Riordan.
+ *
  * Player class for instantiating player objects for different variants of the UG.
  */
 public class Player {
+
     private static int count = 0; // class-wide attribute that helps assign player ID
     private int ID; // each player has a unique ID
     private double score; // amount of reward player has received from playing; i.e. this player's fitness
@@ -21,39 +24,33 @@ public class Player {
     private double old_p; // the p value held at the beginning of the gen; will be copied by imitators
     private double old_q; // the q value held at the beginning of the gen; will be copied by imitators
     private boolean old_abstainer; // the abstainer value held at start of gen; to be copied by imitators
-    private boolean abstainer; // indicates whether this player is an abstainer; an abstainer always abstains
-    // from playing the game, hence both interacting parties receive the loner's payoff.
+    private boolean abstainer; // indicates whether this player is an abstainer; an abstainer always abstains from playing the game, hence both interacting parties receive the loner's payoff.
     private int role1_games; // how many games this player has played as role1
     private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
     private static DecimalFormat df = new DecimalFormat("0.0000"); // general df for doubles
     private static double edge_decay_factor; // EDF affects the rate of edge decay
     private double edge_decay_score; // EDS determines this player's probability of edge decay
-
-    // facilitates the selection of a player who has not been a dictator yet in a given gen.
-    private boolean selected = false;
-
-    // tracks which players a player has left to play in a given gen.
-    private ArrayList<Player> players_left_to_play_this_gen;
-
-    // Tracks to what degree are neighbours less generous than the player.
-    private double[] edge_weights;
-
-    // rate of change during edge decay
-    private static double rate_of_change;
-
-    // one decimal point DecimalFormat
-    private static DecimalFormat EW_df = new DecimalFormat("0.0");
+    private ArrayList<Player> players_left_to_play_this_gen; // tracks which players a player has left to play in a given gen.
+    private double[] edge_weights; // stores weights of edges belonging to the player.
+    private static double rate_of_change; // fixed amount by which edge weight is modified.
+    private static DecimalFormat EW_df = new DecimalFormat("0.0"); // one decimal point DecimalFormat
 
 
 
 
 
-    public Player(){}  // empty constructor
+    public Player(){} // empty constructor
 
-    // constructor for instantiating a player.
-    // if DG player, make sure to pass 0.0 double to q parameter.
-    // if abstinence-less game, make sure to pass false boolean to abstainer parameter.
+    /**
+     * constructor for instantiating a player.
+     * if DG, make sure to pass 0.0 double as q argument.
+     * if abstinence-less game, make sure to pass false boolean to abstainer parameter.
+     *
+     * @param p
+     * @param q
+     * @param abstainer
+     */
     public Player(double p, double q, boolean abstainer){
         ID=count++; // assign this player's ID
         this.p=p; // assign p value
@@ -61,15 +58,17 @@ public class Player {
         this.abstainer=abstainer; // indicate whether this player initialises as an abstainer
         old_p=p;
 
-        // edge decay mechanism: calculate initial EDS based on initial value of p
-//        edge_decay_score = edge_decay_factor * (1 / p);
-//        System.out.println("p="+p+"\tEDS="+edge_decay_score);
-
 //        df.setRoundingMode(RoundingMode.UP); // set df to round doubles up
     }
 
-    // method for playing the UG.
-    // if DG player, the offer is always accepted since the responder/recipient/role2 player has q=0.0.
+
+    /**
+     * method for playing the UG.
+     * receives a Player argument to play with.
+     * if DG, the offer is always accepted since the responder/recipient/role2 player has q=0.0.
+     *
+     * @param responder
+     */
     public void playUG(Player responder) {
         if(p >= responder.q){ // accept offer
             updateStats(prize*(1-p), true);
@@ -80,9 +79,14 @@ public class Player {
         }
     }
 
-    // method for playing the UG with an abstinence option.
-    // if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
-    // otherwise, play the regular UG.
+
+    /**
+     * method for playing the UG with an abstinence option.
+     * if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
+     * otherwise, play the regular UG.
+     *
+     * @param responder
+     */
     public void playAbstinenceUG(Player responder){
         if(abstainer || responder.abstainer){
             updateStats(loners_payoff, true);
@@ -296,10 +300,15 @@ public class Player {
         }
     }
 
-    // method for assigning the position of a player on a 2D space and
-    // finding the neighbours when a player resides on a 2D space.
-    // currently, this method handles programs using the von Neumann and the Moore neighbourhood types.
-    // possible neighbourhood_type values: VN; M
+
+    /**
+     * method for assigning the position of a player on a 2D space and finding the neighbours when a
+     * player resides on a 2D space. possible neighbourhood_type values: VN, M
+     *
+     * @param grid
+     * @param row_position
+     * @param column_position
+     */
     public void findNeighbours2D(ArrayList<ArrayList<Player>> grid, int row_position, int column_position){
         neighbourhood = new ArrayList<>();
         int a=row_position;
@@ -498,13 +507,6 @@ public class Player {
         edge_decay_score=d;
     }
 
-    public boolean getSelected(){
-        return selected;
-    }
-
-    public void setSelected(boolean b){
-        selected=b;
-    }
 
     public void setPlayers_left_to_play_this_gen(ArrayList<Player> al){
         players_left_to_play_this_gen=al;
