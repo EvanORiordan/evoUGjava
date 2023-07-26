@@ -143,10 +143,10 @@ public class DGAlgorithmPaper1 extends Thread{
 
         // define initial parameter values.
         runs=1000;
-        Player.setRate_of_change(0.2);
-        rows = 30;
+        Player.setRate_of_change(0.1);
+        rows = 10;
         gens = 10000;
-        evo_phase_rate = 1;
+        evo_phase_rate = 5;
 
 
         // below are attributes of the experiment that should not be changed.
@@ -163,18 +163,18 @@ public class DGAlgorithmPaper1 extends Thread{
         if(experiment_series){ // for carrying out an experiment series
 
             // define the parameter to be varied across the experiment series.
-//            varying_parameter = "ROC"; // vary the rate of change.
-            varying_parameter = "EPR"; // vary the evolutionary phase rate.
+            varying_parameter = "ROC"; // vary the rate of change.
+//            varying_parameter = "EPR"; // vary the evolutionary phase rate.
 //            varying_parameter = "gens"; // vary the number of generations.
-            varying_parameter = "rows_columns"; // vary the number of rows and columns.
+//            varying_parameter = "rows_columns"; // vary the number of rows and columns.
 
 
             // define the amount by which the parameter will vary between subsequent experiments.
             // note: the double type here also works for varying integer type params such as gens.
-            double variation = 1;
+            double variation = 0.005;
 
 
-            int num_experiments = 8; // define number of experiments to occur here
+            int num_experiments = 10; // define number of experiments to occur here
 
 
             // display which parameter is being modified and by how much per experiment.
