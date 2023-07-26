@@ -11,13 +11,13 @@ import java.io.IOException;
 
 /**
  * Programmed by Evan O'Riordan.
+ *
  * If recreating the results obtained from DGAlgorithmPaper1.java, please cite the following paper:
  * insertLinkToPaperHere
+ *
+ * Algorithm for the Dictator Game subject to a square grid, evolution, edge weights.
+ * File was previously named DG20.
  */
-
-
-// Alternatively/previously called DG20.
-// Algorithm for the Dictator Game subject to a square grid, evolution, edge weights.
 public class DGAlgorithmPaper1 extends Thread{
 
     static int rows; // how many rows in the square grid.
