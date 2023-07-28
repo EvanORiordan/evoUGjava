@@ -28,13 +28,13 @@ public class Player {
     private int role1_games; // how many games this player has played as role1
     private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
-    private static DecimalFormat df = new DecimalFormat("0.0000"); // general df for doubles
+    private static DecimalFormat DF1 = new DecimalFormat("0.0"); // 1 decimal point DecimalFormat
+    private static DecimalFormat DF4 = new DecimalFormat("0.0000"); // 4 decimal point DecimalFormat
     private static double edge_decay_factor; // EDF affects the rate of edge decay
     private double edge_decay_score; // EDS determines this player's probability of edge decay
     private ArrayList<Player> players_left_to_play_this_gen; // tracks which players a player has left to play in a given gen.
     private double[] edge_weights; // stores weights of edges belonging to the player.
     private static double rate_of_change; // fixed amount by which edge weight is modified.
-    private static DecimalFormat EW_df = new DecimalFormat("0.0"); // one decimal point DecimalFormat
 
 
 
@@ -57,8 +57,6 @@ public class Player {
         this.q=q; // assign q value
         this.abstainer=abstainer; // indicate whether this player initialises as an abstainer
         old_p=p;
-
-//        df.setRoundingMode(RoundingMode.UP); // set df to round doubles up
     }
 
 
@@ -167,7 +165,7 @@ public class Player {
 
 
     /**
-     * Play the game with respect to space and edge decay.
+     * Play the game with respect to space and edge weights.
      *
      * For each neighbour in your neighbourhood, propose to them if the weight of their edge
      * to you, which represents their likelihood of receiving from you, is greater than a
@@ -175,7 +173,7 @@ public class Player {
      *
      * If the game is DG, you can mentally replace the word "propose" with "dictate".
      */
-    public void playEdgeDecaySpatialUG(){
+    public void playEWSpatialUG(){
         for(int i=0;i<neighbourhood.size();i++){
             Player neighbour = neighbourhood.get(i);
             double random_double = ThreadLocalRandom.current().nextDouble();
@@ -405,13 +403,11 @@ public class Player {
 
 
     /**
-     * Method that allows players to perform "edge weight learning".
-     *
-     * Your edge weights indicates your neighbours' degree of exploitation towards you.
-     * Neighbour i's behaviour is represented by your edge weight i. If a neighbour is more
-     * generous than you, i.e. if their value of p is higher than yours, raise the weight
-     * of your edge to them by the rate of change parameter value. Reduce the edge weight
-     * if a neighbour is less generous than you.
+     * Method that allows players to perform a form of edge weight learning.
+     * Here, a player x's edge weights is supposed to represent x's neighbours' relationship towards x.
+     * If a neighbour y has a higher value of p than x, x raises the weight of their edge to y.
+     * If y has a lower value of p than x, x reduces the weight of their edge to y.
+     * The amount by which an edge is modified is determined by the rate_of_change parameter.
      */
     public void edgeWeightLearning(){
         for (int i = 0; i < neighbourhood.size(); i++) {
@@ -487,8 +483,10 @@ public class Player {
         this.old_abstainer=old_abstainer;
     }
 
-    public static DecimalFormat getDf(){
-        return df;
+    public static DecimalFormat getDF1() { return DF1; }
+
+    public static DecimalFormat getDF4(){
+        return DF4;
     }
 
     public static double getEdge_decay_factor(){
@@ -531,12 +529,12 @@ public class Player {
         // comment out a variable if you don't want it to appear in the player description when debugging
         String description = "";
         description += "ID="+ID;
-        description += " p="+df.format(p);
-//        description += " oldp="+df.format(old_p);
-//        description += " q="+df.format(q);
+        description += " p="+DF4.format(p);
+//        description += " oldp="+DF4.format(old_p);
+//        description += " q="+DF4.format(q);
 //        description += " A="+abstainer;
-        description += " score="+df.format(score);
-        description += " avgscore="+df.format(average_score);
+        description += " score="+DF4.format(score);
+        description += " avgscore="+DF4.format(average_score);
 //        description += " EAP="+ EAP;
         if(neighbourhood.size() != 0){
             description += " neighbours=[";
@@ -551,7 +549,7 @@ public class Player {
         if(edge_weights.length != 0){
             description += " EW=[";
             for(int i=0;i<edge_weights.length;i++){
-                description += EW_df.format(edge_weights[i]);
+                description += DF1.format(edge_weights[i]);
                 if((i+1) < neighbourhood.size()){ // are there more neighbours?
                     description +=", ";
                 }

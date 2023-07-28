@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\DGAlgorithmPaper1connections.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="&#9;" />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\avg_p_per_gen_data.csv">
           <value>
             <Attribute>

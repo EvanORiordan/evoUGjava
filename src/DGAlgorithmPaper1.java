@@ -28,7 +28,8 @@ public class DGAlgorithmPaper1 extends Thread{
     static int evo_phase_rate; // how often the evolutionary phase occurs.
     ArrayList<ArrayList<Player>> grid = new ArrayList<>(); // contains the population.
     double avg_p; // the average value of p across the population.
-    static DecimalFormat df = Player.getDf(); // formats numbers.
+    static DecimalFormat DF1 = Player.getDF1(); // formats numbers to 1 decimal place
+    static DecimalFormat DF4 = Player.getDF4(); // formats numbers to 4 decimal places
     int gen = 0; // indicates which generation is currently running.
     static boolean per_gen_data; // indicates whether "per gen data" will be stored.
     static String varying_parameter; // indicates which parameter to be varied in an experiment series.
@@ -38,6 +39,7 @@ public class DGAlgorithmPaper1 extends Thread{
 
     /**
      * Method for starting a run of an experiment.
+     * This is the core algorithm at the heart of the program.
      */
     public void start(){
 
@@ -62,7 +64,7 @@ public class DGAlgorithmPaper1 extends Thread{
             // playing phase
             for(ArrayList<Player> row: grid){
                 for(Player player: row){
-                    player.playEdgeDecaySpatialUG();
+                    player.playEWSpatialUG();
                 }
             }
 
@@ -110,9 +112,7 @@ public class DGAlgorithmPaper1 extends Thread{
                 }
             }
 
-
-            // collect "per gen data" if enabled.
-            if(per_gen_data){
+            if(!experiment_series){ // collect "per gen data" if this experiment is not part of a series.
                 getStats();
                 writeSingleGenStats("per_gen_data.csv");
             }
@@ -121,7 +121,13 @@ public class DGAlgorithmPaper1 extends Thread{
 
             gen++; // move on to the next generation
         }
+
         getStats(); // get stats at the end of the run
+
+        if(!experiment_series){
+            displayPopEWStatus(
+                    Thread.currentThread().getStackTrace()[1].getClassName() + "connections.csv");
+        }
     }
 
 
@@ -142,8 +148,8 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define initial parameter values.
-        runs=1000;
-        Player.setRate_of_change(0.1);
+        runs=1;
+        Player.setRate_of_change(0.05);
         rows = 10;
         gens = 10000;
         evo_phase_rate = 5;
@@ -157,8 +163,9 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define whether an experiment or an experiment series will be conducted.
-        experiment_series = true;
-//        experiment_series = false;
+//        experiment_series = true;
+        experiment_series = false;
+
 
         if(experiment_series){ // for carrying out an experiment series
 
@@ -239,7 +246,7 @@ public class DGAlgorithmPaper1 extends Thread{
         FileWriter fw = new FileWriter(filename, false);
         for(ArrayList<Player> row: grid){
             for (Player player : row) {
-                fw.append(df.format(player.getP()) + ",");
+                fw.append(DF4.format(player.getP()) + ",");
             }
             fw.append("\n");
         }
@@ -255,56 +262,45 @@ public class DGAlgorithmPaper1 extends Thread{
                 + ", gens="+gens
                 + ", neighbourhood="+Player.getNeighbourhoodType()
                 + ", N="+N
-                + ", ROC="+df.format(Player.getRate_of_change())
+                + ", ROC="+DF4.format(Player.getRate_of_change())
                 + ", EPR="+evo_phase_rate
                 +": ");
     }
 
 
-//    /**
-//     * Displays the number of players for whom all associated edge weights are set to 0.0.
-//     */
-//    public void displayNeighbourhoodStatus(){
-//        int num_players_with_all_associated_edge_weights_at_0 = 0;
-//        int num_associated_edge_weights_per_player = grid.get(0).get(0).getEdge_weights().length * 2;
-//        for(ArrayList<Player> row: grid){
-//
-//            for(Player player: row){
-//
-//                // look at player's own edge weights
-//                int num_edge_weights_at_0 = 0;
-//                for(int i=0;i<player.getEdge_weights().length;i++){
-//                    if(player.getEdge_weights()[i] == 0.0){
-//                        num_edge_weights_at_0++;
-//                    }
-//                }
-//
-//                // look at neighbours' edge weights associated to player
-//                ArrayList<Player> neighbourhood = player.getNeighbourhood();
-//                for(int i=0;i<neighbourhood.size();i++) {
-//                    Player neighbour = neighbourhood.get(i);
-//                    double edge_weight = 0.0;
-//                    for (int j = 0; j < neighbour.getNeighbourhood().size(); j++){
-//                        Player neighbours_neighbour = neighbour.getNeighbourhood().get(j);
-//                        if (neighbours_neighbour.getId() == player.getId()) {
-//                            edge_weight = neighbour.getEdge_weights()[j];
-//                            break;
-//                        }
-//                    }
-//                    if(edge_weight == 0.0){
-//                        num_edge_weights_at_0++;
-//                    }
-//                }
-//
-//                if(num_edge_weights_at_0 == num_associated_edge_weights_per_player){
-//                    num_players_with_all_associated_edge_weights_at_0++;
-//                }
-//
-//            }
-//        }
-//        System.out.println("Number of players for whom all associated edge weights are set " +
-//                "to 0.0: "+num_players_with_all_associated_edge_weights_at_0);
-//    }
+    /**
+     * Writes the population to a .csv file in the form of a square grid of values in [0.0, 4.0].
+     * Each value in the grid represents the sum of connections (edge weights) belonging to the
+     * player in that position.
+     *
+     * This value represents how trusting the player is of their neighbours. If a player x has a 0 on
+     * this grid, x must have a higher p value than their neighbours and depending on the ROC, they
+     * have had a greater value of p for some time. If x has a 4, x must have the lowest p value in
+     * their neighbourhood.
+     */
+    public void displayPopEWStatus(String filename){
+        FileWriter fw;
+        try{
+            fw = new FileWriter(filename, false);
+            for(ArrayList<Player> row:grid){
+                for(int j=0;j<row.size();j++){
+                    double sum = 0.0;
+                    Player player = row.get(j);
+                    for(int i=0;i<player.getEdge_weights().length;i++){
+                        sum+=player.getEdge_weights()[i];
+                    }
+                    fw.append(DF4.format(sum));
+                    if(j+1<row.size()){
+                        fw.append(",");
+                    }
+                }
+                fw.append("\n");
+            }
+            fw.close();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
 
 
 //    /**
@@ -354,7 +350,7 @@ public class DGAlgorithmPaper1 extends Thread{
 
             // add the data to the .csv file.
             fw = new FileWriter(filename, true); // append set to true means append mode.
-            fw.append(gen + "," + df.format(avg_p) + "," + df.format(SD) + "\n");
+            fw.append(gen + "," + DF4.format(avg_p) + "," + DF4.format(SD) + "\n");
             fw.close();
         } catch(IOException e){
             e.printStackTrace();
@@ -415,8 +411,8 @@ public class DGAlgorithmPaper1 extends Thread{
         sd_avg_p_of_experiment = Math.pow(sd_avg_p_of_experiment / runs, 0.5);
 
         // display stats in console
-        System.out.println("mean avg p="+df.format(mean_avg_p_of_experiment)
-                + ", avg p SD="+df.format(sd_avg_p_of_experiment)
+        System.out.println("mean avg p="+DF4.format(mean_avg_p_of_experiment)
+                + ", avg p SD="+DF4.format(sd_avg_p_of_experiment)
         );
 
         // write stats/results and settings to the .csv data file.
@@ -439,8 +435,8 @@ public class DGAlgorithmPaper1 extends Thread{
                 fw = new FileWriter(filename, true);
             }
             fw.append("\n" + experiment_number
-                    + "," + df.format(mean_avg_p_of_experiment)
-                    + "," + df.format(sd_avg_p_of_experiment)
+                    + "," + DF4.format(mean_avg_p_of_experiment)
+                    + "," + DF4.format(sd_avg_p_of_experiment)
                     + "," + runs
                     + "," + gens
                     + "," + Player.getNeighbourhoodType()
@@ -524,8 +520,8 @@ public class DGAlgorithmPaper1 extends Thread{
 
         for(int i=0;i<row_count-1;i++){
             summary += "experiment="+experiment_number.get(i)
-                    + "\tmean avg p="+df.format(mean_avg_p.get(i))
-                    + "\tavg p SD="+df.format(avg_p_SD.get(i))
+                    + "\tmean avg p="+DF4.format(mean_avg_p.get(i))
+                    + "\tavg p SD="+DF4.format(avg_p_SD.get(i))
             ;
 
             if(varying_parameter.equals("gens")){
@@ -533,7 +529,7 @@ public class DGAlgorithmPaper1 extends Thread{
             } else if(varying_parameter.equals("rows_columns")){
                 summary += "\tN=" + N.get(i);
             } else if(varying_parameter.equals("ROC")){
-                summary += "\tROC=" + df.format(ROC.get(i));
+                summary += "\tROC=" + DF4.format(ROC.get(i));
             } else if(varying_parameter.equals("EPR")){
                 summary += "\tEPR=" + EPR.get(i);
             }
