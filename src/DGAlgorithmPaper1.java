@@ -148,40 +148,40 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define initial parameter values.
-        runs=1;
-        Player.setRate_of_change(0.05);
-        rows = 10;
-        gens = 10000;
-        evo_phase_rate = 5;
+        runs=2;
+        Player.setRate_of_change(0.2);
+        rows = 30;
+        gens = 50;
+        evo_phase_rate = 3;
+        Player.setNeighbourhoodType("VN"); // possible values: VN, M
 
 
-        // below are attributes of the experiment that should not be changed.
+
         Player.setPrize(1.0);
-        Player.setNeighbourhoodType("VN");
         columns = rows;
         N = rows * columns;
 
 
         // define whether an experiment or an experiment series will be conducted.
-//        experiment_series = true;
-        experiment_series = false;
+        experiment_series = true;
+//        experiment_series = false;
 
 
         if(experiment_series){ // for carrying out an experiment series
 
             // define the parameter to be varied across the experiment series.
-            varying_parameter = "ROC"; // vary the rate of change.
+//            varying_parameter = "ROC"; // vary the edge weight rate of change per EWL phase.
 //            varying_parameter = "EPR"; // vary the evolutionary phase rate.
-//            varying_parameter = "gens"; // vary the number of generations.
+            varying_parameter = "gens"; // vary the number of generations.
 //            varying_parameter = "rows_columns"; // vary the number of rows and columns.
 
 
             // define the amount by which the parameter will vary between subsequent experiments.
             // note: the double type here also works for varying integer type params such as gens.
-            double variation = 0.005;
+            double variation = 50;
 
 
-            int num_experiments = 10; // define number of experiments to occur here
+            int num_experiments = 20; // define number of experiments to occur here
 
 
             // display which parameter is being modified and by how much per experiment.
@@ -471,6 +471,7 @@ public class DGAlgorithmPaper1 extends Thread{
             } else if(varying_parameter.equals("rows_columns")){
                 rows += variation;
                 columns += variation;
+                N = rows * columns;
             }
         }
 
