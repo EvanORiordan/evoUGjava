@@ -149,9 +149,9 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define initial parameter values.
-        runs=1000;
+        runs = 1;
         Player.setRate_of_change(0.05);
-        rows = 30;
+        rows = 10;
         gens = 10000;
         evo_phase_rate = 5;
         Player.setNeighbourhoodType("VN"); // possible values: VN, M
@@ -164,8 +164,8 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define whether an experiment or an experiment series will be conducted.
-        experiment_series = true;
-//        experiment_series = false;
+//        experiment_series = true;
+        experiment_series = false;
 
 
         if(experiment_series){ // for carrying out an experiment series
