@@ -126,7 +126,11 @@ public class DGAlgorithmPaper1 extends Thread{
 
         if(!experiment_series){
             displayPopEWStatus(
-                    Thread.currentThread().getStackTrace()[1].getClassName() + "connections.csv");
+                    Thread.currentThread().getStackTrace()[1].getClassName()
+                            + "connections.csv");
+            displayPopStrategies(
+                    Thread.currentThread().getStackTrace()[1].getClassName()
+                            + "strategies.csv");
         }
     }
 
@@ -140,7 +144,7 @@ public class DGAlgorithmPaper1 extends Thread{
         Instant start = Instant.now();
         System.out.println("Executing "+Thread.currentThread().getStackTrace()[1].getClassName()+"."
                 +Thread.currentThread().getStackTrace()[1].getMethodName()+"()...");
-        System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
+        System.out.println("Timestamp: " + java.time.Clock.systemUTC().instant());
 
 
         // define name of .csv file for storing experiment data.
@@ -152,9 +156,10 @@ public class DGAlgorithmPaper1 extends Thread{
         runs = 1;
         Player.setRate_of_change(0.05);
         rows = 10;
-        gens = 10000;
+        gens = 5;
         evo_phase_rate = 5;
         Player.setNeighbourhoodType("VN"); // possible values: VN, M
+//        Player.setNeighbourhoodType("M");
 
 
 
@@ -200,7 +205,7 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // marks the end of the program's runtime
-        System.out.println("Timestamp:" + java.time.Clock.systemUTC().instant());
+        System.out.println("Timestamp: " + java.time.Clock.systemUTC().instant());
         Instant finish = Instant.now();
         long secondsElapsed = Duration.between(start, finish).toSeconds();
         long minutesElapsed = Duration.between(start, finish).toMinutes();
@@ -278,6 +283,8 @@ public class DGAlgorithmPaper1 extends Thread{
      * this grid, x must have a higher p value than their neighbours and depending on the ROC, they
      * have had a greater value of p for some time. If x has a 4, x must have the lowest p value in
      * their neighbourhood.
+     *
+     * @param filename
      */
     public void displayPopEWStatus(String filename){
         FileWriter fw;
@@ -285,12 +292,46 @@ public class DGAlgorithmPaper1 extends Thread{
             fw = new FileWriter(filename, false);
             for(ArrayList<Player> row:grid){
                 for(int j=0;j<row.size();j++){
-                    double sum = 0.0;
                     Player player = row.get(j);
+
+                    // write connection sum.
+                    double sum = 0.0;
                     for(int i=0;i<player.getEdge_weights().length;i++){
                         sum+=player.getEdge_weights()[i];
                     }
                     fw.append(DF4.format(sum));
+
+
+                    if(j+1<row.size()){
+                        fw.append(",");
+                    }
+                }
+                fw.append("\n");
+            }
+            fw.close();
+        } catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Writes a grid of strategies, i.e. the p values, of the pop to a given .csv file.
+     *
+     * @param filename
+     */
+    public void displayPopStrategies(String filename){
+        FileWriter fw;
+        try{
+            fw = new FileWriter(filename, false);
+            for(ArrayList<Player> row:grid){
+                for(int j=0;j<row.size();j++){
+                    Player player = row.get(j);
+
+                    // write strategy.
+                    fw.append(DF4.format(player.getP()));
+
+
                     if(j+1<row.size()){
                         fw.append(",");
                     }

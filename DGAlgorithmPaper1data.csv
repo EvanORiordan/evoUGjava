@@ -1,2 +1,2 @@
 experiment,mean avg p,avg p SD,runs,gens,neighbourhood,N,ROC,EPR
-0,0.2716,0.0000,1,10000,VN,100,0.05,5
+0,0.5169,0.0000,1,5,VN,100,0.05,5
