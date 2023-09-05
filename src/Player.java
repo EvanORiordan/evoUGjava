@@ -29,8 +29,6 @@ public class Player {
     private double average_score; // average score of this player this gen
     private static DecimalFormat DF1 = new DecimalFormat("0.0"); // 1 decimal point DecimalFormat
     private static DecimalFormat DF4 = new DecimalFormat("0.0000"); // 4 decimal point DecimalFormat
-    private static double edge_decay_factor; // EDF affects the rate of edge decay
-    private double edge_decay_score; // EDS determines this player's probability of edge decay
     private ArrayList<Player> players_left_to_play_this_gen; // tracks which players a player has left to play in a given gen.
     private double[] edge_weights; // stores weights of edges belonging to the player.
     private static double rate_of_change; // fixed amount by which edge weight is modified.
@@ -130,37 +128,6 @@ public class Player {
         }
     }
 
-
-    /**
-     * Method for playing with space and abstinence alongside edge weights.
-     *
-     * Works alongside edgeDecay2().
-     *
-     * If either player is an abstainer, the interaction goes ahead regardless of the edge weight.
-     * Else, when the player is the dictator, the neighbour's edge weight determines the chance of
-     * interaction of receiving from the dictator. Else if the neighbour's edge weight beats the
-     * double, you get to play with them. Else, the neighbour does not even arrive at the table to
-     * play with the dictator, hence neither player gets any payoff.
-     */
-    public void playEdgeDecaySpatialAbstinenceUG(){
-        for(int i=0;i<neighbourhood.size();i++){
-            Player neighbour = neighbourhood.get(i);
-            double random_double = ThreadLocalRandom.current().nextDouble();
-
-            // ensures that the correct edge weight is retrieved from the neighbour
-            double edge_weight = 0.0;
-
-            for(int j=0;j<neighbour.neighbourhood.size();j++){
-                if(neighbour.getNeighbourhood().get(j).getId() == ID){
-                    edge_weight = neighbour.getEdge_weights()[j];
-                    break;
-                }
-            }
-            if(edge_weight > random_double || abstainer || neighbour.getAbstainer()){
-                playAbstinenceUG(neighbour);
-            }
-        }
-    }
 
 
     /**
@@ -319,34 +286,15 @@ public class Player {
         }
     }
 
-    /**
-     * If threshold is overcome by an edge_decay_score, an edge is decayed.
-     */
-    public void edgeDecay(){
-        if (!abstainer) { // only non-abstainers may remove edges
-            ArrayList<Player> neighbourhood_copy = (ArrayList<Player>) neighbourhood.clone();
-            for (Player neighbour : neighbourhood_copy) {
-                if(neighbourhood.size() == 1 || neighbour.neighbourhood.size() == 1){
-                    break;
-                }
-                double threshold = ThreadLocalRandom.current().nextDouble(); // should threshold be random
-                if (threshold < neighbour.edge_decay_score) {
-                    neighbourhood.remove(neighbour);
-                    neighbour.neighbourhood.remove(this);
-                }
-            }
-        }
-    }
+
 
     /**
-     * Allows edgeDecay2() to work by initialising edge_weights with respect to the
-     * neighbourhood size.
+     * Initialise edge_weights with respect to neighbourhood size.
      */
     public void initialiseEdgeWeights() {
         edge_weights = new double[neighbourhood.size()];
         for(int i=0;i<neighbourhood.size();i++){
-            edge_weights[i] = 1.0;
-//            edge_weights[i] = 0.5;
+            edge_weights[i] = 1.0; // initialise edge weight at 1.0
         }
     }
 
@@ -438,23 +386,6 @@ public class Player {
     public static DecimalFormat getDF4(){
         return DF4;
     }
-
-    public static double getEdge_decay_factor(){
-        return edge_decay_factor;
-    }
-
-    public static void setEdge_decay_factor(double d){
-        edge_decay_factor = d;
-    }
-
-    public double getEdge_decay_score(){
-        return edge_decay_score;
-    }
-
-    public void setEdge_decay_score(double d){
-        edge_decay_score=d;
-    }
-
 
     public void setPlayers_left_to_play_this_gen(ArrayList<Player> al){
         players_left_to_play_this_gen=al;
