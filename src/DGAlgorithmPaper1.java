@@ -47,7 +47,7 @@ public class DGAlgorithmPaper1 extends Thread{
         for(int i=0;i<rows;i++){
             ArrayList<Player> row = new ArrayList<>();
             for(int j=0;j<columns;j++){
-                row.add(new Player(ThreadLocalRandom.current().nextDouble(), 0.0, false));
+                row.add(new Player(ThreadLocalRandom.current().nextDouble(), 0.0));
             }
             grid.add(row);
         }
@@ -153,7 +153,7 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define initial parameter values.
-        runs = 2;
+        runs = 10;
         Player.setRate_of_change(0.05);
         rows = 10;
         gens = 5;

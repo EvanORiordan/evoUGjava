@@ -22,11 +22,8 @@ public class Player {
     private ArrayList<Player> neighbourhood; // this player's neighbourhood
     private int games_played_this_gen;
     private static double prize; // the prize amount being split in an interaction
-    private static double loners_payoff; // payoff received for being part of an interaction where a party abstained
     private double old_p; // the p value held at the beginning of the gen; will be copied by imitators
     private double old_q; // the q value held at the beginning of the gen; will be copied by imitators
-    private boolean old_abstainer; // the abstainer value held at start of gen; to be copied by imitators
-    private boolean abstainer; // indicates whether this player is an abstainer; an abstainer always abstains from playing the game, hence both interacting parties receive the loner's payoff.
     private int role1_games; // how many games this player has played as role1
     private int role2_games; // how many games this player has played as role2
     private double average_score; // average score of this player this gen
@@ -42,16 +39,16 @@ public class Player {
 
     public Player(){} // empty constructor
 
+
+
     /**
      * constructor for instantiating a player.
      * if DG, make sure to pass 0.0 double as q argument.
-     * if abstinence-less game, make sure to pass false boolean to abstainer parameter.
      */
-    public Player(double p, double q, boolean abstainer){
+    public Player(double p, double q){
         ID=count++; // assign this player's ID
         this.p=p; // assign p value
         this.q=q; // assign q value
-        this.abstainer=abstainer; // indicate whether this player initialises as an abstainer
         old_p=p;
     }
 
@@ -73,19 +70,6 @@ public class Player {
     }
 
 
-    /**
-     * method for playing the UG with an abstinence option.
-     * if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
-     * otherwise, play the regular UG.
-     */
-    public void playAbstinenceUG(Player responder){
-        if(abstainer || responder.abstainer){
-            updateStats(loners_payoff, true);
-            responder.updateStats(loners_payoff, false);
-        } else {
-            playUG(responder);
-        }
-    }
 
     // method for playing the UG, as the proposer, with each neighbour
     public void playSpatialUG(){
@@ -94,35 +78,6 @@ public class Player {
         }
     }
 
-    // method for playing the UG with an abstinence option, as the proposer, with each neighbour
-    public void playSpatialAbstinenceUG(){
-        for(Player neighbour: neighbourhood){
-            playAbstinenceUG(neighbour);
-        }
-    }
-
-
-    // method for playing the game asymmetrically, spatially and with abstinence.
-    public void playAsymmSpatialAbstinenceUG(){
-//        for(Player neighbour: neighbourhood){
-//            if(games_played_this_gen != 4 || neighbour.games_played_this_gen != 4) {
-//                playAbstinenceUG(neighbour);
-//            }
-
-
-//        for(int i=0;i<players_left_to_play_this_gen.size();i++){
-//            Player neighbour = players_left_to_play_this_gen.get(i);
-//            playAbstinenceUG(neighbour);
-//
-//            // remove this player from neighbour's players left to play this gen.
-//            neighbour.players_left_to_play_this_gen.remove(this);
-//        }
-
-        for(Player neighbour: players_left_to_play_this_gen){
-            playAbstinenceUG(neighbour);
-            neighbour.players_left_to_play_this_gen.remove(this);
-        }
-    }
 
 
 
@@ -216,7 +171,6 @@ public class Player {
     public void copyStrategy(Player model){
         setP(model.old_p);
         setQ(model.old_q);
-        abstainer=model.old_abstainer;
     }
 
     public int getId(){
@@ -329,22 +283,6 @@ public class Player {
         return neighbourhood;
     }
 
-    public static double getLoners_payoff(){
-        return loners_payoff;
-    }
-
-    public static void setLoners_payoff(double d){
-        loners_payoff=d;
-    }
-
-    public boolean getAbstainer(){
-        return abstainer;
-    }
-
-    public void setAbstainer(boolean abstainer){
-        this.abstainer=abstainer;
-    }
-
     public double getAverage_score(){
         return average_score;
     }
@@ -363,14 +301,6 @@ public class Player {
 
     public void setOld_q(double old_q){
         this.old_q=old_q;
-    }
-
-    public boolean getOldAbstainer(){
-        return old_abstainer;
-    }
-
-    public void setOldAbstainer(boolean old_abstainer){
-        this.old_abstainer=old_abstainer;
     }
 
     public static DecimalFormat getDF1() { return DF1; }
@@ -405,7 +335,6 @@ public class Player {
         description += " p="+DF4.format(p);
 //        description += " oldp="+DF4.format(old_p);
 //        description += " q="+DF4.format(q);
-//        description += " A="+abstainer;
         description += " score="+DF4.format(score);
         description += " avgscore="+DF4.format(average_score);
 //        description += " EAP="+ EAP;
