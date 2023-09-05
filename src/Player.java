@@ -361,46 +361,6 @@ public class Player {
     }
 
 
-    /**
-     * Second attempt at an edge decay mechanism. The player looks back on their relationships
-     * with their neighbours in order to decide who to play less often with.
-     *
-     * This mechanism does not eject players from the neighbourhood. Instead, it uses an edge weight
-     * array to determine the chance of playing with the neighbour. Positive interactions result in
-     * weights increasing, to a max of 1.0, while negative interactions reduce the weight, to a min
-     * of 0.0. Once an edge weight w reaches 0.0, the neighbour can no longer dictate to the
-     * player. A positive interaction is defined as one where the neighbour dictator had higher p
-     * than the player, and vice versa for negative interactions.
-     *
-     * Question: Should abstainers abstain from modifying their edges?
-     *
-     * Question: What value should rate_of_change be assigned?
-     *
-     * Question: Should you consider modifying edge weight with an abstainer neighbour?
-     */
-    public void edgeDecay2(){
-//        if(!abstainer) {
-//            for (int i = 0; i < neighbourhood.size(); i++) {
-//                Player neighbour = neighbourhood.get(i);
-//                if (neighbour.p > p) { // if neighbour is more generous than you, increase EW
-//                    if(edge_weights[i].add(rate_of_change).compareTo(new BigDecimal("1.0"))
-//                            == 1){
-//                        edge_weights[i] = new BigDecimal("1.0");
-//                    } else {
-//                        edge_weights[i].add(rate_of_change);
-//                    }
-//                } else if(neighbour.p < p){ // if neighbour is less generous, decrease EW
-//                    if(edge_weights[i].subtract(rate_of_change).compareTo(new BigDecimal("0.0"))
-//                            == -1){
-//                        edge_weights[i] = new BigDecimal("0.0");
-//                    } else {
-//                        edge_weights[i].subtract(rate_of_change);
-//                    }
-//                }
-//            }
-//        }
-    }
-
 
     /**
      * Method that allows players to perform a form of edge weight learning.
