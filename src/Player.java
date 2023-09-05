@@ -3,7 +3,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Programmed by Evan O'Riordan.
+ * Evan O'Riordan<br>
+ * e.oriordan3@universityofgalway.ie<br>
+ * 2023<br>
+ * <br>
  *
  * Player class for instantiating player objects for different variants of the UG.
  */
@@ -43,10 +46,6 @@ public class Player {
      * constructor for instantiating a player.
      * if DG, make sure to pass 0.0 double as q argument.
      * if abstinence-less game, make sure to pass false boolean to abstainer parameter.
-     *
-     * @param p
-     * @param q
-     * @param abstainer
      */
     public Player(double p, double q, boolean abstainer){
         ID=count++; // assign this player's ID
@@ -62,7 +61,6 @@ public class Player {
      * receives a Player argument to play with.
      * if DG, the offer is always accepted since the responder/recipient/role2 player has q=0.0.
      *
-     * @param responder
      */
     public void playUG(Player responder) {
         if(p >= responder.q){ // accept offer
@@ -79,8 +77,6 @@ public class Player {
      * method for playing the UG with an abstinence option.
      * if the proposer or the responder is an abstainer, both parties receive the loner's payoff.
      * otherwise, play the regular UG.
-     *
-     * @param responder
      */
     public void playAbstinenceUG(Player responder){
         if(abstainer || responder.abstainer){
@@ -131,12 +127,10 @@ public class Player {
 
 
     /**
-     * Play the game with respect to space and edge weights.
-     *
+     * Play the game with respect to space and edge weights.<br>
      * For each neighbour in your neighbourhood, propose to them if the weight of their edge
      * to you, which represents their likelihood of receiving from you, is greater than a
-     * randomly generated double between 0 and 1.
-     *
+     * randomly generated double between 0 and 1.<br>
      * If the game is DG, you can mentally replace the word "propose" with "dictate".
      */
     public void playEWSpatialUG(){
@@ -203,8 +197,7 @@ public class Player {
     /**
      * Update the status of this player after playing, including score and average score.
      * The average score calculation is usual for seeing what score a player accrued over
-     * the gen.
-     *
+     * the gen.<br>
      * 6/3/23: I have changed this to dividing by games_played_this_gen to games_played_in_total.
      */
     public void updateStats(double payoff, boolean role1){
@@ -243,8 +236,10 @@ public class Player {
     }
 
 
-    // method for assigning the position of a player on a 1D space and
-    // finding the neighbours when a player resides on a 1D line space.
+    /**
+     * Method for assigning the position of a player on a 1D space and
+     * finding the neighbours when a player resides on a 1D line space.
+     */
     public void findNeighbours1D(ArrayList<Player> line, int position){
         neighbourhood = new ArrayList<>();
         if(neighbourhood_type.equals("line2")){
@@ -257,12 +252,9 @@ public class Player {
 
 
     /**
-     * method for assigning the position of a player on a 2D space and finding the neighbours when a
-     * player resides on a 2D space. possible neighbourhood_type values: VN, M
-     *
-     * @param grid
-     * @param row_position
-     * @param column_position
+     * Method for assigning the position of a player on a 2D space and finding the neighbours when a
+     * player resides on a 2D space.<br>
+     * Possible neighbourhood_type values: VN, M.
      */
     public void findNeighbours2D(ArrayList<ArrayList<Player>> grid, int row_position, int column_position){
         neighbourhood = new ArrayList<>();
