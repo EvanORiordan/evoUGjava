@@ -345,18 +345,7 @@ public class DGAlgorithmPaper1 extends Thread{
     }
 
 
-//    /**
-//     * Displays how much score is being accumulated across the whole pop in a given gen.
-//     */
-//    public void displayTotalScore(){
-//        double total_accumulated_score = 0.0;
-//        for(ArrayList<Player> row: grid){
-//            for(Player player: row){
-//                total_accumulated_score += player.getScore();
-//            }
-//        }
-//        System.out.println(total_accumulated_score);
-//    }
+
 
 
     /**
