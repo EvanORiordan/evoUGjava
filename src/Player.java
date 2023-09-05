@@ -190,20 +190,6 @@ public class Player {
     }
 
 
-    /**
-     * Method for assigning the position of a player on a 1D space and
-     * finding the neighbours when a player resides on a 1D line space.
-     */
-    public void findNeighbours1D(ArrayList<Player> line, int position){
-        neighbourhood = new ArrayList<>();
-        if(neighbourhood_type.equals("line2")){
-            int a=position;
-            int b=line.size();
-            neighbourhood.add(line.get(((a-1)%b+b)%b)); // (a%b+b)%b lets edge players reach other edge players
-            neighbourhood.add(line.get(((a+1)%b+b)%b));
-        }
-    }
-
 
     /**
      * Method for assigning the position of a player on a 2D space and finding the neighbours when a
