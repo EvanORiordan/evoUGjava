@@ -334,10 +334,11 @@ public class Player {
         description += "ID="+ID;
         description += " p="+DF4.format(p);
 //        description += " oldp="+DF4.format(old_p);
-//        description += " q="+DF4.format(q);
+        if(q != 0){
+            description += " q="+DF4.format(q);
+        }
         description += " score="+DF4.format(score);
         description += " avgscore="+DF4.format(average_score);
-//        description += " EAP="+ EAP;
         if(neighbourhood.size() != 0){
             description += " neighbours=[";
             for(int i=0;i<neighbourhood.size();i++){
