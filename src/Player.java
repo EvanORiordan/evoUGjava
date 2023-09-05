@@ -15,7 +15,6 @@ public class Player {
     private double p; // proposal value; real num within [0,1]
     private double q; // acceptance threshold value; real num within [0,1]
     private int games_played_in_total; // keep track of the total number of games this player has played
-    private double EAP;  // EAP; used by [rand2013evolution]
     private static String neighbourhood_type; // neighbourhood type of this player
     private ArrayList<Player> neighbourhood; // this player's neighbourhood
     private int games_played_this_gen;
@@ -262,15 +261,6 @@ public class Player {
 
     public int getId(){
         return ID;
-    }
-
-    public double getEAP_rand2013evolution(){
-        return EAP;
-    }
-
-    // Method for calculating a player's effective average payoff, according to [rand2013evolution].
-    public void setEAP_rand2013evolution(double w){
-        EAP = Math.exp(w * average_score);
     }
 
     public static String getNeighbourhoodType(){
