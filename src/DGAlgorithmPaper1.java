@@ -153,7 +153,7 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define initial parameter values.
-        runs = 1;
+        runs = 2;
         Player.setRate_of_change(0.05);
         rows = 10;
         gens = 5;
