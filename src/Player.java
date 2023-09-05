@@ -71,15 +71,6 @@ public class Player {
 
 
 
-    // method for playing the UG, as the proposer, with each neighbour
-    public void playSpatialUG(){
-        for(Player neighbour: neighbourhood){
-            playUG(neighbour);
-        }
-    }
-
-
-
 
     /**
      * Play the game with respect to space and edge weights.<br>
