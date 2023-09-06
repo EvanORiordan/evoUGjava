@@ -30,7 +30,7 @@ public class Player {
     private static DecimalFormat DF1 = new DecimalFormat("0.0"); // 1 decimal point DecimalFormat
     private static DecimalFormat DF4 = new DecimalFormat("0.0000"); // 4 decimal point DecimalFormat
     private ArrayList<Player> players_left_to_play_this_gen; // tracks which players a player has left to play in a given gen.
-    private double[] edge_weights; // stores weights of edges belonging to the player.
+    private double[] edge_weights; // store edge weights belonging to the player.
     private static double rate_of_change; // fixed amount by which edge weight is modified.
 
 
