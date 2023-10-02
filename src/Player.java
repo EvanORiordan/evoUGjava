@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * University of Galway<br>
  *
  *
- * Player class for instantiating player objects for different variants of the UG.<br>
+ * Player class for instantiating player objects.<br>
  *
  * If recreating the results of this algorithm, please cite the paper "On the Emergence of Fairness in
  * the Evolutionary Dictator Game with Edge Weight Learning".<br>
