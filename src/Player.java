@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * School of Computer Science<br>
  * University of Galway<br>
  *
+ *
  * Player class for instantiating player objects for different variants of the UG.<br>
  *
  * If recreating the results of this algorithm, please cite the paper "On the Emergence of Fairness in

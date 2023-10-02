@@ -15,6 +15,7 @@ import java.io.IOException;
  * School of Computer Science<br>
  * University of Galway<br>
  *
+ *
  * Algorithm for the Dictator Game subject to a square grid, evolution, edge weights.<br>
  *
  * If recreating the results of this algorithm, please cite the paper "On the Emergence of Fairness in
