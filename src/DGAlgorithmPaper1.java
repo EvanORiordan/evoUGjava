@@ -10,13 +10,15 @@ import java.io.IOException;
 
 
 /**
- * Programmed by Evan O'Riordan.
+ * Evan O'Riordan (e.oriordan3@universityofgalway.ie)<br>
+ * 02/10/2023<br>
+ * School of Computer Science<br>
+ * University of Galway<br>
  *
- * If recreating the results obtained from DGAlgorithmPaper1.java, please cite the following paper:
- * insertLinkToPaperHere
+ * Algorithm for the Dictator Game subject to a square grid, evolution, edge weights.<br>
  *
- * Algorithm for the Dictator Game subject to a square grid, evolution, edge weights.
- * File was previously named DG20.
+ * If recreating the results of this algorithm, please cite the paper "On the Emergence of Fairness in
+ * the Evolutionary Dictator Game with Edge Weight Learning".<br>
  */
 public class DGAlgorithmPaper1 extends Thread{
 

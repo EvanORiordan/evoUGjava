@@ -3,12 +3,15 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Evan O'Riordan<br>
- * e.oriordan3@universityofgalway.ie<br>
- * 2023<br>
- * <br>
+ * Evan O'Riordan (e.oriordan3@universityofgalway.ie)<br>
+ * 02/10/2023<br>
+ * School of Computer Science<br>
+ * University of Galway<br>
  *
- * Player class for instantiating player objects for different variants of the UG.
+ * Player class for instantiating player objects for different variants of the UG.<br>
+ *
+ * If recreating the results of this algorithm, please cite the paper "On the Emergence of Fairness in
+ * the Evolutionary Dictator Game with Edge Weight Learning".<br>
  */
 public class Player {
 
