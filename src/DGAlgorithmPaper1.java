@@ -157,10 +157,10 @@ public class DGAlgorithmPaper1 extends Thread{
 
         // define initial parameter values.
         runs = 10;
-        Player.setRate_of_change(0.05);
+        Player.setRate_of_change(0.2);
         rows = 10;
-        gens = 5;
-        evo_phase_rate = 5;
+        gens = 10000;
+        evo_phase_rate = 1;
         Player.setNeighbourhoodType("VN"); // possible values: VN, M
 //        Player.setNeighbourhoodType("M");
 
@@ -179,15 +179,15 @@ public class DGAlgorithmPaper1 extends Thread{
         if(experiment_series){ // for carrying out an experiment series
 
             // define the parameter to be varied across the experiment series.
-            varying_parameter = "ROC"; // vary the edge weight rate of change per EWL phase.
-//            varying_parameter = "EPR"; // vary the evolutionary phase rate.
+//            varying_parameter = "ROC"; // vary the edge weight rate of change per EWL phase.
+            varying_parameter = "EPR"; // vary the evolutionary phase rate.
 //            varying_parameter = "gens"; // vary the number of generations.
 //            varying_parameter = "rows_columns"; // vary the number of rows and columns.
 
 
             // define the amount by which the parameter will vary between subsequent experiments.
             // note: the double type here also works for varying integer type params such as gens.
-            double variation = 0.05;
+            double variation = 1;
 
 
             int num_experiments = 8; // define number of experiments to occur here
