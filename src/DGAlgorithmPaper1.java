@@ -96,8 +96,7 @@ public class DGAlgorithmPaper1 extends Thread{
                         double total_imitation_score = 0;
                         double player_avg_score = player.getAverage_score();
                         for (int i = 0; i < neighbourhood.size(); i++) {
-                            imitation_scores[i] =
-                                    Math.exp(neighbourhood.get(i).getAverage_score() - player_avg_score);
+                            imitation_scores[i] = Math.exp(neighbourhood.get(i).getAverage_score() - player_avg_score);
                             total_imitation_score += imitation_scores[i];
                         }
                         total_imitation_score += 1.0;
@@ -158,7 +157,7 @@ public class DGAlgorithmPaper1 extends Thread{
         // define initial parameter values.
         runs = 10;
         Player.setRate_of_change(0.2);
-        rows = 10;
+        rows = 30;
         gens = 10000;
         evo_phase_rate = 1;
         Player.setNeighbourhoodType("VN"); // possible values: VN, M
@@ -172,8 +171,8 @@ public class DGAlgorithmPaper1 extends Thread{
 
 
         // define whether an experiment or an experiment series will be conducted.
-//        experiment_series = true;
-        experiment_series = false;
+        experiment_series = true;
+//        experiment_series = false;
 
 
         if(experiment_series){ // for carrying out an experiment series
