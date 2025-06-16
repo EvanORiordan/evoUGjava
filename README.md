@@ -4,9 +4,7 @@ Files required to recreate results of "Fairness in the Dictator Game with Edge W
 - src/DGAlgorithmPaper1.java
 - src/Player.java
 
-How to run: 
-- In DGAlgorithmPaper1.main(), initialise these important parameters: runs, ROC, rows (the value of rows affects N), gens, evo_phase_rate.
-- Use the experiment_series boolean to indicate whether you wish to run a single experiment or a series of experiments. If experiment_series is set to true, make sure to initialise varying_parameter, num_experiments and variation to indicate which parameter will be varied across the experiment series, by how much per experiment and how many experiments will take place in the series.
+To assign values to the environmental parameters, edit code in setParams().
 
 Example experiment settings: 
 - runs=1000, 
